@@ -1,0 +1,12 @@
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, "sans-serif";
+}
+
+h2 {
+  font-weight: 600;
+  color: #aaaaaa;
+  margin-bottom: 15px;
+}

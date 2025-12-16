@@ -1,0 +1,190 @@
+<div class="modal-overlay" (click)="cerrarModal($event)">
+
+<div class="modal-buscador-prendas">
+
+  <div class="modal-content-flex">
+    <!-- ================== LEFT SIDE ================== -->
+    <div class="buscador-left">
+      <div class="cabecera-filtros">
+        <h2 class="titulo-buscador">Buscador de Prendas</h2>
+        <button type="button" class="btn btn-reiniciar" (click)="reiniciarFiltros()">Reiniciar</button>
+      </div>
+
+      <!-- Buscadores de texto: descripción y calidad -->
+      <div class="fila-busquedas">
+        <!-- descripción -->
+        <div class="input-con-icono">
+          <span class="material-icons icono-lupa">search</span>
+          <input type="text" [(ngModel)]="busquedaDescripcionPr" (input)="aplicarFiltros()" placeholder="Buscar por descripción..." class="input-busqueda" />
+        </div>
+        <!-- calidad -->
+        <div class="input-con-icono">
+          <span class="material-icons icono-lupa">tune</span>
+          <input type="text" [(ngModel)]="busquedaCalidadPr" (input)="aplicarFiltros()" placeholder="Buscar por calidad..." class="input-busqueda" />
+        </div>
+      </div>
+
+      <!-- Filtros: categoría, marca, estado -->
+      <div class="fila-selects">
+        <!-- categoría -->
+        <mat-form-field appearance="outline" floatLabel="always" class="filtro-categoria">
+          <mat-label>Categoría</mat-label>
+          <mat-select [(ngModel)]="idCategoriaFiltro" (selectionChange)="onCategoriaFiltroChange()">
+            <mat-option [value]="null">Todos</mat-option>
+            <mat-option *ngFor="let cat of categoriasFiltro" [value]="cat.idCategoria">{{ cat.nombre }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!-- marca -->
+        <mat-form-field appearance="outline" floatLabel="always" class="filtro-marca">
+          <mat-label>Marca</mat-label>
+          <mat-select [(ngModel)]="idMarcaFiltro" (selectionChange)="aplicarFiltros()" [disabled]="!idCategoriaFiltro">
+            <mat-option [value]="null">Todas</mat-option>
+            <mat-option *ngFor="let mod of marcasFiltro" [value]="mod.idMarca">{{ mod.marca }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!-- estado -->
+        <mat-form-field appearance="outline" floatLabel="always" class="filtro-estado">
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="estadoFiltro" (selectionChange)="aplicarFiltros()">
+            <mat-option [value]="null">Todos</mat-option>
+            <mat-option [value]="'Disponible'">Disponible</mat-option>
+            <mat-option [value]="'Agotado'">Agotado</mat-option>
+            <mat-option [value]="'Pedido'">Pedido</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- contenedor de tarjetas -->
+      <div class="lista-prendas">
+        <div class="tarjeta-prenda" *ngFor="let prenda of listaFiltrada">
+          <div class="fila-imagen">
+            <div class="imagen-placeholder2">
+              <img
+                [src]="getImagenCategoria(prenda)"
+                alt="img"
+                class="percha-icon"
+                height="90"
+                width="90"
+              />
+            </div>
+          </div>
+
+          <!-- Contenedor para info (con posición relativa) -->
+          <div class="prenda-info-container">
+
+            <!-- Estado: posicionado arriba a la derecha -->
+            <p class="estado-prenda">{{ prenda.estado }}</p>
+
+            <!-- Título y subtítulo -->
+            <div class="titulo-y-subtitulo">
+              <p class="categoria-prenda">{{ prenda.marca.categoria.nombre || 'Sin categoría' }}</p>
+              <p class="marca-prenda">{{ prenda.marca.marca || 'Sin marca' }}</p>
+            </div>
+
+            <!-- Calidad y Stock -->
+            <div class="calidad-stock">
+              <!-- Calidad -->
+              <div class="atributo">
+                <div class="atributo-titulo">Calidad</div>
+                <div class="atributo-valor">{{ prenda.calidad || '-' }}</div>
+              </div>
+
+              <!-- Stock -->
+              <div class="atributo">
+                <div class="atributo-titulo">Stock</div>
+                <div class="atributo-valor">{{ prenda.stock || 0 }}</div>
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="fila-descripcion">
+              <div class="titulo-descripcion">Descripción</div>
+              <div class="texto-descripcion">
+                {{ truncarDescripcion(prenda.descripcion, 35) }}
+              </div>
+            </div>
+
+            <!-- Botón agregar -->
+            <button class="btn-agregar" mat-icon-button (click)="agregarPrenda(prenda)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- botones -->
+      <div class="acciones-buscador">
+        <button type="button" class="action-buttonPE cancelar" (click)="cancelarSeleccion()">Cancelar</button>
+        <button type="button" class="action-buttonPE confirmar" (click)="confirmarSeleccion()">Confirmar</button>
+      </div>
+    </div>
+
+    <!-- ================== RIGHT SIDE ================== -->
+    <div class="seleccion-right">
+      <div class="resumen-seleccion">
+        <label>Total Prendas Seleccionadas:</label>
+        <label class="cantidad-total">{{ prendasSeleccionadas.length }}</label>
+      </div>
+
+      <div class="lista-seleccionadas">
+        <div class="tarjeta-prenda seleccionada" *ngFor="let prenda of prendasSeleccionadas">
+          <!-- Imagen -->
+          <div class="fila-imagen">
+            <div class="imagen-placeholder2">
+              <img
+                [src]="getImagenCategoria(prenda)"
+                alt="img"
+                class="percha-icon"
+                height="90"
+                width="90"
+              />
+            </div>
+          </div>
+
+          <!-- Contenedor para info -->
+          <div class="prenda-info-container">
+
+            <!-- Estado: posicionado arriba a la derecha -->
+            <p class="estado-prenda">{{ prenda.estado }}</p>
+
+            <!-- Título y subtítulo -->
+            <div class="titulo-y-subtitulo">
+              <p class="categoria-prenda">{{ prenda.marca.categoria.nombre || 'Sin categoría' }}</p>
+              <p class="marca-prenda">{{ prenda.marca.marca || 'Sin marca' }}</p>
+            </div>
+
+            <!-- Calidad y Stock -->
+            <div class="calidad-stock">
+              <!-- Calidad -->
+              <div class="atributo">
+                <div class="atributo-titulo">Calidad</div>
+                <div class="atributo-valor">{{ prenda.calidad || '-' }}</div>
+              </div>
+
+              <!-- Stock -->
+              <div class="atributo">
+                <div class="atributo-titulo">Stock</div>
+                <div class="atributo-valor">{{ prenda.stock || 0 }}</div>
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="fila-descripcion">
+              <div class="titulo-descripcion">Descripción</div>
+              <div class="texto-descripcion">
+                {{ truncarDescripcion(prenda.descripcion, 35) }}
+              </div>
+            </div>
+
+            <!-- Botón eliminar -->
+            <button class="btn-eliminar" (click)="eliminarPrenda(prenda)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

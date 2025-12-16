@@ -1,0 +1,173 @@
+<div class="modal-overlay" (click)="cerrarModal()">
+
+  <div class="modal-buscador-prendas" (click)="$event.stopPropagation()">
+    <div class="modal-content-flex">
+
+      <!-- ================== LEFT SIDE: BUSCADOR ================== -->
+      <div class="buscador-left">
+        <div class="cabecera-filtros">
+          <h2 class="titulo-buscador">Buscador de Prendas para Venta</h2>
+          <button type="button" class="btn btn-reiniciar" (click)="reiniciarFiltros()">Reiniciar</button>
+        </div>
+
+        <!-- Buscadores de texto -->
+        <div class="fila-busquedas">
+          <div class="input-con-icono">
+            <span class="material-icons icono-lupa">search</span>
+            <input type="text" [(ngModel)]="busquedaDescripcionPr" (input)="aplicarFiltros()" placeholder="Buscar por descripción..." class="input-busqueda" />
+          </div>
+          <div class="input-con-icono">
+            <span class="material-icons icono-lupa">tune</span>
+            <input type="text" [(ngModel)]="busquedaCalidadPr" (input)="aplicarFiltros()" placeholder="Buscar por calidad..." class="input-busqueda" />
+          </div>
+        </div>
+
+        <!-- Filtros: categoría y marca -->
+        <div class="fila-selects">
+          <mat-form-field appearance="outline" floatLabel="always" class="filtro-categoria">
+            <mat-label>Categoría</mat-label>
+            <mat-select [(ngModel)]="idCategoriaFiltro2" (selectionChange)="onCategoriaFiltroChange2()">
+              <mat-option [value]="null">Todos</mat-option>
+              <mat-option *ngFor="let cat of categoriasFiltro" [value]="cat.idCategoria">{{ cat.nombre }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" floatLabel="always" class="filtro-marca">
+            <mat-label>Marca</mat-label>
+            <mat-select [(ngModel)]="idMarcaFiltro2" (selectionChange)="aplicarFiltros()" [disabled]="!idCategoriaFiltro2">
+              <mat-option [value]="null">Todas</mat-option>
+              <mat-option *ngFor="let mod of marcasFiltro" [value]="mod.idMarca">{{ mod.marca }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Lista de prendas filtradas -->
+        <div class="lista-prendas">
+          <div class="tarjeta-prenda" *ngFor="let prenda of listaFiltrada">
+            <div class="fila-imagen">
+              <div class="imagen-placeholder2">
+                <img
+                  [src]="getImagenCategoria(prenda)"
+                  alt="img"
+                  class="percha-icon"
+                  height="90"
+                  width="90"
+                />
+              </div>
+            </div>
+            <div class="prenda-info-container">
+              <p class="categoria-prenda">{{ prenda.marca.categoria.nombre || 'Sin categoría' }}</p>
+              <p class="marca-prenda">{{ prenda.marca.marca || 'Sin marca' }}</p>
+              <div class="calidad-stock">
+                <div class="atributo">
+                  <div class="atributo-titulo">Calidad</div>
+                  <div class="atributo-valor">{{ prenda.calidad || '-' }}</div>
+                </div>
+                <div class="atributo">
+                  <div class="atributo-titulo">Stock</div>
+                  <div class="atributo-valor">{{ prenda.stock || 0 }}</div>
+                </div>
+              </div>
+              <div class="fila-descripcion">
+                <div class="titulo-descripcion">Descripción</div>
+                <div class="texto-descripcion">{{ truncarDescripcion(prenda.descripcion, 35) }}</div>
+              </div>
+              <button class="btn-agregar" mat-icon-button (click)="abrirModalTallas(prenda)">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTONES DE ACCIÓN -->
+        <div class="acciones-finales">
+          <button class="btn-aceptar" (click)="confirmarSeleccion()">Aceptar todo</button>
+          <button class="btn-cerrar" (click)="cerrarModal()">Cerrar</button>
+        </div>
+      </div>
+
+      <!-- ================== RIGHT SIDE: DETALLES SELECCIONADOS ================== -->
+      <div class="seleccion-right">
+      <div class="lista-seleccionadas">
+        <div class="tarjeta-prenda-seleccionada" *ngFor="let grupo of detallesAgrupados">
+
+          <!-- Imagen -->
+          <div class="fila-imagen">
+            <div class="imagen-placeholder3">
+              <img
+                [src]="getImagenCategoria(grupo.prenda)"
+                alt="img"
+                class="percha-icon"
+                height="90"
+                width="90"
+              />
+            </div>
+          </div>
+
+          <!-- Info general de la prenda -->
+          <div class="prenda-info-container">
+            <p class="categoria-prenda">{{ grupo.prenda.marca.categoria.nombre }}</p>
+            <p class="marca-prenda">{{ grupo.prenda.marca.marca }}</p>
+
+            <!-- LISTA DE TALLAS DENTRO DE LA MISMA TARJETA -->
+            <div class="tallas-listadas">
+
+              <div class="talla-card" *ngFor="let det of grupo.tallas">
+                <div class="atributo">
+                  <div class="atributo-titulo">Talla</div>
+                  <div class="atributo-valor">{{ det.talla.size }}</div>
+                </div>
+                <div class="atributo">
+                  <div class="atributo-titulo">Cant.</div>
+                  <div class="atributo-valor">{{ det.cantidad }}</div>
+                </div>
+                <div class="atributo">
+                  <div class="atributo-titulo">Subtotal</div>
+                  <div class="atributo-valor">{{ det.subTotal | currency }}</div>
+                </div>
+
+                <button class="btn-eliminar" (click)="eliminarDetalle(det)">
+                  <mat-icon class="delete-icon">delete</mat-icon>
+                </button>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+  <!-- ================== MODAL DE TALLAS ================== -->
+  <div *ngIf="prendaSeleccionada" class="modal-overlay-tallas" (click)="prendaSeleccionada = null">
+    <div class="modal-tallas" (click)="$event.stopPropagation()">
+      <!-- INFO DE LA PRENDA -->
+      <div class="info-prenda">
+        <p><strong>Descripción:</strong> {{ prendaSeleccionada.descripcion }}</p>
+        <p><strong>Marca:</strong> {{ prendaSeleccionada.marca.marca }}</p>
+        <p><strong>Categoría:</strong> {{ prendaSeleccionada.marca.categoria.nombre }}</p>
+        <p><strong>Precio:</strong> {{ prendaSeleccionada.precioVenta | currency }}</p>
+        <p><strong>Calidad:</strong> {{ prendaSeleccionada.calidad }}</p>
+        <p><strong>Stock total:</strong> {{ prendaSeleccionada.stock }}</p>
+      </div>
+
+      <!-- SELECCIÓN DE TALLAS -->
+      <h3>Selecciona tallas</h3>
+      <div *ngFor="let ts of tallasSeleccionadas" class="fila-talla">
+        <span>{{ ts.talla.size }} (Stock: {{ ts.talla.cantidad }})</span>
+        <input type="number" min="0" [max]="ts.talla.cantidad" [(ngModel)]="ts.cantidad" placeholder="Cantidad" />
+      </div>
+
+      <button class="btn-confirmar" (click)="confirmarTallas()">Confirmar tallas</button>
+      <button class="btn-cancelar" (click)="prendaSeleccionada = null">Cancelar</button>
+    </div>
+  </div>
+
+</div>
+
+

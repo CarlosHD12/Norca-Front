@@ -1,0 +1,318 @@
+<!-- Sidebar de navegación -->
+<div class="main-content">
+  <app-sidebar-component></app-sidebar-component>
+</div>
+
+<div class="main-container">
+  <div class="contenido-pedidos">
+    <div class="container">
+
+      <!-- HEADER -->
+      <div class="header-pedidos">
+        <div class="titulo-pedidos">
+          <h2>Administración de Pedidos</h2>
+          <p class="subtitulo">Gestiona pedidos de clientes</p>
+
+          <div class="botones-header">
+
+            <button class="btn btn-pedidos" (click)="abrirModal()">
+              <img ngSrc="/carrito.png" class="material-icons" alt="img" height="20" width="20"/>
+              Nuevo Pedido
+            </button>
+
+            <button class="btn btn-pedidos" (click)="cargarPedidos()">
+              <img ngSrc="/actualizar.png" class="material-icons" alt="img" height="20" width="20"/>
+              Actualizar
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="barra-filtros-pedidos">
+        <!-- Fila superior: buscador + filtros -->
+        <div class="fila-filtros-superior">
+          <!-- Buscador cliente (izquierda) -->
+          <div class="input-con-icono">
+            <span class="material-icons icono-lupa">search</span>
+            <input
+              type="text"
+              [(ngModel)]="busquedaCliente"
+              (input)="aplicarFiltrosPedidos()"
+              placeholder="Buscar por cliente..."
+              class="input-busqueda"
+            />
+          </div>
+
+          <!-- Filtros a la derecha -->
+          <div class="filtros-derecha">
+            <mat-form-field appearance="outline" floatLabel="always" class="filtro-estadoP">
+              <mat-label>Estado</mat-label>
+              <mat-select [(ngModel)]="estadoFiltroPedido" (selectionChange)="aplicarFiltrosPedidos()">
+                <mat-option [value]="null">Todos</mat-option>
+                <mat-option value="Pendiente">Pendiente</mat-option>
+                <mat-option value="Completado">Completado</mat-option>
+                <mat-option value="Cancelado">Cancelado</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" floatLabel="always" class="filtro-fechaI">
+              <mat-label>Desde</mat-label>
+              <input
+                matInput
+                [matDatepicker]="pickerDesde"
+                [(ngModel)]="fechaDesdeP"
+                (dateChange)="aplicarFiltrosPedidos()"
+              />
+              <mat-datepicker-toggle matSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+              <mat-datepicker #pickerDesde></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" floatLabel="always" class="filtro-fechaF">
+              <mat-label>Hasta</mat-label>
+              <input
+                matInput
+                [matDatepicker]="pickerHasta"
+                [(ngModel)]="fechaHastaP"
+                (dateChange)="aplicarFiltrosPedidos()"
+              />
+              <mat-datepicker-toggle matSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+              <mat-datepicker #pickerHasta></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Fila inferior: botón reiniciar -->
+        <div class="fila-boton-reiniciar">
+          <button type="button" class="btn btn-reiniciarP" (click)="reiniciarFiltrosPedidos()">
+            Reiniciar
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
+          <tr>
+            <th class="text-left">N°</th>
+            <th class="text-left">Cliente</th>
+            <th class="text-left">Fecha y Hora</th>
+            <th>Estado</th>
+            <th>Detalles</th>
+            <th>Acciones</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <!-- Si hay pedidos -->
+          <tr *ngFor="let pedido of pedidosPaginados; let i = index; trackBy: trackByPedido">
+            <td>{{ (paginaActual - 1) * itemsPorPagina + i + 1 }}</td>
+
+            <td>
+              <div class="categoria-con-descripcion">
+                <div class="cliente">{{ pedido.cliente }}</div>
+                <div
+                  *ngIf="pedido.descripcion"
+                  class="cliente-descripcion"
+                  title="{{ pedido.descripcion }}">
+                  {{
+                    pedido.descripcion.length > 20
+                      ? pedido.descripcion.substring(0, 20) + '...'
+                      : pedido.descripcion
+                  }}
+                </div>
+              </div>
+            </td>
+
+
+            <td class="text-left">{{ pedido.fechaPedido | date:'dd/MM/yyyy - HH:mm' }}</td>
+
+            <td class="text-center">
+          <span class="status-badge"
+                [ngClass]="{
+                'status-pedido': pedido.estado === 'Pendiente',
+                'status-completo': pedido.estado === 'Completado',
+                'status-cancelado': pedido.estado === 'Cancelado'
+                }">
+            {{ pedido.estado }}
+            </span>
+            </td>
+
+            <td class="text-center">
+              <!-- Botón "Añadir detalles" -->
+              <button mat-button type="button"
+                      *ngIf="!pedidoTieneDetalles.get(pedido.idPedido!)"
+                      (click)="abrirModalPrendas(pedido)"
+                      class="btn-detalle">Añadir
+              </button>
+
+              <!-- Icono si ya tiene detalles -->
+              <span *ngIf="pedidoTieneDetalles.get(pedido.idPedido!)">
+                <mat-icon style="color: green;">check</mat-icon>
+              </span>
+            </td>
+
+            <td class="text-center">
+              <button mat-icon-button (click)="abrirMenuPedido($event, pedido)">
+                <mat-icon>toc</mat-icon>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="!pedidosPaginados || pedidosPaginados.length === 0">
+            <td colspan="8" class="text-center">No se encontraron pedidos</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <div class="items-por-pagina">
+          <input type="number" min="1" max="50" [(ngModel)]="itemsPorPagina" (change)="cambiarItemsPorPagina()" class="page-input corto" placeholder="15" />
+          <span>Items por página</span>
+        </div>
+        Ir a la página:
+        <div class="go-to-page">
+          <input type="number" min="1" [max]="totalPaginas2" [(ngModel)]="paginaInput" class="page-input" (keydown.enter)="irAPagina(paginaInput)" (blur)="irAPagina(paginaInput)" />
+        </div>
+        <button (click)="cambiarPagina(paginaActual - 1)" [disabled]="paginaActual === 1" class="paginator-btn">Anterior</button>
+        <button *ngFor="let item of getPaginas2()" (click)="typeof item === 'number' ? cambiarPagina(item) : null" [class.active]="item === paginaActual" [class.dots]="item === '...'" class="page-btn">
+          {{ item }}
+        </button>
+        <button (click)="cambiarPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas2" class="paginator-btn">Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de eliminación -->
+  <div *ngIf="mostrarModalConfirmacion" class="modal-overlay" (click)="cerrarModalConfirmacion()">
+    <div class="modal-confirmacion" (click)="$event.stopPropagation()">
+      <h3>¿Está seguro?</h3>
+      <p>Se eliminará el pedido de <strong>{{ pedidoAEliminar?.cliente }}</strong> y todos sus detalles.</p>
+      <div class="botones-confirmacion">
+        <button class="btn-cancelar" (click)="cancelarEliminacion()">Cancelar</button>
+        <button class="btn-eliminar" (click)="confirmarEliminacion()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Editar Estado -->
+<div *ngIf="mostrarModalEstado" class="modal-overlay" (click)="cerrarModalEstado()">
+  <div class="modal-estado" (click)="$event.stopPropagation()">
+    <h2 class="modal-titulo">Pedido #{{ pedidoSeleccionado?.idPedido }}</h2>
+
+    <div class="info-pedido">
+      <p><strong>Cliente:</strong> {{ pedidoSeleccionado?.cliente }}</p>
+      <p><strong>Descripción:</strong> {{ pedidoSeleccionado?.descripcion || '—' }}</p>
+      <p><strong>Fecha y Hora:</strong> {{ pedidoSeleccionado?.fechaPedido | date:'dd/MM/yyyy HH:mm' }}</p>
+    </div>
+
+    <mat-form-field appearance="outline" class="estado-select">
+      <mat-label>Estado</mat-label>
+      <mat-select [(ngModel)]="pedidoSeleccionado!.estado" (selectionChange)="guardarEstadoPedido()">
+        <mat-option value="Pendiente">Pendiente</mat-option>
+        <mat-option value="Completado">Completado</mat-option>
+        <mat-option value="Cancelado">Cancelado</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="botones-modal">
+      <button class="btn-cancelar" (click)="cerrarModalEstado()">Cancelar</button>
+      <button class="btn-guardar" (click)="guardarEstadoPedido()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- 🌟 MODAL FUERA DEL CONTENIDO 🌟 -->
+<div class="modal-overlay-pedido" *ngIf="mostrarModal" (click)="onOverlayClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+
+    <div class="modal-header-contenido">
+      <h2 class="modal-title">Nuevo Pedido</h2>
+      <img ngSrc="/pedido.png" alt="img" class="percha-iconMarca" height="60" width="60">
+    </div>
+
+    <button class="btn-cerrar-modal" (click)="cerrarModalPedido()">×</button>
+    <form [formGroup]="pedidoForm" (ngSubmit)="guardarPedido()">
+
+      <div class="select-columna">
+        <label>Nombre del Cliente</label>
+        <mat-form-field appearance="outline" class="w-100">
+          <input matInput formControlName="cliente"/>
+        </mat-form-field>
+      </div>
+
+      <div class="select-columna">
+        <label>Descripción</label>
+        <mat-form-field appearance="outline" class="w-100">
+          <input matInput formControlName="descripcion" placeholder="Opcional" />
+        </mat-form-field>
+      </div>
+
+
+      <!-- Fecha & Estado -->
+      <div class="info-extra">
+        <div class="info-box">
+          <div class="info-title">Fecha y Hora</div>
+          <div class="info-value">{{ fechaActual | date:'dd/MM/yyyy - HH:mm' }}</div>
+        </div>
+        <div class="info-box">
+          <div class="info-title">Estado</div>
+          <div class="info-value">Pendiente</div>
+        </div>
+      </div>
+
+      <div class="modal-buttons">
+        <button type="button" class="action-buttonP cancel" (click)="cerrarModalPedido()">Cancelar</button>
+        <button type="submit" class="action-buttonP save" [disabled]="loading">Registrar</button>
+      </div>
+
+      <!-- Mensajes -->
+      <div *ngIf="registrar" class="mensaje-exito">
+        {{ edicion ? 'Pedido actualizado correctamente' : 'Pedido registrado correctamente' }}
+      </div>
+
+      <div *ngIf="mostrarError" class="mensaje-error">
+        {{ edicion ? 'Error al actualizar el pedido' : 'Error al registrar el pedido' }}
+      </div>
+
+
+
+    </form>
+  </div>
+</div>
+
+<div #actionMenu class="action-menu" [style.display]="menuVisibleP ? 'block' : 'none'" [style.left.px]="menuXP" [style.top.px]="menuYP">
+  <ul>
+    <!-- Editar: deshabilitado si no tiene detalles -->
+    <li
+      (click)="pedidoTieneDetalles.get(pedidoSeleccionado?.idPedido!) ? abrirModalEditarDetalles() : null"
+      [class.disabled]="!pedidoTieneDetalles.get(pedidoSeleccionado?.idPedido!)">
+      <span class="material-icons">edit</span> Editar
+    </li>
+    <li (click)="abrirModalEstado()">
+      <span class="material-icons">edit_note</span> Editar Estado
+    </li>
+    <li>
+      <span class="material-icons">visibility</span> Ver Detalles
+    </li>
+    <li (click)="eliminarPedidoSeleccionado()">
+      <span class="material-icons">delete</span> Eliminar
+    </li>
+  </ul>
+</div>
+
+<!-- Modal para REGISTRAR (sin prendas iniciales) -->
+<app-prenda-buscador
+  *ngIf="mostrarModalPrendas"
+  (confirmar)="onPrendasSeleccionadas($event)"
+  (cerrar)="mostrarModalPrendas = false">
+</app-prenda-buscador>
+
+<!-- Modal para EDITAR (con prendas iniciales) -->
+<app-prenda-buscador
+  *ngIf="mostrarModalEditarDetalles"
+  [prendasIniciales]="prendasActualesDelPedido"
+  (confirmar)="onDetallesEditados($event)"
+  (cerrar)="mostrarModalEditarDetalles = false">
+</app-prenda-buscador>

@@ -1,0 +1,136 @@
+.auth-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+.welcome-panel {
+  width: 50%;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: white;
+  padding: 4rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+  }
+
+  .welcome-content {
+    text-align: center;
+    max-width: 80%;
+
+    h1 {
+      font-size: 2.5rem;
+      margin: 0 0 0.5rem 0;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0.5rem 0;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+  }
+}
+
+.form-panel {
+  width: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+
+  .form-card {
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+    .titulo {
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .form-content {
+      .campo-form {
+        margin-bottom: 1.5rem;
+      }
+
+      .alert-error {
+        background: #ffebee;
+        color: #c62828;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid #ef9a9a;
+        margin-bottom: 1rem;
+        text-align: center;
+        font-size: 0.9rem;
+      }
+
+      .btn-login {
+        width: 100%;
+        margin: 1.5rem 0 1rem 0;
+        padding: 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 25px;
+        text-transform: uppercase;
+        background: #2a5298 !important;
+        color: white !important;
+      }
+
+      .btn-login:hover {
+        background: #1e3c72 !important;
+      }
+
+      .texto {
+        text-align: center;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+
+        .enlace {
+          color: #2a5298;
+          font-weight: 600;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+
+::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+::ng-deep .mat-mdc-form-field-label {
+  color: #555 !important;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+  color: #2a5298 !important;
+}
+
+}

@@ -1,0 +1,54 @@
+<!-- login.component.html -->
+<div class="auth-container">
+  <!-- Panel Izquierdo -->
+  <div class="welcome-panel">
+    <div class="welcome-content">
+      <h1>Boutique Norca</h1>
+      <p>Nice to see you again</p>
+      <p class="subtitle">Gestiona tu inventario de prendas con facilidad y eficiencia.</p>
+    </div>
+  </div>
+
+  <!-- Panel Derecho -->
+  <div class="form-panel">
+    <mat-card class="form-card login-card">
+      <h2 class="titulo">Iniciar Sesión</h2>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form-content">
+        <mat-form-field appearance="outline" class="campo-form">
+          <mat-label>Email ID:</mat-label>
+          <input matInput formControlName="username" placeholder="Enter your email" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-form">
+          <mat-label>Password:</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            placeholder="Enter your password"
+          />
+          <button mat-icon-button matSuffix (click)="togglePassword()" type="button">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <div *ngIf="errorLogin" class="alert-error">
+          {{ errorLogin }}
+        </div>
+
+        <button mat-raised-button color="primary" type="submit" class="btn-login">
+          Iniciar Sesión
+        </button>
+
+        <p class="texto">
+          ¿Olvidaste tu contraseña?
+        </p>
+        <p class="texto">
+          ¿Nuevo en Boutique Norca?
+          <a routerLink="/home" class="enlace">Crear una cuenta</a>
+        </p>
+      </form>
+    </mat-card>
+  </div>
+</div>

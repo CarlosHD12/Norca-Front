@@ -1,0 +1,44 @@
+<div class="sidebar"
+     [class.expanded]="isExpanded"
+     (mouseenter)="expand()"
+     (mouseleave)="collapse()">
+
+
+<div class="sidebar-header">
+    <div class="header-logo">
+      <img src="/blancogrande.png" alt="logo"/>
+    </div>
+
+    <div class="header-text">
+      <span>Boutique Norca</span>
+      <small>Inventario</small>
+    </div>
+  </div>
+
+  <ul class="menu-list">
+    <li *ngFor="let item of menuItems"
+        [class.active]="isActive(item)"
+        (click)="selectItem(item)">
+
+      <i [class]="item.icon" class="menu-icon"></i>
+      <span class="label">{{ item.label }}</span>
+
+    </li>
+  </ul>
+
+  <div class="sidebar-footer">
+
+    <!-- Cerrar sesión -->
+    <div class="toggle-wrap logout" (click)="logout()">
+      <div class="header-logo2">
+        <i class="fi fi-br-power menu-icon"></i>
+      </div>
+
+      <div class="header-text">
+        <span>Logout</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>

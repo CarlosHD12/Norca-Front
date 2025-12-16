@@ -1,0 +1,173 @@
+/* SIDEBAR BASE */
+.sidebar {
+  width: 70px;
+  background-color: #f7e7e6;
+  border-right: none;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  transition: width 0.25s ease;
+}
+
+/* Expandido */
+.sidebar.expanded {
+  width: 250px;
+}
+
+/* HEADER */
+.sidebar-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #d6c9c8;
+  background-color: #f7e7e6;
+  height: 70px;
+  box-sizing: border-box;
+}
+
+/* LOGO separado */
+.header-logo img {
+  width: 40px;
+  height: 40px;
+}
+
+/* TEXTO */
+.header-text {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+}
+
+.header-text span {
+  font-weight: bold;
+  font-size: 17px;
+  color: #471319;
+}
+
+/* MENU LIST */
+.menu-list {
+  list-style: none;
+  padding: 15px 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.header-text small {
+  font-size: 11px;
+  color: rgba(71, 19, 25, 0.66);
+}
+
+.sidebar:not(.expanded) .header-text {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* COLAPSADO → imagen centrada */
+.sidebar:not(.expanded) .sidebar-header {
+  gap: 0;
+}
+
+.sidebar:not(.expanded) .header-logo {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.menu-list li {
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+  color: #471319;
+  border-radius: 25px;
+  margin: 15px 10px;
+}
+
+/* Label */
+.label {
+  font-size: 16px;
+  font-weight: bolder;
+  color: #471319;
+}
+
+/* Hover */
+.menu-list li:hover {
+  background-color: #FFFFFF;
+}
+
+/* ACTIVO */
+.menu-list li.active {
+  background-color: #D94B63;
+  color: #fff;
+  border-radius: 30px;
+  transform: scale(1.03);
+}
+
+.menu-list li.active {
+  color: #fff;
+}
+
+.menu-list li.active .menu-icon,
+.menu-list li.active .label {
+  color: #fff;
+}
+
+
+/* COLAPSADO → ocultar texto y centrar el icono */
+.sidebar:not(.expanded) .menu-list li {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.sidebar:not(.expanded) .label {
+  display: none;
+}
+
+
+/* FOOTER */
+.sidebar-footer {
+  min-height: 70px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #f7e7e6;
+  border-top: 1px solid #d6c9c8;
+  box-sizing: border-box;
+  margin-top: auto;
+  overflow: hidden;
+  transition: width 0.25s ease;
+}
+
+.menu-icon {
+  font-size: 22px;
+  color: currentColor;
+  display: flex;
+  align-items: center;
+}
+
+.header-text {
+  margin-left: 10px;
+}
+
+.toggle-wrap.logout {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.header-logo2 {
+  margin-left: 5px;
+  display: flex;
+  color: #471319;
+}

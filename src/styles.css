@@ -1,0 +1,40 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500&display=swap');
+
+html, body { height: 100%;   background-color: #FBEFEF;}
+body { margin: 0; font-family: 'Poppins', sans-serif;}
+
+/* ==================== SCROLLBAR GLOBAL ==================== */
+/* Scrollbar global */
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Fondo de la scrollbar */
+*::-webkit-scrollbar-track {
+  background: #FBEFEF;
+}
+
+/* Thumb (la parte que se mueve) */
+*::-webkit-scrollbar-thumb {
+  background: #e85a7f;
+  border-radius: 8px;
+}
+
+/* Hover del thumb */
+*::-webkit-scrollbar-thumb:hover {
+  background: #df2263; /* un rosa más intenso que haga contraste al pasar el mouse */
+}
+
+/* Scrollbar horizontal más delgada */
+*::-webkit-scrollbar:horizontal {
+  height: 6px; /* o 4px, lo que quieras */
+}
+
+
+mat-label,
+mat-select,
+mat-datepicker-toggle {
+  font-family: 'Poppins', sans-serif;
+  color: #160000 !important;
+}

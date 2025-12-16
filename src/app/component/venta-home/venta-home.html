@@ -1,0 +1,355 @@
+<!-- Sidebar de navegación -->
+<div class="main-content">
+  <app-sidebar-component></app-sidebar-component>
+</div>
+
+<div class="main-container">
+  <div class="contenido-ventas">
+    <div class="container">
+
+      <!-- HEADER -->
+      <div class="header-ventas">
+        <div class="titulo-ventas">
+          <h2>Administración de Ventas</h2>
+          <p class="subtitulo">Gestiona pedidos de clientes</p>
+          <div class="botones-header">
+            <button class="btn btn-ventas" (click)="abrirModal()">
+              <span class="material-icons">add_shopping_cart</span>
+              Nueva Venta
+            </button>
+            <button class="btn btn-ventas">
+              <span class="material-icons">refresh</span>
+              Actualizar
+            </button>
+          </div>
+        </div>
+      </div>
+
+          <div class="barra-filtros-ventas">
+            <div class="fila-filtros-superior">
+              <!-- Buscador por cliente -->
+              <div class="input-con-icono">
+                <span class="material-icons icono-lupa">search</span>
+                <input
+                  type="text"
+                  [(ngModel)]="busquedaCliente"
+                  (input)="aplicarFiltrosVentas()"
+                  placeholder="Buscar por cliente..."
+                  class="input-busqueda"
+                />
+              </div>
+
+              <!-- Filtro por metodo de pago -->
+              <div class="filtros-derecha">
+              <mat-form-field appearance="outline" floatLabel="always" class="filtro-metodo">
+                <mat-label>Método de pago</mat-label>
+                <mat-select [(ngModel)]="metodoPagoFiltro" (selectionChange)="aplicarFiltrosVentas()">
+                  <mat-option [value]="null">Todos</mat-option>
+                  <mat-option value="Yape">Yape</mat-option>
+                  <mat-option value="Plin">Plin</mat-option>
+                  <mat-option value="Efectivo">Efectivo</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <!-- 📅 Filtro por fecha específica -->
+              <mat-form-field appearance="outline" floatLabel="always" class="filtro-fecha">
+                <mat-label>Fecha</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="pickerFecha"
+                  [(ngModel)]="fechaFiltro"
+                  (dateChange)="aplicarFiltrosVentas()"
+                />
+                <mat-datepicker-toggle matSuffix [for]="pickerFecha"></mat-datepicker-toggle>
+                <mat-datepicker #pickerFecha></mat-datepicker>
+              </mat-form-field>
+
+              <!-- 💰 Filtro por rango de precios -->
+              <mat-form-field appearance="outline" floatLabel="always" class="filtro-precio">
+                <mat-label>Precio mínimo</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  [(ngModel)]="precioMin"
+                  (input)="aplicarFiltrosVentas()"
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" floatLabel="always" class="filtro-precio">
+                <mat-label>Precio máximo</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  [(ngModel)]="precioMax"
+                  (input)="aplicarFiltrosVentas()"
+                />
+              </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Botón para reiniciar -->
+            <div class="fila-boton-reiniciar">
+              <button type="button" class="btn btn-reiniciarV" (click)="reiniciarFiltrosVentas()">
+                Reiniciar
+              </button>
+            </div>
+          </div>
+
+
+          <!-- Tabla de ventas -->
+          <div class="table-container">
+            <table class="custom-table">
+              <thead>
+              <tr>
+                <th class="text-left">N°</th>
+                <th class="text-left">Cliente</th>
+                <th class="text-left">Fecha y Hora</th>
+                <th>Método de Pago</th>
+                <th>Total</th>
+                <th>Acciones</th>
+              </tr>
+              </thead>
+
+              <tbody>
+              <tr *ngFor="let venta of ventasPaginadas; let i = index; trackBy: trackByVenta">
+                <td>{{ (paginaActual - 1) * itemsPorPagina + i + 1 }}</td>
+                <td>
+                  <div class="categoria-con-descripcion">
+                    <div class="cliente">{{ venta.cliente }}</div>
+                  </div>
+                </td>
+
+                <td class="text-left">{{ venta.fechahoraVenta | date:'dd/MM/yyyy - HH:mm' }}</td>
+
+                <td class="text-center">
+                  <span class="status-badge"
+                [ngClass]="{
+                'status-yape': venta.metodoPago === 'Yape',
+                'status-plin': venta.metodoPago === 'Plin',
+                'status-efectivo': venta.metodoPago === 'Efectivo'
+                }">
+                    {{ venta.metodoPago }}
+                  </span>
+                </td>
+
+                <td class="text-center">{{ venta.total ? ('S/ ' + venta.total.toFixed(2)) : 'S/. 0.00' }}</td>
+
+                <td class="text-center">
+                  <button mat-icon-button (click)="abrirMenuVenta($event, venta)">
+                    <mat-icon>toc</mat-icon>
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="!ventasPaginadas || ventasPaginadas.length === 0">
+                <td colspan="8" class="text-center">No se encontraron ventas</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+
+
+          <div class="pagination">
+            <div class="items-por-pagina">
+              <input type="number" min="1" max="50" [(ngModel)]="itemsPorPagina" (change)="cambiarItemsPorPagina()" class="page-input corto" placeholder="15" />
+              <span>Items por página</span>
+            </div>
+            Ir a la página:
+            <div class="go-to-page">
+              <input type="number" min="1" [max]="totalPaginas3" [(ngModel)]="paginaInput" class="page-input" (keydown.enter)="irAPagina(paginaInput)" (blur)="irAPagina(paginaInput)" />
+            </div>
+            <button (click)="cambiarPagina(paginaActual - 1)" [disabled]="paginaActual === 1" class="paginator-btn">Anterior</button>
+            <button *ngFor="let item of getPaginas3()" (click)="typeof item === 'number' ? cambiarPagina(item) : null" [class.active]="item === paginaActual" [class.dots]="item === '...'" class="page-btn">
+              {{ item }}
+            </button>
+            <button (click)="cambiarPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas3" class="paginator-btn">Siguiente</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+<!-- Botón para abrir el modal -->
+<button class="btn-nueva-venta" (click)="abrirModal()">Nueva Venta</button>
+
+<!-- Modal de registro de venta -->
+<div *ngIf="mostrarModal" class="modal-overlayV" (click)="onOverlayClick($event)">
+  <div class="modal-venta" (click)="$event.stopPropagation()">
+    <button class="btn-cerrar-modal" (click)="cerrarModal()">×</button>
+
+    <!-- Header con título e ícono -->
+    <div class="modal-header">
+      <h2 class="categoria-titulo">Registrar Nueva Venta</h2>
+      <img ngSrc="/vestido.png" alt="venta" class="percha-icon" height="60" width="60" />
+    </div>
+
+    <div class="form-wrapper-degradado">
+      <form [formGroup]="ventaForm" class="form-prenda-content">
+
+        <!-- Cliente -->
+        <div class="fila-color-calidad">
+          <div class="select-columna">
+            <label>Cliente</label>
+            <mat-form-field appearance="outline" class="w-100">
+              <input matInput formControlName="cliente" placeholder="Opcional" />
+            </mat-form-field>
+          </div>
+          <div class="select-columna">
+            <label>Método de Pago</label>
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-select formControlName="metodoPago" placeholder="Seleccione un método">
+                <mat-option *ngFor="let metodo of metodosPago" [value]="metodo.value">
+                  {{ metodo.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Fecha & Estado -->
+        <div class="info-extra">
+          <div class="info-box">
+            <div class="info-title">Fecha y Hora</div>
+            <div class="info-value">{{ fechahoraVenta | date:'dd/MM/yyyy - HH:mm' }}</div>
+          </div>
+        </div>
+
+
+
+
+        <!-- Botones -->
+        <div class="botones-form">
+          <button type="button" class="btn-cancelar" (click)="cerrarModal()">
+            <span class="login-text">Cancelar</span>
+          </button>
+          <button type="button" class="btn-guardar" (click)="guardarVenta()">
+            <span class="register-text">
+              {{ loading ? 'Guardando...' : 'Registrar Venta' }}
+            </span>
+          </button>
+        </div>
+
+        <!-- Mensajes -->
+        <div *ngIf="ventaGuardada" class="mensaje-exito">¡Venta registrada correctamente!</div>
+        <div *ngIf="error" class="mensaje-error">Error al registrar la venta</div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div #actionMenu class="action-menu" [style.display]="menuVisibleV ? 'block' : 'none'" [style.left.px]="menuXV" [style.top.px]="menuYV">
+  <ul>
+    <!-- Agregar detalles: deshabilitado si ya tiene detalles -->
+    <li
+      (click)="ventaTieneDetalles.get(ventaSeleccionada?.idVenta!) ? null : abrirModalAgregarDetalles()"
+      [class.disabled]="ventaTieneDetalles.get(ventaSeleccionada?.idVenta!)">
+      <span class="material-icons">add</span> Agregar detalles
+    </li>
+
+    <li (click)="abrirModalVerDetalles()">
+      <span class="material-icons">visibility</span> Ver Detalles
+    </li>
+
+    <li (click)="abrirModalEliminar(ventaSeleccionada)">
+      <span class="material-icons">delete</span> Eliminar
+    </li>
+
+  </ul>
+</div>
+
+
+
+
+<!-- Modal para AGREGAR detalles -->
+<app-prenda-buscador-venta
+  *ngIf="mostrarModalPrendasVenta"
+  (confirmar)="onDetallesVentaAgregados($event)"
+  (cerrar)="mostrarModalPrendasVenta = false">
+</app-prenda-buscador-venta>
+
+
+<!-- ===== MODAL DE CONFIRMACIÓN ===== -->
+<div class="modal-eliminar" *ngIf="mostrarModalConfirmarEliminar">
+  <div class="modal-contenido animate-fade-in">
+
+    <h2>¿Estás seguro que deseas eliminar esta venta?</h2>
+    <p>Esta acción no se puede deshacer.</p>
+
+    <div class="modal-footer">
+      <button class="btn-cancelar" (click)="cancelarEliminacion()">Cancelar</button>
+      <button class="btn-eliminar" (click)="confirmarEliminacion()">Eliminar</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- Modal Ver Detalles -->
+<div class="modal" *ngIf="mostrarModalVerDetalles">
+  <div class="modal-content">
+    <h2>Detalles de la Venta</h2>
+
+    <p><strong>Cliente:</strong> {{ ventaSeleccionada?.cliente }}</p>
+    <p><strong>Fecha:</strong> {{ ventaSeleccionada?.fechahoraVenta | date:'medium' }}</p>
+    <p><strong>Método de pago:</strong> {{ ventaSeleccionada?.metodoPago }}</p>
+    <p><strong>Total:</strong> S/{{ ventaSeleccionada?.total }}</p>
+
+    <div class="prendas-container">
+      <div class="prenda-card" *ngFor="let grupo of detallesAgrupados">
+        <p><strong>Categoria:</strong> {{ grupo.prenda.marca.categoria.nombre }}</p>
+        <p><strong>Marca:</strong> {{ grupo.prenda.marca.marca }}</p>
+        <p><strong>Color:</strong> {{ grupo.prenda.colores }}</p>
+        <p><strong>Calidad:</strong> {{ grupo.prenda.calidad }}</p>
+
+        <table>
+          <thead>
+          <tr>
+            <th>Talla</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>SubTotal</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let det of grupo.tallas">
+            <td>{{ det.talla.size }}</td>
+            <td>{{ det.cantidad }}</td>
+            <td>S/{{ det.precioUnitario }}</td>
+            <td>S/{{ det.subTotal }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="acciones-finales">
+      <button class="btn-cerrar" (click)="cerrarModalVerDetalles()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="grafico-container">
+  <h3>Total ganado en un día específico</h3>
+
+  <input type="date" (change)="onFechaChange($event)" />
+
+  <p>Total del día: S/{{ totalDelDia }}</p>
+
+  <canvas baseChart
+          [data]="barChartData"
+          [type]="barChartType"
+          [options]="barChartOptions">
+  </canvas>
+</div>
+
+<div class="grafico-container">
+  <h3>Ganancias a lo largo del tiempo</h3>
+  <canvas baseChart
+          [data]="lineChartData"
+          [type]="lineChartType"
+          [options]="lineChartOptions">
+  </canvas>
+</div>
+
+
