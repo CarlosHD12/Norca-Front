@@ -1,55 +1,123 @@
 import {inject, Injectable} from '@angular/core';
 import {environment} from '../environments/environment';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Observable, Subject} from 'rxjs';
-import {Venta} from '../model/venta';
+import {Observable} from 'rxjs';
+import {Venta} from '../model/Venta';
+import {VentaDetalleDTO} from '../model/VentaDetalleDTO';
+import {VentasTotalesDTO} from '../model/VentasTotalesDTO';
+import {MetodoPagoDTO} from '../model/MetodoPagoDTO';
+import {IngresosCategoriaDTO} from '../model/IngresosCategoriaDTO';
+import {PageVenta} from '../model/PageVenta';
+import {VentaListadoDTO} from '../model/VentaListadoDTO';
+import {CrearVentaDTO} from '../model/CrearVentaDTO';
+import {ImpactoVentaDTO} from '../model/ImpactoVentaDTO';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VentaService {
-  private url: string= environment.apiUrl
-  private http:HttpClient=inject(HttpClient)
-  private listaCambio = new Subject<Venta[]>();
+  private http: HttpClient = inject(HttpClient);
+  private baseUrl = `${environment.apiUrl}`;
 
-  constructor() { }
-
-  setList(listaNueva: Venta[]) {
-    this.listaCambio.next(listaNueva);
+  registrarVenta(venta: CrearVentaDTO): Observable<Venta> {
+    return this.http.post<Venta>(`${this.baseUrl}/post/venta`, venta);
   }
 
-  // -------------------- GUARDAR --------------------
-  insert(venta: Partial<Venta>): Observable<any> {
-    return this.http.post(this.url + '/venta', venta);
+  editarVenta(id: number, venta: Venta): Observable<Venta> {
+    return this.http.put<Venta>(`${this.baseUrl}/put/venta/${id}`, venta);
   }
 
-  // -------------------- LISTAR TODAS --------------------
-  listar(): Observable<Venta[]> {
-    return this.http.get<Venta[]>(this.url + '/ventas');
+  eliminarVenta(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/delete/venta/${id}`);
   }
 
-  // -------------------- EDITAR --------------------
-  actualizar(id: number, venta: Venta | null): Observable<any> {
-    return this.http.put(this.url + '/venta/modificar/' + id, venta);
+  obtenerDetalleVenta(idVenta: number): Observable<VentaDetalleDTO> {
+    return this.http.get<VentaDetalleDTO>(`${this.baseUrl}/detalle/venta/${idVenta}`);
   }
 
-  // -------------------- LISTAR POR METODO DE PAGO --------------------
-  listarPorMetodoPago(metodoPago: string): Observable<Venta[]> {
-    return this.http.get<Venta[]>(this.url + '/ventas/metodo/' + metodoPago);
+  desactivarVenta(idVenta: number): Observable<string> {
+    return this.http.put(`${this.baseUrl}/desactivar/venta/${idVenta}`, null, { responseType: 'text' });
   }
 
-  // -------------------- LISTAR POR FECHA --------------------
-  listarPorFecha(fecha: string): Observable<Venta[]> {
-    return this.http.get<Venta[]>(this.url + '/ventas/fecha/' + fecha);
+  kpiVentas(): Observable<VentasTotalesDTO> {
+    return this.http.get<VentasTotalesDTO>(`${this.baseUrl}/ventas/totales`);
   }
 
-  // -------------------- LISTAR POR RANGO DE FECHAS --------------------
-  listarPorRangoFechas(inicio: string, fin: string): Observable<Venta[]> {
-    let params = new HttpParams().set('inicio', inicio).set('fin', fin);
-    return this.http.get<Venta[]>(this.url + '/ventas/rango', { params });
+  kpiUnidades(): Observable<VentasTotalesDTO> {
+    return this.http.get<VentasTotalesDTO>(`${this.baseUrl}/unidades/totales`);
   }
 
-  eliminar(id: number): Observable<any> {
-    return this.http.delete(`${this.url}/venta/eliminar/${id}`, { responseType: 'text' });
+  obtenerIngresosTotales(): Observable<VentasTotalesDTO> {
+    return this.http.get<VentasTotalesDTO>(`${this.baseUrl}/ingresos/totales`);
   }
+
+  obtenerMetodoPagoFavorito(): Observable<MetodoPagoDTO> {
+    return this.http.get<MetodoPagoDTO>(`${this.baseUrl}/metodo/top`);
+  }
+
+  obtenerIngresosPorCategoria(): Observable<IngresosCategoriaDTO[]> {
+    return this.http.get<IngresosCategoriaDTO[]>(`${this.baseUrl}/ganancias/categoria`);
+  }
+
+  reporteMensual(tipo: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/ventas/mensuales`, { params: { tipo } });
+  }
+
+  listarVentas(
+    page: number = 0,
+    size: number = 10,
+    filtros?: any
+  ): Observable<PageVenta> {
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    if (filtros) {
+
+      if (filtros.codigo && filtros.codigo.trim() !== '') {
+        params = params.set('codigo', filtros.codigo.trim());
+      }
+
+      if (filtros.metodoPago) {
+        params = params.set('metodoPago', filtros.metodoPago);
+      }
+
+      if (filtros.fecha) {
+        const fecha = new Date(filtros.fecha);
+        const formatted = fecha.toISOString().split('T')[0];
+        params = params.set('fecha', formatted);
+      }
+
+      if (filtros.periodo) {
+        params = params.set('periodo', filtros.periodo);
+      }
+
+      if (filtros.precioMin != null) {
+        params = params.set('precioMin', filtros.precioMin.toString());
+      }
+
+      if (filtros.precioMax != null) {
+        params = params.set('precioMax', filtros.precioMax.toString());
+      }
+
+      if (filtros.unidadesMin != null) {
+        params = params.set('unidadesMin', filtros.unidadesMin.toString());
+      }
+
+      if (filtros.unidadesMax != null) {
+        params = params.set('unidadesMax', filtros.unidadesMax.toString());
+      }
+    }
+
+    return this.http.get<PageVenta>(
+      `${this.baseUrl}/listar/ventas`,
+      { params }
+    );
+  }
+
+  impactoVenta(id: number): Observable<ImpactoVentaDTO> {
+    return this.http.get<ImpactoVentaDTO>(`${this.baseUrl}/impacto/${id}`);
+  }
+
 }

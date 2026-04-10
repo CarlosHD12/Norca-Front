@@ -1,0 +1,868 @@
+<div class="layout" [class.sidebar-expanded]="sidebarExpanded">
+
+  <app-sidebar-component (toggleSidebar)="onToggleSidebar($event)"></app-sidebar-component>
+
+  <main class="main-container">
+
+    <section class="contenido">
+      <div class="container">
+
+        <div class="header-wrapper">
+
+          <div class="bloque-titulo">
+            <h2>Administración de Ventas</h2>
+            <p class="subtitulo">Supervisa, gestiona y controla las operaciones de venta de manera eficiente</p>
+          </div>
+
+          <div class="botones-header">
+
+            <button type="button" class="btn-primary" (click)="abrirModal(Modales.VENTA)">
+              <span class="btn-p-icon"><i class="fi fi-br-plus"></i></span>
+              <span class="btn-p-text">VENTA</span>
+            </button>
+
+            <button class="btn-limpiar">
+              <i class="fi fi-br-settings"></i>
+            </button>
+
+          </div>
+        </div>
+
+        <div class="tabla-wrapper">
+
+          <div class="table-header">
+            <div class="table-info">
+              <span class="table-icon"><i class="fi fi-bs-receipt"></i></span>
+
+              <div class="table-text">
+                <h3>Listado de Ventas</h3>
+                <p>Mostrando {{ ventasListaPaginada.length }} de {{ totalGlobal }} ventas</p>
+              </div>
+            </div>
+
+            <div class="table-header-right">
+              <div class="buscador-prendas">
+
+                <div class="buscador-icon">
+                  <i class="fi fi-br-search"></i>
+                </div>
+
+                <input type="text" placeholder="Buscar venta..." class="input-buscador" [(ngModel)]="busqueda" (input)="aplicarFiltrosTabla()"/>
+
+                <div class="buscador-clear" (click)="limpiarFiltroBuscador()">
+                  <i class="fi fi-br-delete"></i>
+                </div>
+
+              </div>
+
+              <div class="filtros-tabla">
+
+                <div class="custom-select" (click)="toggleMetodoPago($event)">
+
+                  <div class="select-display">
+                    {{ metodoPagoSeleccionado || 'Método de pago' }}
+                  </div>
+
+                  <ul class="select-options" *ngIf="dropdownMetodoPago">
+
+                    <li (click)="seleccionarMetodoPago(null); $event.stopPropagation()"
+                        [class.activo]="!filtroMetodoPago">
+                      Todos
+                    </li>
+
+                    <li *ngFor="let metodo of metodosPago"
+                        [class.activo]="filtroMetodoPago === metodo"
+                        (click)="seleccionarMetodoPago(metodo); $event.stopPropagation()">
+                      {{ metodo }}
+                    </li>
+
+                  </ul>
+                </div>
+
+                <div class="custom-select" (click)="togglePeriodo($event)">
+
+                  <div class="select-display">
+                    {{ periodoSeleccionado || 'Periodo del día' }}
+                  </div>
+
+                  <ul class="select-options" *ngIf="dropdownPeriodo">
+
+                    <li (click)="seleccionarPeriodo(null); $event.stopPropagation()"
+                        [class.activo]="!filtroPeriodo">
+                      Todos
+                    </li>
+
+                    <li [class.activo]="filtroPeriodo === 'MANANA'"
+                        (click)="seleccionarPeriodo('MANANA'); $event.stopPropagation()">
+                      Mañana (06:00 - 12:00)
+                    </li>
+
+                    <li [class.activo]="filtroPeriodo === 'TARDE'"
+                        (click)="seleccionarPeriodo('TARDE'); $event.stopPropagation()">
+                      Tarde (12:00 - 18:00)
+                    </li>
+
+                    <li [class.activo]="filtroPeriodo === 'NOCHE'"
+                        (click)="seleccionarPeriodo('NOCHE'); $event.stopPropagation()">
+                      Noche (18:00 - 24:00)
+                    </li>
+
+                  </ul>
+                </div>
+              </div>
+
+              <button class="btn-limpiar" (click)="limpiarFiltrosTabla()">
+                <i class="fi fi-br-filter-slash"></i>
+              </button>
+
+            </div>
+          </div>
+
+          <div class="filtros-avanzados" [class.activo]="filtrosAvanzadosActivos">
+
+            <div class="avanzado">
+              <label class="form-label-filtro">Fecha</label>
+              <div class="custom-field">
+                <input type="date" class="input-class" [(ngModel)]="fechaFiltro" (input)="aplicarFiltrosTabla()"/>
+              </div>
+            </div>
+
+            <div class="avanzado">
+              <label class="form-label-filtro">Stock Min</label>
+              <div class="custom-field">
+                <input type="number" placeholder="Desde... en unidades" class="input-class" [(ngModel)]="stockMin" (input)="aplicarFiltrosTabla()"/>
+              </div>
+            </div>
+
+            <div class="avanzado">
+              <label class="form-label-filtro">Stock Max</label>
+              <div class="custom-field">
+                <input type="number" placeholder="Hasta... en unidades" class="input-class" [(ngModel)]="stockMax" (input)="aplicarFiltrosTabla()"/>
+              </div>
+            </div>
+
+            <div class="avanzado">
+              <label class="form-label-filtro">Precio de Venta Min</label>
+              <div class="custom-field">
+                <input type="number" placeholder="Desde..." class="input-class" [(ngModel)]="precioMin" (input)="aplicarFiltrosTabla()"/>
+              </div>
+            </div>
+
+            <div class="avanzado">
+              <label class="form-label-filtro">Precio de Venta Max</label>
+              <div class="custom-field">
+                <input type="number" placeholder="Hasta..." class="input-class" [(ngModel)]="precioMax" (input)="aplicarFiltrosTabla()"/>
+              </div>
+            </div>
+
+
+          </div>
+
+          <section class="table-container">
+            <table class="custom-table">
+              <thead>
+              <tr>
+                <th class="text-center">#</th>
+                <th class="text-left">CODIGO</th>
+                <th class="text-center">UNIDADES</th>
+                <th class="text-center">FECHA Y HORA</th>
+                <th class="text-center">METODO DE PAGO</th>
+                <th class="text-center">TOTAL DE VENTA</th>
+                <th class="text-center">ACCIONES</th>
+              </tr>
+              </thead>
+
+              <tbody>
+
+              <tr *ngFor="let venta of ventasListaPaginada; let i = index">
+
+                <td class="text-center">{{ i + 1 }}</td>
+
+                <td class="text-left">
+                  <div class="categoria-nombre">{{ venta.codigo || '-' }}</div>
+                </td>
+
+                <td class="text-center">{{ venta.unidades || '-' }} u.</td>
+
+                <td class="text-center">{{ venta.fechaHora | date:'dd MMM yyyy / HH:mm a' }}</td>
+
+                <td class="text-center">
+                  <span class="status-badge" [ngClass]="getMetodoClass(venta.metodoPago)">{{ venta.metodoPago }}</span>
+                </td>
+
+                <td class="text-center">S/ {{ venta.total | number:'1.2-2' }}</td>
+
+                <td class="text-center">
+                  <button class="btn-acciones"
+                          (click)="seleccionarVenta(venta); abrirMenu($event, venta)">
+                    <i class="fi fi-br-menu-burger"></i>
+                  </button>
+                </td>
+
+              </tr>
+
+              <tr *ngIf="!ventasListaPaginada || ventasListaPaginada.length === 0">
+                <td class="no-data-cell" colspan="99">
+                  <div class="empty-state">
+                    <div class="empty-icon"><i class="fi fi-br-empty-set"></i></div>
+                    <h3 class="empty-title">No se encontraron ventas</h3>
+                    <p class="empty-text">
+                      No hay datos disponibles para los criterios seleccionados. Revisa tus filtros o intenta más tarde
+                    </p>
+                  </div>
+                </td>
+              </tr>
+
+              </tbody>
+            </table>
+          </section>
+
+          <footer class="pagination">
+            <div class="pagination-left">
+              <div class="items-por-pagina">
+                <span class="items-title">Items por página</span>
+
+                <div class="items-stepper">
+                  <button (click)="disminuirVent()" (mousedown)="disminuirVent(true)" (mouseup)="stopStepper()" (mouseleave)="stopStepper()" [disabled]="itemsPorPagina <= 1" class="btn-step">
+                    <i class="fi fi-br-minus-small"></i>
+                  </button>
+                  <span class="items-count">{{ itemsPorPagina }}</span>
+                  <button (click)="aumentarVent()" (mousedown)="aumentarVent(true)" (mouseup)="stopStepper()" (mouseleave)="stopStepper()" [disabled]="itemsPorPagina >= 50" class="btn-step">
+                    <i class="fi fi-br-plus-small"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="pagination-right">
+
+              <div class="items-por-pagina">
+                <span class="items-title">Ir a la página</span>
+                <input type="number" min="1" [max]="totalPaginas" [(ngModel)]="paginaInput" class="page-input" (keydown.enter)="irAPagina(paginaInput)" (blur)="irAPagina(paginaInput)"/>
+              </div>
+
+              <button (click)="cambiarPagina(paginaActual - 1)" [disabled]="paginaActual === 1" class="paginator-btn">Anterior</button>
+
+              <button *ngFor="let item of getPaginas()" (click)="typeof item === 'number' ? cambiarPagina(item) : null"
+                      [class.active]="item === paginaActual" [class.dots]="item === '...'" class="page-btn">{{ item }}
+              </button>
+
+              <button (click)="cambiarPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas" class="paginator-btn">Siguiente</button>
+
+            </div>
+          </footer>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- MODAL DETALLES DE UNA VENTA -->
+<div class="modal-overlay" [class.activo]="modalActivo === 'detalle'">
+  <div class="modal-content-terciario">
+    <div class="detalle-venta-card">
+      <!-- Columna izquierda -->
+      <div class="col-izquierda">
+
+        <div class="total-header">
+          <span>Monto Total</span>
+          <h1>S/ {{ ventaDetalle?.total | number:'1.2-2' }}</h1>
+        </div>
+
+        <div class="cuadros-info">
+          <div class="info-box">
+            <div class="icon-box"><i class="fi fi-bs-receipt"></i></div>
+            <div class="text-box">
+              <p class="titulo">Código</p>
+              <p class="valor">{{ ventaDetalle?.codigo }}</p>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <div class="icon-box"><i class="fi fi-br-calendar-clock"></i></div>
+            <div class="text-box">
+              <p class="titulo">Fecha y Hora</p>
+              <p class="valor">{{ ventaDetalle?.fechaHora | date:'dd MMM yyyy / HH:mm a' }}</p>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <div class="icon-box"><i class="fi fi-br-wallet"></i></div>
+            <div class="text-box">
+              <p class="titulo">Método de Pago</p>
+              <p class="valor">{{ ventaDetalle?.metodoPago }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer con botón -->
+        <div class="footer-izquierda">
+          <div class="modal-btn-actions">
+            <button type="button" class="btn-cancel" (click)="cerrarModal()">CERRAR</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Columna derecha -->
+      <div class="col-derecha">
+
+        <div class="inv-detalles">
+          <div *ngFor="let prenda of ventaDetalle?.prendas" class="prenda-card">
+
+            <!-- Header -->
+            <div class="prenda-header-hover">
+
+              <div class="prenda-img-box">
+                <img [src]="prenda.imagen" alt="PRENDA" />
+              </div>
+
+              <div class="prenda-info-box">
+                <p class="categoria-det">{{ prenda.categoria }}</p>
+
+                <div class="badges-det">
+                  <span class="badge-det">{{ prenda.marca }}</span>
+                  <span class="badge-det">{{ prenda.material }}</span>
+                </div>
+              </div>
+
+              <!-- 🔥 PRECIO CORRECTO -->
+              <div class="prenda-precio">
+                S/ {{ prenda.precioVentaUnitario | number:'1.2-2' }}
+              </div>
+
+            </div>
+
+            <!-- 🔥 TOTAL POR PRENDA -->
+            <div class="total-prenda">
+              Total: S/ {{ prenda.totalPrenda | number:'1.2-2' }}
+            </div>
+
+            <!-- TALLAS -->
+            <div class="inventario-list">
+              <div *ngFor="let talla of prenda.detallesTalla" class="inventario-card">
+
+                <div class="talla-box">
+                  {{ talla.talla }}
+                </div>
+
+                <div class="cantidad-box">
+                  <p class="titulo">Cantidad</p>
+                  <p class="valor">x {{ talla.cantidad }}</p>
+                </div>
+
+                <div class="subtotal-box">
+                  S/ {{ talla.subtotal | number:'1.2-2' }}
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL NUEVA VENTA -->
+<div class="modal-overlay" [class.activo]="modalActivo === 'venta'">
+  <div class="modal-content-venta">
+
+    <!-- Parte izquierda -->
+    <div class="modal-izquierda">
+
+      <div class="table-header ventas">
+        <div class="table-info">
+          <span class="table-icon"><i class="fi fi-br-point-of-sale-bill"></i></span>
+
+          <div class="table-text">
+            <h3>Nueva Venta</h3>
+            <p>Mostrando {{ prendasFiltradas.length }} de {{ totalPrendas }} prendas</p>
+          </div>
+        </div>
+
+        <div class="table-header-right-2">
+          <div class="buscador-prendas">
+            <div class="buscador-icon"><i class="fi fi-br-search"></i></div>
+
+            <input type="text" placeholder="Buscar prenda..." class="input-buscador"
+                   [(ngModel)]="filtroTexto"
+                   (input)="aplicarFiltros()"/>
+
+            <div class="buscador-clear" (click)="limpiarBuscador()">
+              <i class="fi fi-br-delete"></i>
+            </div>
+          </div>
+
+          <div class="select-filtro">
+            <div class="custom-select" (click)="toggleCategoria($event)">
+              <div class="select-display">{{ filtroCategoria || 'Categoría' }}</div>
+              <ul class="select-options" *ngIf="dropdownCategoriaFiltro">
+                <li (click)="seleccionarCategoria(null); $event.stopPropagation()">Todos</li>
+                <li *ngFor="let cat of categorias" [class.activo]="filtroCategoria === cat"
+                    (click)="seleccionarCategoria(cat); $event.stopPropagation()">{{ cat }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="select-filtro">
+            <div class="custom-select" (click)="toggleMarca($event)">
+              <div class="select-display">{{ filtroMarca || 'Marca' }}</div>
+              <ul class="select-options" *ngIf="dropdownMarcaFiltro">
+                <li (click)="seleccionarMarca(null); $event.stopPropagation()">Todas</li>
+                <li *ngFor="let m of marcas" [class.activo]="filtroMarca === m"
+                (click)="seleccionarMarca(m); $event.stopPropagation()">{{ m }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <button class="btn-limpiar" (click)="limpiarFiltros()">
+            <i class="fi fi-br-filter-slash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="lista-prendas">
+
+        <div *ngFor="let prenda of prendasFiltradas" class="carrito-card" [ngClass]="{'activo': estaEnCarrito(prenda.idPrenda)}" (click)="abrirInventario(prenda)">
+          <!-- Imagen -->
+          <div class="img-container">
+            <img [src]="prenda.imagen ? 'data:image/jpeg;base64,' + prenda.imagen : '/default.png'" alt="PNG">
+            <div class="stock-img">{{ prenda.stock }} u.</div>
+          </div>
+
+          <!-- Header -->
+          <div class="card-header">
+            <h3 class="categoria">{{ prenda.categoria }}</h3>
+
+            <div class="precio">
+              S/ {{ prenda.precioVenta | number:'1.2-2' }}
+            </div>
+
+            <div class="badges">
+              <span class="badge">{{ prenda.marca }}</span>
+              <span class="badge">{{ prenda.material }}</span>
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <p class="descripcion">
+            {{ prenda.descripcion || 'Sin descripción' }}
+          </p>
+
+          <!-- Footer -->
+          <div class="card-footer">
+            <button class="btn-inventario" (click)="abrirInventario(prenda)">
+              Inventario
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Parte derecha -->
+    <div class="modal-derecha" [formGroup]="ventaForm" (ngSubmit)="registrarVenta()">
+
+      <div class="info-card">
+
+        <div class="info-item">
+          <div class="icon-box">
+            <i class="fi fi-br-calendar-clock"></i>
+          </div>
+          <div class="text">
+            <span class="label">Fecha y Hora</span>
+            <span class="value">{{ fechaHoraActual | date:'dd MMM yyyy / HH:mm:ss a' }}</span>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="icon-box">
+            <i class="fi fi-br-box-open"></i>
+          </div>
+          <div class="text">
+            <span class="label">Cantidad</span>
+            <span class="value">{{ totalUnidades }} u.</span>
+          </div>
+        </div>
+
+        <div class="info-item metodo" (click)="abrirModalPago()">
+          <div class="icon-box">
+            <i class="fi fi-bs-credit-card"></i>
+          </div>
+          <div class="text">
+            <span class="label">Método de Pago</span>
+            <span class="value">{{ ventaForm.get('metodoPago')?.value || '-' }}</span>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="contenedor-carrito">
+        <div class="flex-spacer">
+          <div *ngFor="let prendaGroup of getPrendasAgrupadas()" class="item-carrito">
+            <div class="prenda-header">
+              <div class="prenda-info">
+                <h4>{{ prendaGroup.prenda.categoria }}</h4>
+                <div>{{ prendaGroup.prenda.marca }} - {{ prendaGroup.prenda.material }}</div>
+              </div>
+              <div class="prenda-precio">
+                <span class="badge-carrito">S/ {{ prendaGroup.prenda.precioVenta | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="inventario-header">
+                <span>Talla</span>
+                <span>Cantidad</span>
+                <span>Subtotal</span>
+                <span>Btn</span>
+              </div>
+
+              <div class="inventarios">
+                <div *ngFor="let det of prendaGroup.detalles; let i = index" [formGroup]="det" class="inventario-item">
+
+                  <!-- Talla -->
+                  <div class="item-talla">
+                    {{ det.get('inventario')!.value.nombreTalla }}
+                  </div>
+
+                  <!-- Cantidad -->
+                  <div class="item-cantidad">
+                    <div class="icono-box">
+                      <i class="fi fi-br-box-open"></i>
+                    </div>
+                    <div class="cantidad-texto">
+                      {{ det.get('cantidad')!.value }} u.
+                    </div>
+                  </div>
+
+                  <!-- Subtotal -->
+                  <div class="item-subtotal">
+                    <div class="subtotal-valor">
+                      S/ {{ det.get('subtotal')!.value | number:'1.2-2' }}
+                    </div>
+                  </div>
+
+                  <!-- Botón eliminar -->
+                  <div class="item-accion">
+                    <button class="btn-borrar" (click)="quitarDelCarrito(det)">
+                      <i class="fi fi-br-trash"></i>
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Cuadro de abajo con header y botones -->
+      <div class="cuadro-abajo">
+        <div class="total-carrito">
+          <span class="total-label">Total:</span>
+          <span class="total-valor">S/ {{ detalles.length > 0 ? (totalVenta | number:'1.2-2') : '0.00' }}</span>
+        </div>
+        <div class="modal-btn-actions">
+          <button type="button" class="btn-cancel" (click)="cerrarModal()">CANCELAR</button>
+          <button type="button" class="btn-confirmar" (click)="registrarVenta()">ACEPTAR</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MENU DE OPCIONES -->
+<div class="action-menu" [class.activo]="menuVisible" [style.left.px]="menuX" [style.top.px]="menuY" (click)="$event.stopPropagation()">
+  <ul class="menu-main">
+
+    <!-- DETALLE -->
+    <li (click)="accionMenu('detalle'); $event.stopPropagation()">
+      <i class="fi fi-bs-eye menu-icon"></i>Detalles
+    </li>
+
+    <!-- IMPACTO -->
+    <li (click)="accionMenu('impacto'); $event.stopPropagation()">
+      <i class="fi fi-br-coins"></i>Impacto
+    </li>
+
+
+  </ul>
+  <!-- ZONA ELIMINAR -->
+  <div class="menu-danger">
+    <ul class="menu-second">
+      <li class="danger" (click)="accionMenu('anular'); $event.stopPropagation()">
+        <i class="fi fi-br-remove-folder menu-icon"></i>Anular
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- MODAL INVENTARIO DE UNA PRENDA -->
+<div class="modal-overlay" [class.activo]="modalInventarioVisible">
+  <div class="modal-content">
+
+    <!-- HEADER -->
+    <div class="modal-header-pro">
+      <div class="categoria-img">
+        <img [src]="prendaSeleccionada?.imagen ? 'data:image/jpeg;base64,' + prendaSeleccionada?.imagen : '/default.png'" alt="PNG">
+      </div>
+
+      <div class="categoria-info">
+        <h3>{{ prendaSeleccionada?.categoria }}</h3>
+        <div class="badges-info">
+          <span class="badge-i">{{ prendaSeleccionada?.marca }}</span>
+          <span class="badge-i">{{ prendaSeleccionada?.material }}</span>
+        </div>
+      </div>
+
+      <div class="badge-precio">
+        S/ {{ prendaSeleccionada?.precioVenta | number:'1.2-2' }}
+      </div>
+    </div>
+
+      <!-- Header del inventario -->
+      <div class="inventario-header-top">
+        <h4>Inventario disponible</h4>
+        <span class="contador-inventario">{{ inventarioSeleccionado.length }}</span>
+      </div>
+
+      <!-- Grid de inventarios -->
+      <div class="inventario-grid">
+        <div class="talla-card" *ngFor="let inv of inventarioSeleccionado" [class.activo]="inv.cantidadSeleccionada > 0">
+
+        <!-- Arriba: Cuadro de lote -->
+          <div class="cuadro-talla" (click)="cardClick(inv)">{{ inv.nombreTalla }}</div>
+
+          <!-- Medio: Stock y precio -->
+          <div class="info-medio">
+            <i class="fi fi-br-box-open icono-inv"></i>
+            <div class="stock-a">{{ inv.stock - (inv.cantidadSeleccionada || 0) }} u.</div>
+          </div>
+
+          <!-- Abajo: Stepper -->
+          <div class="footer-card">
+            <div class="items-stepper">
+              <button class="btn-step" (mousedown)="startPress(inv, 'restar')" (mouseup)="endPress()" (mouseleave)="endPress()" [disabled]="inv.cantidadSeleccionada <= 0">
+                <i class="fi fi-br-minus-small"></i>
+              </button>
+
+              <input type="number" [(ngModel)]="inv.cantidadSeleccionada" (ngModelChange)="validarCantidad(inv)" class="stepper-input">
+
+              <button class="btn-step" (mousedown)="startPress(inv, 'sumar')" (mouseup)="endPress()" (mouseleave)="endPress()" [disabled]="inv.cantidadSeleccionada >= inv.stock">
+                <i class="fi fi-br-plus-small"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+    <!-- BOTÓN ÚNICO ABAJO -->
+    <div class="modal-btn-actions">
+      <button type="button" class="btn-cancel" (click)="cerrarInventario()">CANCELAR</button>
+      <button type="button" class="btn-confirmar" (click)="agregarTodosInventarios()">AGREGAR</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MENSAJE DE EXITO Y ERROR -->
+<div class="toast" *ngIf="mostrarToast" [ngClass]="toastTipo">
+  <div class="toast-icon-box">
+    <i class="fi" [ngClass]="toastTipo === 'success' ? 'fi-bs-check-circle' : 'fi-bs-exclamation'"></i>
+  </div>
+  <div class="toast-text">
+    {{ toastMensaje }}
+  </div>
+</div>
+
+<!-- MODAL METODO DE PAGO -->
+<div class="modal-overlay" [class.activo]="mostrarModalPago" (click)="cerrarModalPago()">
+  <div class="modal-pago" (click)="$event.stopPropagation()">
+    <h3>Seleccione un Método</h3>
+
+    <div class="grid-pago">
+
+      <div class="opcion"
+           [class.activo]="ventaForm.get('metodoPago')?.value === 'TARJETA'"
+           (click)="seleccionarMetodo('TARJETA')">
+        <i class="fi fi-bs-credit-card"></i>
+        <span>TARJETA</span>
+      </div>
+
+      <div class="opcion"
+           [class.activo]="ventaForm.get('metodoPago')?.value === 'EFECTIVO'"
+           (click)="seleccionarMetodo('EFECTIVO')">
+        <i class="fi fi-bs-money"></i>
+        <span>EFECTIVO</span>
+      </div>
+
+      <div class="opcion"
+           [class.activo]="ventaForm.get('metodoPago')?.value === 'YAPE'"
+           (click)="seleccionarMetodo('YAPE')">
+        <i class="fi fi-br-mobile-notch"></i>
+        <span>YAPE</span>
+      </div>
+
+      <div class="opcion"
+           [class.activo]="ventaForm.get('metodoPago')?.value === 'PLIN'"
+           (click)="seleccionarMetodo('PLIN')">
+        <i class="fi fi-br-mobile-notch"></i>
+        <span>PLIN</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL IMPACTO DE VENTA -->
+<div class="modal-overlay" [class.activo]="modalActivo === 'impacto'">
+  <div class="modal-content-terciario">
+
+    <!-- HEADER -->
+    <div class="modal-header">
+      <h2>Impacto de Venta</h2>
+      <button class="btn-close" (click)="cerrarModal()">✖</button>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div *ngIf="impactoSeleccionado" class="modal-body">
+
+      <!-- RESUMEN -->
+      <div class="impacto-resumen">
+        <p><strong>Código:</strong> {{impactoSeleccionado.codigoVenta}}</p>
+        <p><strong>Ingreso:</strong> S/ {{impactoSeleccionado.ingresoTotal}}</p>
+        <p><strong>Costo:</strong> S/ {{impactoSeleccionado.costoTotal}}</p>
+        <p><strong>Ganancia:</strong> S/ {{impactoSeleccionado.ganancia}}</p>
+        <p><strong>Margen:</strong> {{impactoSeleccionado.margen | number:'1.2-2'}}%</p>
+      </div>
+
+      <!-- PRODUCTOS -->
+      <h3>Productos</h3>
+
+      <div *ngFor="let p of impactoSeleccionado.productos" class="producto-card">
+
+        <div class="producto-header">
+
+          <!-- Imagen -->
+
+
+          <div>
+            <p><strong>{{p.categoria}}</strong></p>
+            <p>{{p.marca}} | {{p.calidad}}</p>
+          </div>
+
+        </div>
+
+        <!-- Datos -->
+        <div class="producto-info">
+          <p>Vendidos: {{p.cantidadVendida}}</p>
+          <p>Ingreso: S/ {{p.ingreso}}</p>
+          <p>Ganancia: S/ {{p.ganancia}}</p>
+        </div>
+
+        <!-- Inventario -->
+        <div class="inventario">
+          <p><strong>Impacto en stock:</strong></p>
+
+          <div *ngFor="let inv of p.inventarios">
+            <small>
+              Talla {{inv.talla}}:
+              {{inv.stockAntes}} → {{inv.stockDespues}}
+            </small>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ANALISIS -->
+      <div class="analisis">
+        <h3>Análisis</h3>
+        <p>{{impactoSeleccionado.analisis}}</p>
+      </div>
+
+    </div>
+
+    <!-- BOTÓN ÚNICO ABAJO -->
+    <div class="modal-btn-actions">
+      <button type="button" class="btn-cancel" (click)="cerrarModal()">CERRAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ANULAR -->
+<div class="modal-overlay" [class.activo]="modalActivo === 'anular'">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <div class="header-left">
+        <div class="icon-title">
+          <i class="fi fi-br-triangle-warning"></i>
+        </div>
+        <h2 class="title-header">Anular Venta</h2>
+      </div>
+      <button class="btn-close" (click)="cerrarModal()">
+        <i class="fi fi-br-cross"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="select-columna">
+        <label class="form-label">¿Seguro que quieres anular esta venta?</label>
+
+        <div class="custom-field">
+          <input
+            type="text"
+            placeholder="Escribe ANULAR para confirmar"
+            class="input-class"
+            [(ngModel)]="confirmacionAnular"
+          />
+        </div>
+      </div>
+
+
+      <!-- CARD PRENDA -->
+      <div class="card-prenda" *ngIf="ventaSeleccionada">
+
+        <div class="card-left">
+          <div class="icon-box">
+            <i class="fi fi-br-shirt"></i>
+          </div>
+        </div>
+
+        <div class="card-right">
+
+          <div class="categoria-titulo">
+            {{ ventaSeleccionada.codigo }}
+          </div>
+
+          <div class="prenda-subinfo">
+            <span>{{ ventaSeleccionada.total }} • {{ ventaSeleccionada.fechaHora }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-btn-actions">
+      <button type="button" class="btn-cancel" (click)="cerrarModal()">CANCELAR</button>
+      <button type="button" class="btn-confirmar" [disabled]="confirmacionAnular !== 'ANULAR'" (click)="anularVenta()">ANULAR</button>
+    </div>
+
+  </div>
+
+</div>

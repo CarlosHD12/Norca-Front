@@ -1,44 +1,47 @@
-<div class="sidebar"
-     [class.expanded]="isExpanded"
-     (mouseenter)="expand()"
-     (mouseleave)="collapse()">
+<div class="sidebar" [class.expanded]="isExpanded"
+     (mouseenter)="expand()" (mouseleave)="collapse()">
 
-
-<div class="sidebar-header">
-    <div class="header-logo">
-      <img src="/blancogrande.png" alt="logo"/>
+  <!-- HEADER -->
+  <div class="sidebar-header">
+    <div class="logo-box">
+      <img src="/default.png" alt="logo" />
     </div>
-
     <div class="header-text">
-      <span>Boutique Norca</span>
-      <small>Inventario</small>
+      <span class="title">Boutique</span>
+      <small class="subtitle">Norca</small>
     </div>
   </div>
 
-  <ul class="menu-list">
-    <li *ngFor="let item of menuItems"
-        [class.active]="isActive(item)"
-        (click)="selectItem(item)">
-
-      <i [class]="item.icon" class="menu-icon"></i>
-      <span class="label">{{ item.label }}</span>
-
-    </li>
-  </ul>
-
-  <div class="sidebar-footer">
-
-    <!-- Cerrar sesión -->
-    <div class="toggle-wrap logout" (click)="logout()">
-      <div class="header-logo2">
-        <i class="fi fi-br-power menu-icon"></i>
+  <!-- BODY -->
+  <div class="sidebar-body">
+    <div class="menu-item" [class.active]="isActive('/home')" (click)="goTo('/home')">
+      <div class="icon-box">
+        <i class="fi fi-br-house-chimney-blank"></i>
       </div>
-
-      <div class="header-text">
-        <span>Logout</span>
-      </div>
+      <span class="label">Dashboard</span>
     </div>
 
+    <div class="menu-item" [class.active]="isActive('/HomePrenda')" (click)="goTo('/HomePrenda')">
+      <div class="icon-box">
+        <i class="fi fi-bs-shirt-long-sleeve"></i>
+      </div>
+      <span class="label">Prendas</span>
+    </div>
+
+    <div class="menu-item" [class.active]="isActive('/HomeVenta')" (click)="goTo('/HomeVenta')">
+      <div class="icon-box">
+        <i class="fi fi-br-tags"></i>
+      </div>
+      <span class="label">Ventas</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="sidebar-footer" (click)="logout()">
+    <div class="icon-box">
+      <i class="fi fi-br-power"></i>
+    </div>
+    <span class="label">Cerrar Sesión</span>
   </div>
 
 </div>

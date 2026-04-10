@@ -1,37 +1,29 @@
 import {inject, Injectable} from '@angular/core';
 import {environment} from '../environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {Observable, Subject} from 'rxjs';
-import {Marca} from '../model/marca';
+import {Observable} from 'rxjs';
+import {Marca} from '../model/Marca';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MarcaService {
-  private url: string= environment.apiUrl
-  private http:HttpClient=inject(HttpClient)
-  private listaCambio = new Subject<Marca[]>();
+  private http: HttpClient = inject(HttpClient);
+  private baseUrl = `${environment.apiUrl}`;
 
-  constructor() { }
-  setList(listaNueva: Marca[]) {
-    this.listaCambio.next(listaNueva);
-  }
-  getListaCambio(): Observable<Marca[]>{
-    return this.listaCambio.asObservable();
+  crearMarca(marca: Marca): Observable<Marca> {
+    return this.http.post<Marca>(`${this.baseUrl}/post/marca`, marca);
   }
 
-  // -------------------- GUARDAR --------------------
-  insert(marca: Marca): Observable<any> {
-    return this.http.post(this.url + '/marca', marca);
+  listarMarcas(): Observable<Marca[]> {
+    return this.http.get<Marca[]>(`${this.baseUrl}/get/marca`);
   }
 
-  // -------------------- LISTAR TODAS --------------------
-  list(): Observable<Marca[]> {
-    return this.http.get<Marca[]>(this.url + '/marcas');
+  actualizarMarca(id: number, marca: Marca): Observable<Marca> {
+    return this.http.put<Marca>(`${this.baseUrl}/put/marca/${id}`, marca);
   }
 
-  // -------------------- LISTAR POR CATEGORÍA --------------------
-  listarPorCategoria(idCategoria: number): Observable<Marca[]> {
-    return this.http.get<Marca[]>(this.url + '/marcas/categoria/' + idCategoria);
+  eliminarMarca(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/delete/marca/${id}`);
   }
 }

@@ -1,0 +1,1577 @@
+.modal-columnas {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.columna.izquierda {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+}
+
+.columna.derecha {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+}
+
+.columna.izquierda-inventario {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+}
+
+.columna.derecha-inventario {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+}
+
+.fila-cat-mar {
+  display: flex;
+  width: 100%;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.info-adicional {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  cursor: default;
+}
+
+.card-adicional {
+  display: flex;
+  border-left: 3px solid #B83847;
+  align-items: center;
+  background: #F7E7E6;
+  padding: 10px;
+  border-radius: 0 5px 5px 0;
+  gap: 8px;
+}
+
+.card-icono {
+  background: #FFFFFF;
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-icono i {
+  color: #B83847;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.card-textos {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.card-titulo {
+  font-size: 12px;
+  font-weight: 500;
+  color: #5C0B15;
+  margin-bottom: 2px;
+}
+
+.card-valor {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #B83847;
+}
+
+.lista-colores {
+  background: #F7E7E6;
+  border-radius: 5px;
+  padding: 10px 12px;
+  height: 250px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-content: flex-start;
+  overflow-y: auto;
+}
+
+.select-color {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-agregar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  width: 38px;
+  border: none;
+  border-radius: 5px;
+  background: #B83847;
+  color: #F7E7E6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-agregar:hover {
+  transform: scale(1.08);
+  background: #5C0B15;
+}
+
+.btn-agregar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-agregar:not(:disabled):hover {
+  transform: scale(1.08);
+  background: #5C0B15;
+}
+
+.tag-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: #B83847;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 500;
+  flex: 0 0 auto;
+  width: auto;
+  cursor: default;
+  transform: translateY(0) scale(1);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.tag-color:hover {
+  background: #5C0B15;
+  transform: translateY(-3px) scale(1.05);
+}
+
+.tag-color:hover .btn-remove {
+  background: #5C0B15;
+}
+
+.btn-remove {
+  border: none;
+  background: #B83847;
+  color: #FFFFFF;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+/* ========================= MODAL LOTES METRICAS ========================= */
+.modal-columnas-lote {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.ultimo-lote {
+  background: #B83847;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: default;
+}
+
+.card-lote{
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.lote-izquierda{
+  display: flex;
+  align-items: center;
+  padding-right: 5px;
+  border-right: 2px solid #FFFFFF;
+}
+
+.icono-lote{
+  width: 45px;
+  height: 45px;
+  color: #FFFFFF;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  font-size: 28px;
+}
+
+.lote-derecha{
+  margin-left: 15px;
+  display: flex;
+  gap: 40px;
+}
+
+.dato-lote{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+.label-l{
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.valor-l{
+  font-size: 14px;
+}
+
+.icon-trend{
+  margin-left: auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 35px;
+}
+
+.icon-trend.up {
+  background-color:#d4edda;
+  color:#2aa133;
+}
+
+.icon-trend.down {
+  background-color:#f8d7da;
+  color:#e10d0d;
+}
+
+.icon-trend.flat {
+  background-color:#ffe0c2;
+  color:#e67e00;
+}
+
+.icon-trend.off {
+  background-color: #FFFFFF;
+  color: #B83847;
+}
+
+.metrica-container {
+  display: grid;
+  padding: 10px 12px;
+  border-radius: 5px;
+  background: #F7E7E6;
+  grid-template-columns: repeat(3,1fr);
+  gap: 12px;
+}
+
+.metrica-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border-left: 3px solid #B83847;
+  padding: 10px 12PX;
+  border-radius: 0 5px 5px 0;
+  position: relative;
+  transition: all .2s;
+  z-index: 1;
+  cursor: help;
+}
+
+.metrica-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  z-index: 50;
+}
+
+.metrica-card:hover .tooltip-text {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(15px);
+}
+
+.metrica-left {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  background: #F7E7E6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metrica-icon {
+  font-size: 25px;
+  color: #B83847;
+}
+
+.metrica-info {
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.metrica-title {
+  font-size: 12px;
+  color: #5C0B15;
+}
+
+.metrica-value {
+  font-size: 17px;
+  color: #B83847;
+}
+
+.metrica-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tooltip-container {
+  position:relative;
+}
+
+.tooltip-text {
+  position: absolute;
+  top: 50%;
+  left: 99%;
+  transform: translateY(-50%) translateX(10px);
+  z-index: 100;
+  background: #B83847;
+  color: #FFFFFF;
+  font-size: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  width: 170px;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all .2s ease;
+}
+
+.tooltip-text::before {
+  content: "";
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 15px;
+  border-style: solid;
+  border-color: transparent #B83847 transparent transparent;
+}
+
+/* ========================= PARTE DE INVENTARIO ========================= */
+.inventario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inventario-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.inventario-titulo {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #5C0B15;
+}
+
+.stock-text {
+  font-size: 14px;
+  margin-top: 4px;
+  font-weight: 500;
+  color: #B83847;
+}
+
+/* ========================= LISTA DE INVENTARIO ========================= */
+.inventarios-container{
+  margin-top: 15px;
+  flex: 1;
+  min-width: 0;
+  background: #F7E7E6;
+  border-radius: 5px;
+  padding: 10px;
+  box-sizing: border-box;
+  height: 295px;
+  max-height: 295px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-gutter: stable;
+}
+
+.inventario-card{
+  background: #FFFFFF;
+  border-radius: 5px;
+  padding: 10px 12px;
+  height: 85px;
+  min-height: 85px;
+  max-height: 85px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: default;
+}
+
+.inventario-header h4{
+  border-left: 3px solid #B83847;
+  padding-left: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5C0B15;
+  margin: 0;
+}
+
+.btn-quitar-inv {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #B83847;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0;
+  transition: background .2s ease, transform .1s ease;
+}
+
+.btn-quitar-inv i {
+  font-size: 15px;
+  line-height: 1;
+  color: #F7E7E6;
+  display: flex;
+}
+
+.btn-quitar-inv:hover {
+  background: #5C0B15;
+  transform: translateY(-2px) scale(1.05);
+}
+
+.input-class.talla{
+  cursor: pointer;
+  transition: background-color .2s ease, transform .15s ease, box-shadow .2s ease;
+}
+
+.input-class.talla:hover{
+  background: #B83847;
+  color: #FFFFFF;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.input-class.talla:hover::placeholder{
+  color: #FFFFFF;
+}
+
+/* ========================= MODAL TALLA ========================= */
+.modal-talla {
+  background: #FFFFFF;
+  padding: 15px;
+  border-radius: 10px;
+  width: 350px;
+  cursor: default;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  transition: all 0.25s ease;
+}
+
+.modal-talla h3 {
+  margin-top: 5px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #5C0B15;
+  letter-spacing: 0.5px;
+  text-align: center;
+  border-bottom: 2px solid #5C0B15;
+  padding-bottom: 8px;
+}
+
+.grid-talla {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-height: 480px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 5px;
+  box-sizing: border-box;
+}
+
+.talla-opcion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  border-radius: 5px;
+  background: #F7E7E6;
+  color: #5C0B15;
+  height: 50px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.25s ease;
+}
+
+.talla-opcion:hover {
+  background: #B83847;
+  color: #F7E7E6;
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.29);
+}
+
+.talla-opcion:active {
+  transform: scale(0.96);
+}
+
+.talla-opcion.activo {
+  background: #B83847;
+  color: #F7E7E6;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.29);
+  cursor: default;
+}
+
+/* ========================= MODAL DETALLES DE UNA PRENDA ========================= */
+.detalle-header {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  padding: 10px 0;
+  align-items: flex-start;
+}
+
+.detalle-imagen {
+  flex-shrink: 0;
+  background: #B83847;
+  width: 90px;
+  height: 90px;
+  overflow: hidden;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.detalle-imagen img {
+  max-width: 85%;
+  max-height: 85%;
+  object-fit: contain;
+}
+
+.header-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.fila-1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.textos {
+  display: flex;
+  flex-direction: column;
+}
+
+.det-titulo {
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #5C0B15;
+  margin-bottom: 5px;
+}
+
+.det-subtitulo {
+  font-size: 17px;
+  color: #b83847;
+  font-weight: 550;
+  margin-bottom: 5px;
+}
+
+.header-estado {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+}
+
+.det-estado {
+  margin-top: -15px;
+  padding: 10px 12px;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border-radius: 5px;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.det-colores {
+  margin-top: -10px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  padding: 10px 0;
+  gap: 5px;
+  max-height: 65px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ========================= FECHA, CALIDAD, LOTE DEL MODAL DETALLES ========================= */
+.detalle-card {
+  display: flex;
+  margin-top: 10px;
+  gap: 35px;
+  flex-wrap: wrap;
+}
+
+.card-item {
+  flex: 1 1 100px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  display: flex;
+  background: #F7E7E6;
+  align-items: center;
+  position: relative;
+  cursor: default;
+  gap: 10px;
+}
+
+.card-item .det-icon {
+  flex-shrink: 0;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 5px;
+  color: #B83847;
+  font-size: 25px;
+}
+
+.card-item .det-info {
+  display: flex;
+  font-weight: 600;
+  flex-direction: column;
+}
+
+.label-info {
+  font-size: 12px;
+  color: #5C0B15;
+}
+
+.value-info {
+  font-size: 16px;
+  color: #B83847;
+}
+
+.badge-estado {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.badge-estado.activo{
+  background: #B83847;
+  box-shadow: 2px 2px 3px rgba(184, 56, 71, 0.6);
+}
+
+.badge-estado.inactivo{
+  background: #d6c3c1;
+  box-shadow: inset 2px 2px 3px rgba(0,0,0,0.15),
+  inset -1px -1px 2px rgba(255,255,255,0.4);
+}
+
+.tooltip-lote {
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  background-color: #B83847;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 100;
+  min-width: 180px;
+}
+
+.tooltip-lote::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 12px;
+  border-style: solid;
+  border-color: #B83847 transparent transparent transparent;
+}
+
+.tooltip-container:hover .tooltip-lote {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.tooltip-row:last-child {
+  margin-bottom: 0;
+}
+
+.tooltip-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.tooltip-value {
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.tooltip-label i {
+  font-size: 12px;
+}
+
+/* ========================= CUADRO FINANZAS DEL MODAL DETALLES ========================= */
+.cuadro-finanzas {
+  background: #F7E7E6;
+  margin-top: 20px;
+  border-radius: 10px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fila-finanzas {
+  display: flex;
+  gap: 15px;
+}
+
+.item-finanza {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  background: #FFFFFF;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.item-finanza:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.detalle-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  background: #B83847;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.texto-finanzas {
+  display: flex;
+  font-weight: 600;
+  flex-direction: column;
+}
+
+.label-fi {
+  font-size: 13px;
+  color: #5C0B15;
+}
+
+.monto-fi {
+  font-size: 16px;
+  color: #B83847;
+}
+
+.item-finanza.total {
+  background: #B83847;
+  color: #fff;
+}
+
+.item-finanza.total .detalle-icon {
+  background: rgba(255,255,255,0.2);
+  color: #FFFFFF;
+}
+
+.item-finanza.total .label-fi,
+.item-finanza.total .monto-fi {
+  color: #FFFFFF;
+}
+
+/* ========================= CUADRO TALLAS DEL MODAL DETALLES ========================= */
+.cuadro-tallas {
+  background: #F7E7E6;
+  margin-top: 20px;
+  border-radius: 10px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.header-tallas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-tallas .titulo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #5C0B15;
+}
+
+.header-tallas .contador {
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  background: #B83847;
+  color: #FFFFFF;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0;
+  line-height: 1;
+}
+
+.tallas-scroll {
+  margin-top: -10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  overflow-y: auto;
+  max-height: 65px;
+  align-content: flex-start;
+  padding: 5px 0;
+}
+
+.talla-item {
+  width: 90px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: default;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.talla-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
+}
+
+.badge-size {
+  min-width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  background: #B83847;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.info-talla {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.label-talla {
+  margin-top: -3px;
+  font-size: 12px;
+  font-weight: 550;
+  color: #5C0B15;
+}
+
+.stock-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1;
+}
+
+.stock-row i {
+  font-size: 14px;
+  color: #B83847;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.stock-value {
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  color: #B83847;
+}
+
+/* ========================= CUADRO DESCRIPCION DEL MODAL DETALLES ========================= */
+.cuadro-descripcion {
+  background: #F7E7E6;
+  margin-top: 20px;
+  border-radius: 10px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.descripcion-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.descripcion-icon {
+  width: 25px;
+  height: 25px;
+  border-radius: 8px;
+  background: #B83847;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.descripcion-icon i {
+  display: block;
+  line-height: 1;
+}
+
+.descripcion-titulo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #5C0B15;
+}
+
+.descripcion-contenido {
+  background: #FFFFFF;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
+  color: #5C0B15;
+  white-space: pre-line;
+}
+
+/* ========================= DRAWER METRICAS DE VENTA MODAL DETALLES ========================= */
+.metric-grid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.metric-card{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  flex-wrap: wrap;
+  transition: all 0.25s ease;
+  cursor: help;
+}
+
+.metric-icon {
+  width: 42px;
+  height: 42px;
+  background: #B83847;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  transition: background 0.25s ease;
+}
+
+.metric-icon i{
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.metric-text{
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+}
+
+.metric-title {
+  font-size: 12px;
+  color: #5C0B15;
+}
+
+.metric-value {
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  color: #B83847;
+}
+
+.tooltip-metrica{
+  width: 100%;
+  font-size: 12px;
+  color: #FFFFFF;
+  background: #B83847;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 0;
+  opacity: 0;
+  transform: translateY(-12px);
+  max-height: 0;
+  padding: 4px 8px;
+  transition:
+    transform 0.28s ease,
+    opacity 0.28s ease,
+    max-height 0.28s ease,
+    padding 0.28s ease,
+    margin 0.28s ease;
+}
+
+.metric-card:hover .tooltip-metrica{
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 80px;
+}
+
+.metric-card:hover{
+  transform: translateY(-5px);
+  border-bottom: 2px solid #B83847;
+}
+/* ========================= MODAL HISTORIAL DE LOTES ========================= */
+.lotes-wrapper{
+  display:flex;
+  flex-direction:column;
+  gap: 17px;
+  background:#F7E7E6;
+  border-radius: 10px;
+  padding: 12px;
+  height: 530px;
+  overflow-y: scroll;
+}
+
+.lote-card{
+  background: #FFFFFF;
+  border-radius: 8px;
+  transition: all .2s ease;
+  cursor: default;
+}
+
+.lote-card:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.card-body{
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  padding: 0 0 0 12px;
+}
+
+.lote-left{
+  flex: 1;
+}
+
+.lote-header{
+  padding: 12px 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid #F7E7E6;
+}
+
+.lote-icon{
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background: #B83847;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+}
+
+.lote-icon i{
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.lote-info{
+  display: flex;
+  flex-direction: column;
+}
+
+.lote-id{
+  font-weight: 600;
+  color: #5C0B15;
+  font-size: 18px;
+}
+
+.lote-fecha{
+  font-weight: 600;
+  color: #B83847;
+  font-size: 14px;
+}
+
+.badge-estado-lote{
+  margin-left: auto;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 550;
+  transition: all 0.2s ease;
+}
+
+.badge-estado-lote.activo{
+  background: #B83847;
+  color: #F7E7E6;
+  box-shadow:
+    0 4px 10px rgba(0,0,0,0.25),
+    0 2px 4px rgba(0,0,0,0.15);
+}
+
+.badge-estado-lote.inactivo{
+  background: #F7E7E6;
+  color: #B83847;
+  box-shadow:
+    inset 2px 2px 5px rgba(0,0,0,0.18),
+    inset -2px -2px 5px rgba(255,255,255,0.9);
+}
+
+.lote-datos{
+  display: flex;
+  padding: 0 0 12px 0;
+  margin-top: 15px;
+  justify-content: space-between;
+}
+
+.dato-box{
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px;
+  background: #F7E7E6;
+  border-radius: 8px;
+  min-width: 155px;
+}
+
+.dato-icon{
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background: #FFFFFF;
+  color: #B83847;
+}
+
+.dato-icon i{
+  font-size: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.dato-info{
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+}
+
+.dato-info label{
+  color: #5C0B15;
+  font-size: 12px;
+}
+
+.dato-info span{
+  margin-top: -3px;
+  font-size: 14px;
+  color: #B83847;
+}
+
+.lote-right{
+  width: 130px;
+  display: flex;
+  background: #B83847;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #FFFFFF;
+  border-radius: 0 8px 8px 0;
+}
+
+.stock-titulo{
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+.stock-numero{
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.stock-subtitulo{
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.inventario-hover{
+  padding: 15px;
+  background: #F7E7E6;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-radius: 0 0 8px 8px;
+}
+
+.inventario-hover.mostrar{
+  max-height:200px;
+  opacity:1;
+  padding:15px;
+}
+
+.talla-box{
+  height: 45px;
+  display: flex;
+  border-radius: 5px;
+  overflow: hidden;
+  min-width: 95px;
+  transition: all .25s ease;
+}
+
+.talla-box:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.talla-left{
+  width: 45px;
+  background: #B83847;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.talla-right{
+  flex: 1;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 8px;
+}
+
+.stock-title{
+  font-size: 12px;
+  color: #5C0B15;
+  font-weight: 500;
+}
+
+.stock-value{
+  margin-top: -4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #B83847;
+}
+
+.historial-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.header-left-lote {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-icon {
+  width: 50px;
+  height: 50px;
+  background: #F7E7E6;
+  color: #B83847;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.header-icon i{
+  font-size: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.header-text{
+  display: flex;
+  flex-direction: column;
+}
+
+.header-title{
+  font-size: 20px;
+  font-weight: 600;
+  color: #5C0B15;
+}
+
+.header-subtitle{
+  font-size: 16px;
+  color: #B83847;
+  font-weight: 550;
+}
+
+/* ========================= PANEL DE AJUSTES ========================= */
+.panel-ajustes{
+  position: fixed;
+  min-width: 250px;
+  background: #ffffff;
+  border-radius: 5px;
+  padding: 8px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.15);
+  font-family: 'Poppins', sans-serif;
+  z-index: 100;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px) scale(.96);
+  pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease;
+}
+
+.panel-ajustes.activo{
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 5px;
+}
+
+.row-left {
+  width: 130px;
+  color: #5C0B15;
+  font-weight: 500;
+  font-size: 13px;
+  text-align: left;
+  padding-left: 5px;
+  border-left: 3px solid #5C0B15;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.row-center {
+  width: 30px;
+  text-align: center;
+  margin: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.row-right {
+  width: 60px;
+  display: flex;
+  justify-content: center;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 55px;
+  height: 25px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(122, 39, 48, 0.48);
+  border-radius: 24px;
+  transition: 0.25s;
+}
+
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 19px;
+  width: 19px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.25s;
+}
+
+input:checked + .slider {
+  background-color: #B83847;
+}
+
+input:checked + .slider::before {
+  transform: translateX(30px);
+}
+
+.slider:hover {
+  box-shadow: 0 0 2px rgba(0,0,0,0.2);
+}
+
+.row-left.activo {
+  color: #B83847;
+  border-left: 3px solid #B83847;
+}
+
+/* ========================= MODAL DE ELIMINAR ========================= */
+.card-prenda{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #F7E7E6;
+  border-radius: 5px;
+  padding: 12px;
+  letter-spacing: 0.5px;
+}
+
+.categoria-titulo{
+  color: #5C0B15;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.prenda-subinfo {
+  margin-top: 5px;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.tag {
+  padding: 5px 8px;
+  background: #B83847;
+  color: #FFFFFF;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: default;
+  transform: translateY(0) scale(1);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.tag:hover {
+  background: #5C0B15;
+  transform: translateY(-3px) scale(1.05);
+}

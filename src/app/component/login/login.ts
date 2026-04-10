@@ -35,11 +35,8 @@ import {RequestDto} from '../../model/request-dto';
 })
 export class Login {
   loginForm: FormGroup;
-  registerForm: FormGroup; // si no usas registro aquí, puedes eliminarlo
   errorLogin: string = '';
   successLogin: string = '';
-
-  // 👇 Nueva propiedad para mostrar/ocultar contraseña
   hidePassword = true;
 
   private router = inject(Router);
@@ -76,7 +73,7 @@ export class Login {
 
           setTimeout(() => {
             if (rol === 'ROLE_ADMIN') {
-              this.router.navigate(['/home']);
+              this.router.navigate(['/HomePrenda']);
             } else {
               this.errorLogin = 'Rol no válido.';
             }

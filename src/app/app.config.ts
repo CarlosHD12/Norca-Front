@@ -5,7 +5,6 @@ import { routes } from './app.routes';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {loginInterceptorInterceptor} from './interceptor/login-interceptor-interceptor';
 
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),

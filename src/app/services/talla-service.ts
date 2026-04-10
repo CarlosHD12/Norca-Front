@@ -1,50 +1,29 @@
 import {inject, Injectable} from '@angular/core';
-import {Talla} from '../model/talla';
-import {Observable, Subject} from 'rxjs';
 import {environment} from '../environments/environment';
 import {HttpClient} from '@angular/common/http';
-import {Marca} from '../model/marca';
-import {Prenda} from '../model/prenda';
+import {Talla} from '../model/Talla';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TallaService {
-  private url: string= environment.apiUrl
-  private http:HttpClient=inject(HttpClient)
-  private listaCambio = new Subject<Talla[]>();
+  private http: HttpClient = inject(HttpClient);
+  private baseUrl = `${environment.apiUrl}`;
 
-  constructor() { }
-  setList(listaNueva: Talla[]) {
-    this.listaCambio.next(listaNueva);
+  crearTalla(talla: Talla): Observable<Talla> {
+    return this.http.post<Talla>(`${this.baseUrl}/post/talla`, talla);
   }
 
-  getListaCambio(): Observable<Talla[]>{
-    return this.listaCambio.asObservable();
+  listarTallas(): Observable<Talla[]> {
+    return this.http.get<Talla[]>(`${this.baseUrl}/get/talla`);
   }
 
-  // -------------------- GUARDAR --------------------
-  insert(talla: Talla): Observable<any> {
-    return this.http.post(this.url + '/talla', talla);
+  actualizarTalla(id: number, talla: Talla): Observable<Talla> {
+    return this.http.put<Talla>(`${this.baseUrl}/put/talla/${id}`, talla);
   }
 
-  // -------------------- LISTAR TODAS --------------------
-  listar(): Observable<Talla[]> {
-    return this.http.get<Talla[]>(this.url + '/tallas');
-  }
-
-  // -------------------- LISTAR POR PRENDA --------------------
-  listarPorPrenda(idPrenda: number): Observable<Talla[]> {
-    return this.http.get<Talla[]>(this.url + '/tallas/prenda/' + idPrenda);
-  }
-
-  // -------------------- EDITAR --------------------
-  actualizar(id: number, talla: Talla): Observable<any> {
-    return this.http.put(this.url + '/talla/modificar/' + id, talla);
-  }
-
-  // -------------------- ELIMINAR --------------------
-  eliminar(id: number): Observable<any> {
-    return this.http.delete(`${this.url}/prenda/eliminar/${id}`);
+  eliminarTalla(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/delete/talla/${id}`);
   }
 }

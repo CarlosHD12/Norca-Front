@@ -1,147 +1,98 @@
 import {inject, Injectable} from '@angular/core';
 import {environment} from '../environments/environment';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {map, Observable, Subject} from 'rxjs';
-import {Prenda} from '../model/prenda';
-import {Marca} from '../model/marca';
-import {Lote} from '../model/lote';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Prenda} from '../model/Prenda';
+import {PrendaDetalleDTO} from '../model/PrendaDetalleDTO';
+import {PrendaCarritoDTO} from '../model/PrendaCarritoDTO';
+import {InventarioActivoDTO} from '../model/InventarioActivoDTO';
+import {PrendaOlvidadaDTO} from '../model/PrendaOlvidadaDTO';
+import {TopDTO} from '../model/TopDTO';
+import {StockBajoDTO} from '../model/StockBajoDTO';
+import {PrendasTotalesDTO} from '../model/PrendasTotalesDTO';
+import {StockCategoriaDTO} from '../model/StockCategoriaDTO';
+import {PrendaListadoDTO} from '../model/PrendaListadoDTO';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PrendaService {
-  private url: string= environment.apiUrl
-  private http:HttpClient=inject(HttpClient)
-  private listaCambio = new Subject<Prenda[]>();
+  private http: HttpClient = inject(HttpClient);
+  private baseUrl = `${environment.apiUrl}`;
 
-  constructor() { }
-  setList(listaNueva: Prenda[]) {
-    this.listaCambio.next(listaNueva);
+  registrarPrenda(prenda: Prenda): Observable<Prenda> {
+    return this.http.post<Prenda>(`${this.baseUrl}/post/prenda`, prenda);
   }
 
-  getById(id: number): Observable<Prenda> {
-    return this.http.get<Prenda>(`${this.url}/detalle/prenda/${id}`);
+  editarPrenda(id: number, prenda: Prenda): Observable<Prenda> {
+    return this.http.put<Prenda>(`${this.baseUrl}/put/prenda/${id}`, prenda);
   }
 
-  actualizarLista(): void {
-    this.list().subscribe({
-      next: (data) => {
-        const listaOrdenada = data.sort((a, b) => a.idPrenda! - b.idPrenda!);
-        this.setList(listaOrdenada);
-      },
-      error: (err) => console.error('Error actualizando lista', err)
-    });
+  eliminarPrenda(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/delete/prenda/${id}`);
   }
 
-  // -------------------- GUARDAR --------------------
-  insert(prenda: Prenda): Observable<any> {
-    return this.http.post(this.url + '/prenda', prenda);
-
+  listarPrendasTabla(): Observable<PrendaListadoDTO[]> {
+    return this.http.get<PrendaListadoDTO[]>(`${this.baseUrl}/listar/prendas`);
   }
 
-  // -------------------- LISTAR TODAS --------------------
-  list(): Observable<Prenda[]> {
-    return this.http.get<Prenda[]>(`${this.url}/prendas`).pipe(
-      map(data => data || []) // por si backend devuelve null
-    );
+  obtenerDetalle(id: number): Observable<PrendaDetalleDTO> {
+    return this.http.get<PrendaDetalleDTO>(`${this.baseUrl}/detalle/prenda/${id}`);
   }
 
-
-  // -------------------- EDITAR --------------------
-  update(id: number, prenda: Prenda): Observable<any> {
-    return this.http.put(this.url + '/prenda/modificar/' + id, prenda);
+  cambiarEstado(idPrenda: number): Observable<string> {
+    return this.http.put(`${this.baseUrl}/cambiar/estado/${idPrenda}`, null, { responseType: 'text' });
   }
 
-  // -------------------- FILTRAR POR MARCA --------------------
-  listarPorMarca(idMarca: number): Observable<Prenda[]> {
-    return this.http.get<Prenda[]>(this.url + '/prendas/marca/' + idMarca);
+  activarEstado(id: number): Observable<string> {
+    return this.http.put(`${this.baseUrl}/activar/prenda/${id}`, null, { responseType: 'text' });
   }
 
-  // -------------------- FILTRAR POR CATEGORÍA --------------------
-  listarPorCategoria(idCategoria: number): Observable<Prenda[]> {
-    return this.http.get<Prenda[]>(this.url + '/prendas/categoria/' + idCategoria);
+  listarPrendasDisponibles(): Observable<PrendaCarritoDTO[]> {
+    return this.http.get<PrendaCarritoDTO[]>(`${this.baseUrl}/listar/prenda/disponibles`);
   }
 
-  // -------------------- FILTRAR POR CALIDAD --------------------
-  listarPorCalidad(calidad: string): Observable<Prenda[]> {
-    return this.http.get<Prenda[]>(this.url + '/prendas/calidad/' + calidad);
+  obtenerInventario(idPrenda: number): Observable<InventarioActivoDTO[]> {
+    return this.http.get<InventarioActivoDTO[]>(`${this.baseUrl}/inventario/prenda/${idPrenda}`);
   }
 
-  // -------------------- FILTRAR POR ESTADO --------------------
-  listarPorEstado(estado: string): Observable<Prenda[]> {
-    return this.http.get<Prenda[]>(this.url + '/prendas/estado/' + estado);
+  getDistribucionPorCategoria(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/distribucion/categoria`);
   }
 
-  // -------------------- LISTAR TODAS LAS MARCAS --------------------
-  listarMarcas(): Observable<Marca[]> {
-    return this.http.get<Marca[]>(this.url + '/prendas/marcas');
+  getDistribucionPorMarca(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/distribucion/marca`);
   }
 
-  // -------------------- FILTRAR POR RANGO DE PRECIO --------------------
-  listarPorRangoPrecio(min: number, max: number): Observable<Prenda[]> {
-    let params = new HttpParams().set('min', min).set('max', max);
-    return this.http.get<Prenda[]>(this.url + '/prendas/rango', { params });
+  getDistribucionPorEstado(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/distribucion/estado`);
   }
 
-  // -------------------- FILTRAR POR FECHA --------------------
-  listarPorFecha(fecha: string): Observable<Prenda[]> {
-    let params = new HttpParams().set('fecha', fecha);
-    return this.http.get<Prenda[]>(this.url + '/prendas/fecha', { params });
+  obtenerPrendasOlvidadas(): Observable<PrendaOlvidadaDTO[]> {
+    return this.http.get<PrendaOlvidadaDTO[]>(`${this.baseUrl}/prenda/olvidada`);
   }
 
-  // -------------------- ACTUALIZAR SOLO ESTADO --------------------
-  actualizarEstado(id: number, estado: string): Observable<any> {
-    let params = new HttpParams().set('estado', estado);
-    return this.http.patch(this.url + '/prenda/estado/' + id, null, { params });
+  rankingMasVendidas(): Observable<TopDTO[]> {
+    return this.http.get<TopDTO[]>(`${this.baseUrl}/prenda/ranking`);
   }
 
-  listarMarcasPorCategoria(idCategoria: number): Observable<Marca[]> {
-    return this.http.get<Marca[]>(this.url + '/marcas/categoria/' + idCategoria);
+  obtenerPrendasBajoStock(limite: number = 10): Observable<StockBajoDTO[]> {
+    return this.http.get<StockBajoDTO[]>(`${this.baseUrl}/prenda/stock-bajo`, { params: { limite } });
   }
 
-  // -------------------- ELIMINAR PRENDA --------------------
-  eliminar(id: number): Observable<string> {
-    return this.http.delete<string>(`${this.url}/prenda/eliminar/${id}`);
+  obtenerKPIPrendas(): Observable<PrendasTotalesDTO> {
+    return this.http.get<PrendasTotalesDTO>(`${this.baseUrl}/prendas/totales`);
   }
 
-  // -------------------- VERIFICAR SI LA PRENDA EXISTE --------------------
-  existePrenda(marcaId: number, calidad: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.url}/prenda/existe`, {
-      params: {
-        marcaId: marcaId.toString(),
-        calidad: calidad
-      }
-    });
+  obtenerPrendasAgotadas(): Observable<number> {
+    return this.http.get<number>(`${this.baseUrl}/prenda/agotada`);
   }
 
-  buscarPrendas(
-    descripcion?: string,
-    idMarca?: number,
-    idCategoria?: number,
-    estado?: string,
-    fecha?: string,
-    fechaDesde?: string,
-    fechaHasta?: string
-  ): Observable<Prenda[]> {
-
-    let params = new HttpParams();
-
-    if (descripcion) params = params.set('descripcion', descripcion);
-    if (idMarca) params = params.set('idMarca', idMarca);
-    if (idCategoria) params = params.set('idCategoria', idCategoria);
-    if (estado) params = params.set('estado', estado);
-    if (fecha) params = params.set('busquedaFecha', fecha);
-    if (fechaDesde) params = params.set('fechaDesde', fechaDesde);
-    if (fechaHasta) params = params.set('fechaHasta', fechaHasta);
-
-    return this.http.get<Prenda[]>(`${this.url}/prendas/filtrar`, { params });
+  stockPorCategoria(): Observable<StockCategoriaDTO[]> {
+    return this.http.get<StockCategoriaDTO[]>(`${this.baseUrl}/stock/categoria`);
   }
 
-  getLotesByPrenda(idPrenda: number): Observable<Lote[]> {
-    return this.http.get<Lote[]>(`${this.url}/lotes/${idPrenda}`);
-  }
-
-  getPrendasStockBajo(limite: number = 5): Observable<Prenda[]> {
-    return this.http.get<Prenda[]>(`${this.url}/bajo-stock?limite=${limite}`);
+  obtenerPrendas(): Observable<Prenda[]> {
+    return this.http.get<Prenda[]>(`${this.baseUrl}/get/prendas`);
   }
 }
