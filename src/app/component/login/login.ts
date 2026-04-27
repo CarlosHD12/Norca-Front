@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import {LoginService} from '../../services/login-service';
 import {RequestDto} from '../../model/request-dto';
+import {AuthService} from '../../services/auth-service';
 
 @Component({
   selector: 'app-login',
@@ -34,6 +35,7 @@ import {RequestDto} from '../../model/request-dto';
   styleUrl: './login.css'
 })
 export class Login {
+
   loginForm: FormGroup;
   errorLogin: string = '';
   successLogin: string = '';
@@ -42,6 +44,7 @@ export class Login {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private loginService = inject(LoginService);
+  private authService = inject(AuthService);
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -55,18 +58,26 @@ export class Login {
   }
 
   onSubmit() {
+
     this.errorLogin = '';
     this.successLogin = '';
 
     if (this.loginForm.valid) {
+
       const requestDto = new RequestDto();
       requestDto.username = this.loginForm.get('username')?.value;
       requestDto.password = this.loginForm.get('password')?.value;
 
       this.loginService.login(requestDto).subscribe({
+
         next: (data: ResponseDto) => {
-          const rol = data.roles[0];
-          localStorage.setItem('token', data.jwt);
+
+          console.log("LOGIN RESPONSE:", data);
+
+          const rol = data.roles?.[0];
+
+          this.authService.login(data.jwt);
+
           localStorage.setItem('rol', rol);
 
           this.successLogin = '¡Login exitoso! Redirigiendo...';
@@ -79,12 +90,14 @@ export class Login {
             }
           }, 700);
         },
+
         error: () => {
-          this.errorLogin = 'Usuario o contraseña incorrectos. Intenta de nuevo.';
+          this.errorLogin = 'Usuario o contraseña incorrectos.';
         }
       });
+
     } else {
-      this.errorLogin = 'El formulario está incompleto. ¡Llena todos los campos!';
+      this.errorLogin = 'El formulario está incompleto.';
     }
   }
 }

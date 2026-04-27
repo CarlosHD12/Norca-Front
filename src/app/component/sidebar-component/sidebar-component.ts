@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
 import {filter} from 'rxjs';
 import {FormsModule} from '@angular/forms';
+import {AuthService} from '../../services/auth-service';
 
 interface MenuItem {
   icon: string;
@@ -22,7 +23,7 @@ export class SidebarComponent {
   isExpanded = true;
   activeRoute = '';
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
@@ -31,8 +32,7 @@ export class SidebarComponent {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
+    this.authService.logout();
     this.router.navigate(['/']);
   }
 
