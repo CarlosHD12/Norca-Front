@@ -2,15 +2,13 @@ import {inject, Injectable} from '@angular/core';
 import {environment} from '../environments/environment';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Venta} from '../model/Venta';
 import {VentaDetalleDTO} from '../model/VentaDetalleDTO';
 import {VentasTotalesDTO} from '../model/VentasTotalesDTO';
 import {MetodoPagoDTO} from '../model/MetodoPagoDTO';
 import {IngresosCategoriaDTO} from '../model/IngresosCategoriaDTO';
-import {PageVenta} from '../model/PageVenta';
-import {VentaListadoDTO} from '../model/VentaListadoDTO';
-import {CrearVentaDTO} from '../model/CrearVentaDTO';
 import {ImpactoVentaDTO} from '../model/ImpactoVentaDTO';
+import {VentaRegistroDTO} from '../model/VentaRegistroDTO';
+import {VentaResponseDTO} from '../model/VentaResponseDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -19,17 +17,37 @@ export class VentaService {
   private http: HttpClient = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}`;
 
-  registrarVenta(venta: CrearVentaDTO): Observable<Venta> {
-    return this.http.post<Venta>(`${this.baseUrl}/post/venta`, venta);
+  constructor() {}
+
+  registrarVenta(dto: VentaRegistroDTO): Observable<VentaResponseDTO> {
+    return this.http.post<VentaResponseDTO>(
+      `${this.baseUrl}/crear/venta`,
+      dto
+    );
   }
 
-  editarVenta(id: number, venta: Venta): Observable<Venta> {
-    return this.http.put<Venta>(`${this.baseUrl}/put/venta/${id}`, venta);
+  anularVenta(id: number): Observable<void> {
+    return this.http.patch<void>(
+      `${this.baseUrl}/anular/venta/${id}`,
+      {}
+    );
   }
 
-  eliminarVenta(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/delete/venta/${id}`);
+  listarVentas(page: number = 0, size: number = 20): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    return this.http.get<any>(
+      `${this.baseUrl}/listar/ventas`,
+      { params }
+    );
   }
+
+
+
+
+
 
   obtenerDetalleVenta(idVenta: number): Observable<VentaDetalleDTO> {
     return this.http.get<VentaDetalleDTO>(`${this.baseUrl}/detalle/venta/${idVenta}`);
@@ -63,61 +81,7 @@ export class VentaService {
     return this.http.get<any[]>(`${this.baseUrl}/ventas/mensuales`, { params: { tipo } });
   }
 
-  listarVentas(
-    page: number = 0,
-    size: number = 10,
-    filtros?: any
-  ): Observable<PageVenta> {
-
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
-
-    if (filtros) {
-
-      if (filtros.codigo && filtros.codigo.trim() !== '') {
-        params = params.set('codigo', filtros.codigo.trim());
-      }
-
-      if (filtros.metodoPago) {
-        params = params.set('metodoPago', filtros.metodoPago);
-      }
-
-      if (filtros.fecha) {
-        const fecha = new Date(filtros.fecha);
-        const formatted = fecha.toISOString().split('T')[0];
-        params = params.set('fecha', formatted);
-      }
-
-      if (filtros.periodo) {
-        params = params.set('periodo', filtros.periodo);
-      }
-
-      if (filtros.precioMin != null) {
-        params = params.set('precioMin', filtros.precioMin.toString());
-      }
-
-      if (filtros.precioMax != null) {
-        params = params.set('precioMax', filtros.precioMax.toString());
-      }
-
-      if (filtros.unidadesMin != null) {
-        params = params.set('unidadesMin', filtros.unidadesMin.toString());
-      }
-
-      if (filtros.unidadesMax != null) {
-        params = params.set('unidadesMax', filtros.unidadesMax.toString());
-      }
-    }
-
-    return this.http.get<PageVenta>(
-      `${this.baseUrl}/listar/ventas`,
-      { params }
-    );
-  }
-
   impactoVenta(id: number): Observable<ImpactoVentaDTO> {
     return this.http.get<ImpactoVentaDTO>(`${this.baseUrl}/impacto/${id}`);
   }
-
 }

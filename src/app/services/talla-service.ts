@@ -3,6 +3,9 @@ import {environment} from '../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Talla} from '../model/Talla';
 import {Observable} from 'rxjs';
+import {TallaRegistroDTO} from '../model/TallaRegistroDTO';
+import {TallaResponseDTO} from '../model/TallaResponseDTO';
+import {TallaUpdateDTO} from '../model/TallaUpdateDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -11,19 +14,38 @@ export class TallaService {
   private http: HttpClient = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}`;
 
-  crearTalla(talla: Talla): Observable<Talla> {
-    return this.http.post<Talla>(`${this.baseUrl}/post/talla`, talla);
+  constructor() {}
+
+  registrarTalla(dto: TallaRegistroDTO): Observable<TallaResponseDTO> {
+    return this.http.post<TallaResponseDTO>(
+      `${this.baseUrl}/crear/talla`,
+      dto
+    );
   }
 
-  listarTallas(): Observable<Talla[]> {
-    return this.http.get<Talla[]>(`${this.baseUrl}/get/talla`);
+  listarTallas(): Observable<TallaResponseDTO[]> {
+    return this.http.get<TallaResponseDTO[]>(
+      `${this.baseUrl}/listar/tallas`
+    );
   }
 
-  actualizarTalla(id: number, talla: Talla): Observable<Talla> {
-    return this.http.put<Talla>(`${this.baseUrl}/put/talla/${id}`, talla);
+  editarTalla(id: number, dto: TallaUpdateDTO): Observable<TallaResponseDTO> {
+    return this.http.put<TallaResponseDTO>(
+      `${this.baseUrl}/editar/talla/${id}`,
+      dto
+    );
   }
 
-  eliminarTalla(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/delete/talla/${id}`);
+  desactivarTalla(id: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.baseUrl}/desactivar/talla/${id}`
+    );
+  }
+
+  activarTalla(id: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.baseUrl}/activar/talla/${id}`,
+      {}
+    );
   }
 }

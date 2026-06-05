@@ -3,6 +3,9 @@ import {environment} from '../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Marca} from '../model/Marca';
+import {MarcaRegistroDTO} from '../model/MarcaRegistroDTO';
+import {MarcaResponseDTO} from '../model/MarcaResponseDTO';
+import {MarcaUpdateDTO} from '../model/MarcaUpdateDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -11,19 +14,38 @@ export class MarcaService {
   private http: HttpClient = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}`;
 
-  crearMarca(marca: Marca): Observable<Marca> {
-    return this.http.post<Marca>(`${this.baseUrl}/post/marca`, marca);
+  constructor() {}
+
+  registrarMarca(dto: MarcaRegistroDTO): Observable<MarcaResponseDTO> {
+    return this.http.post<MarcaResponseDTO>(
+      `${this.baseUrl}/crear/marca`,
+      dto
+    );
   }
 
-  listarMarcas(): Observable<Marca[]> {
-    return this.http.get<Marca[]>(`${this.baseUrl}/get/marca`);
+  listarMarcas(): Observable<MarcaResponseDTO[]> {
+    return this.http.get<MarcaResponseDTO[]>(
+      `${this.baseUrl}/listar/marcas`
+    );
   }
 
-  actualizarMarca(id: number, marca: Marca): Observable<Marca> {
-    return this.http.put<Marca>(`${this.baseUrl}/put/marca/${id}`, marca);
+  editarMarca(id: number, dto: MarcaUpdateDTO): Observable<MarcaResponseDTO> {
+    return this.http.put<MarcaResponseDTO>(
+      `${this.baseUrl}/editar/marca/${id}`,
+      dto
+    );
   }
 
-  eliminarMarca(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/delete/marca/${id}`);
+  desactivarMarca(id: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.baseUrl}/desactivar/marca/${id}`
+    );
+  }
+
+  activarMarca(id: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.baseUrl}/activar/marca/${id}`,
+      {}
+    );
   }
 }

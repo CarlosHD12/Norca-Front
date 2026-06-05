@@ -1,0 +1,287 @@
+<div class="filters-card">
+
+  <div class="filters-top">
+
+    <div class="search-box">
+
+      <i class="fi fi-rr-search"></i>
+
+      <input
+        type="text"
+        placeholder="Buscar por código o nombre..."
+        [(ngModel)]="filters.search"
+        (input)="onFiltersChange()">
+
+    </div>
+
+    <div class="filter-group">
+
+      <div class="custom-select" (click)="toggleCategoriaDropdown($event)">
+
+        <div class="select-display">
+
+    <span class="selected-text">
+      {{ filters.categoria || 'Categorias' }}
+    </span>
+
+          <i
+            class="fi fi-rr-angle-small-down"
+            [class.rotate]="showCategoriaDropdown">
+          </i>
+
+        </div>
+
+        <div
+          class="select-dropdown"
+          *ngIf="showCategoriaDropdown">
+
+          <div
+            class="select-option"
+            [class.active]="filters.categoria === ''"
+            (click)="selectCategoria(''); $event.stopPropagation()">
+
+            Todas las categorías
+
+          </div>
+
+          <div
+            *ngFor="let categoria of categorias"
+            class="select-option"
+            [class.active]="filters.categoria === categoria.nombre"
+            (click)="selectCategoria(categoria.nombre); $event.stopPropagation()">
+
+            <span>{{ categoria.nombre }}</span>
+
+            <i
+              *ngIf="filters.categoria === categoria.nombre"
+              class="fi fi-rr-check">
+            </i>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="filter-group">
+
+      <div class="custom-select" (click)="toggleMarcaDropdown($event)">
+
+        <div class="select-display">
+
+    <span class="selected-text">
+      {{ filters.marca || 'Marcas' }}
+    </span>
+
+          <i
+            class="fi fi-rr-angle-small-down"
+            [class.rotate]="showMarcaDropdown">
+          </i>
+
+        </div>
+
+        <div
+          class="select-dropdown"
+          *ngIf="showMarcaDropdown">
+
+          <div
+            class="select-option"
+            [class.active]="filters.marca === ''"
+            (click)="selectMarca(''); $event.stopPropagation()">
+
+            Todas las marcas
+
+          </div>
+
+          <div
+            *ngFor="let marca of marcas"
+            class="select-option"
+            [class.active]="filters.marca === marca.nombre"
+            (click)="selectMarca(marca.nombre); $event.stopPropagation()">
+
+            <span>{{ marca.nombre }}</span>
+
+            <i
+              *ngIf="filters.marca === marca.nombre"
+              class="fi fi-rr-check">
+            </i>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="filter-group">
+
+      <div class="custom-select" (click)="toggleEstadoDropdown($event)">
+
+        <div class="select-display">
+
+    <span class="selected-text">
+
+      {{
+        filters.estado === 'DISPONIBLE' ? 'Disponible' :
+            filters.estado === 'AGOTADO' ? 'Agotado' :
+              filters.estado === 'SIN_LOTES' ? 'Sin lotes' :
+                'Estados'
+      }}
+
+    </span>
+
+          <i
+            class="fi fi-rr-angle-small-down"
+            [class.rotate]="showEstadoDropdown">
+          </i>
+
+        </div>
+
+        <div
+          class="select-dropdown"
+          *ngIf="showEstadoDropdown">
+
+          <div
+            class="select-option"
+            [class.active]="filters.estado === ''"
+            (click)="selectEstado(''); $event.stopPropagation()">
+
+            Todos los estados
+
+          </div>
+
+          <div
+            class="select-option"
+            [class.active]="filters.estado === 'DISPONIBLE'"
+            (click)="selectEstado('DISPONIBLE'); $event.stopPropagation()">
+
+            <span>Disponible</span>
+
+            <i
+              *ngIf="filters.estado === 'DISPONIBLE'"
+              class="fi fi-rr-check">
+            </i>
+
+          </div>
+
+          <div
+            class="select-option"
+            [class.active]="filters.estado === 'AGOTADO'"
+            (click)="selectEstado('AGOTADO'); $event.stopPropagation()">
+
+            <span>Agotado</span>
+
+            <i
+              *ngIf="filters.estado === 'AGOTADO'"
+              class="fi fi-rr-check">
+            </i>
+
+          </div>
+
+          <div
+            class="select-option"
+            [class.active]="filters.estado === 'SIN_LOTES'"
+            (click)="selectEstado('SIN_LOTES'); $event.stopPropagation()">
+
+            <span>Sin lotes</span>
+
+            <i
+              *ngIf="filters.estado === 'SIN_LOTES'"
+              class="fi fi-rr-check">
+            </i>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="actions">
+
+      <button type="button" class="advanced-btn" (click)="toggleAdvancedFilters()">
+
+        <i class="fi fi-rr-settings-sliders"></i>
+
+      </button>
+
+      <button type="button" class="clear-btn" (click)="clearFilters()">
+        <i class="fi fi-rr-cross-small"></i>
+      </button>
+
+    </div>
+
+  </div>
+
+  <div
+    class="advanced-filters"
+    [class.open]="showAdvanced">
+
+    <div class="advanced-grid">
+
+      <div class="advanced-group">
+
+        <label>
+          Stock mínimo
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          placeholder="0"
+          [(ngModel)]="filters.stockMin"
+          (input)="onFiltersChange()">
+
+      </div>
+
+      <div class="advanced-group">
+
+        <label>
+          Stock máximo
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          placeholder="100"
+          [(ngModel)]="filters.stockMax"
+          (input)="onFiltersChange()">
+
+      </div>
+
+      <div class="advanced-group">
+
+        <label>
+          Precio mínimo
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          placeholder="0"
+          [(ngModel)]="filters.precioMin"
+          (input)="onFiltersChange()">
+
+      </div>
+
+      <div class="advanced-group">
+
+        <label>
+          Precio máximo
+        </label>
+
+        <input
+          type="number"
+          min="0"
+          placeholder="1000"
+          [(ngModel)]="filters.precioMax"
+          (input)="onFiltersChange()">
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

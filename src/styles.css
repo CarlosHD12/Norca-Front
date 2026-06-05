@@ -5,34 +5,31 @@
 html, body { height: 100%; background-color: #FFFFFF;}
 body { margin: 0; font-family: 'Poppins', sans-serif;}
 
-/* ==================== CUERPO DE LA PAGINA ==================== */
-.layout {
-  display: flex;
-}
-
-.main-container {
-  flex-grow: 1;
-  margin-left: 90px;
-  transition: all 0.4s ease;
-}
-
-.layout.sidebar-expanded .main-container {
-  margin-left: 270px;
-}
-
-.contenido {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.4s ease;
-}
-
-.container {
-  width: min(98%);
-  margin: 0 auto;
-  padding: 12px;
+* {
   box-sizing: border-box;
-  transition: all 0.4s ease;
+}
+
+/* Tema principal (por defecto) */
+:root {
+  --primary: #B83847;
+  --primary-hover: #A02F3D;
+  --secondary: #5C0B15;
+  --bg-main: #FAF5F6;
+  --bg-card: #FFFFFF;
+  --bg-hover: #F6E9EC;
+  --border: #E8D8DC;
+  --text-primary: #2D2D2D;
+  --text-secondary: #6B6B6B;
+  --success: #4CAF50;
+  --warning: #F59E0B;
+  --danger: #DC3545;
+  --info: #3B82F6;
+  --shadow: rgba(184, 56, 71, 0.12);
+  --sidebar-bg: #5C0B15;
+  --sidebar-hover: #7A1020;
+  --sidebar-active: #B83847;
+  --header-bg: #FFFFFF;
+  --navbar-height: 70px;
 }
 
 /* ==================== HEADER DE LA PAGINA ==================== */
@@ -1031,92 +1028,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 /* ========================= LABEL Y SELECT ========================= */
-.custom-field {
-  border-left: 3px solid #B83847;
-  position: relative;
-  width: 100%;
-  display: flex;
-}
 
-.custom-select {
-  border-left: 3px solid #B83847;
-  position: relative;
-  width: 100%;
-  cursor: pointer;
-}
-
-.select-display,
-.input-class {
-  width: 100%;
-  outline: none;
-  font-family: 'Poppins', sans-serif;
-  color: #B83847;
-  background: #F7E7E6;
-  font-weight: 590;
-  border: none;
-  letter-spacing: 0.5px;
-  border-radius: 5px;
-  font-size: 14px;
-  padding: 10px 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-sizing: border-box;
-  transition: border 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
-}
-
-.input-class::placeholder {
-  color: #B83847;
-}
-
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.select-display i {
-  font-size: 20px;
-  transition: transform 0.25s;
-}
-
-.select-display i.rotate {
-  transform: rotate(180deg);
-}
-
-.select-options {
-  position: absolute;
-  width: 100%;
-  margin-top: 2px;
-  background: #FFFFFF;
-  font-size: 13px;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-  max-height: 140px;
-  overflow-y: auto;
-  z-index: 300;
-  padding: 6px 0;
-  color: #5C0B15;
-}
-
-.select-options li {
-  padding: 8px 12px;
-  list-style: none;
-  font-weight: 500;
-  transition: background 0.2s, color 0.2s;
-}
-
-.select-options li:hover {
-  background: #B83847;
-  color: #FFFFFF;
-}
-
-.select-options li.active {
-  background: #B83847;
-  font-weight: 550;
-  color: #FFFFFF;
-  cursor: default;
-}
 
 .warning-box {
   display: flex;

@@ -1,0 +1,263 @@
+<div class="table-card">
+
+  <div class="table-header">
+
+    <div class="header-left">
+
+      <h3>
+        Catálogo de Prendas
+      </h3>
+
+      <div class="table-stats">
+
+      <span class="stat-chip">
+
+        {{ prendas.length }}
+        mostradas
+
+      </span>
+
+        <span class="stat-chip selected">
+          {{ selectedPrendaCodigo || 'Ninguna' }}
+        </span>
+
+      </div>
+
+    </div>
+
+    <div class="header-actions">
+
+      <button
+        class="hover-toggle"
+        [class.active]="hoverMode"
+        (click)="toggleHoverMode()">
+
+        <i class="fi fi-br-mouse"></i>
+
+        {{ hoverMode ? 'Hover ON' : 'Hover OFF' }}
+
+      </button>
+
+
+      <button class="refresh-btn" (click)="onRefresh()">
+        <i class="fi fi-rr-refresh"></i>
+        Recargar
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="table-wrapper">
+
+    <table>
+
+      <thead>
+
+      <tr>
+
+        <th class="img-col">
+          IMG
+        </th>
+
+        <th>
+          Código
+        </th>
+
+        <th>
+          Prenda
+        </th>
+
+        <th>
+          Categoría
+        </th>
+
+        <th>
+          Marca
+        </th>
+
+        <th>
+          Lote FIFO
+        </th>
+
+        <th>
+          Estado
+        </th>
+
+        <th>
+          Precio
+        </th>
+
+        <th>
+          Stock
+        </th>
+
+        <th class="actions-col">
+          Acciones
+        </th>
+
+      </tr>
+
+      </thead>
+
+      <tbody>
+
+      <tr
+        *ngFor="let prenda of prendas"
+        [class.selected-row]="selectedPrendaId === prenda.idPrenda"
+        (mouseenter)="onRowHover(prenda)"
+        (click)="onRowClick(prenda)">
+
+        <td>
+
+          <div class="image-container">
+
+            <img
+              [src]="prenda.imagenUrl || '/default.png'"
+              [alt]="prenda.nombre">
+
+          </div>
+
+        </td>
+
+        <td class="codigo">
+
+          {{ prenda.colores }}
+
+        </td>
+
+        <td>
+
+          <div class="prenda-info">
+
+            <span class="nombre">
+
+              {{ prenda.nombre }}
+
+            </span>
+
+            <small class="material">
+
+              {{ prenda.material }}
+
+            </small>
+
+          </div>
+
+        </td>
+
+        <td>
+
+          <span class="categoria-chip">
+
+            {{ prenda.categoria }}
+
+          </span>
+
+        </td>
+
+        <td class="marca">
+
+          {{ prenda.marca }}
+
+        </td>
+
+        <td>
+
+          <span class="lote-chip">
+
+            {{ prenda.colores }}
+
+          </span>
+
+        </td>
+
+        <td>
+
+          <span
+            class="estado"
+            [class.disponible]="prenda.estado === 'DISPONIBLE'"
+            [class.agotado]="prenda.estado === 'AGOTADO'"
+            [class.sin-lotes]="prenda.estado === 'SIN_LOTES'"
+            [class.stock-bajo]="prenda.estado === 'STOCK_BAJO'">
+
+            {{ prenda.estado }}
+
+          </span>
+
+        </td>
+
+        <td class="precio">
+
+          S/ {{ prenda.precioVenta }}
+
+        </td>
+
+        <td>
+
+          <span
+            class="stock"
+            [class.low]="prenda.stock < 10">
+
+            {{ prenda.stock }}
+
+          </span>
+
+        </td>
+
+        <td class="actions-col">
+
+          <div class="menu-container">
+
+            <button
+              class="action-btn"
+              (click)="toggleMenu(prenda.idPrenda, $event)">
+
+              <i class="fi fi-br-menu-dots"></i>
+
+            </button>
+
+            <div
+              class="dropdown-menu"
+              *ngIf="openedMenuId === prenda.idPrenda"
+              (click)="$event.stopPropagation()">
+
+              <button>
+
+                Ver detalle
+
+              </button>
+
+              <button>
+
+                Editar
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+      <tr *ngIf="!loading && prendas.length === 0">
+
+        <td
+          colspan="10"
+          class="empty-state">
+
+          No se encontraron prendas
+
+        </td>
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

@@ -2,7 +2,9 @@ import {inject, Injectable} from '@angular/core';
 import {environment} from '../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Categoria} from '../model/Categoria';
+import {CategoriaRegistroDTO} from '../model/CategoriaRegistroDTO';
+import {CategoriaResponseDTO} from '../model/CategoriaResponseDTO';
+import {CategoriaUpdateDTO} from '../model/CategoriaUpdateDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -11,32 +13,38 @@ export class CategoriaService {
   private http: HttpClient = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}`;
 
-  crearCategoria(categoria: Categoria): Observable<Categoria> {
-    return this.http.post<Categoria>(`${this.baseUrl}/post/categoria`, categoria);
+  constructor() {}
+
+  registrarCategoria(dto: CategoriaRegistroDTO): Observable<CategoriaResponseDTO> {
+    return this.http.post<CategoriaResponseDTO>(
+      `${this.baseUrl}/crear/categoria`,
+      dto
+    );
   }
 
-  listarCategorias(): Observable<Categoria[]> {
-    return this.http.get<Categoria[]>(`${this.baseUrl}/get/categoria`);
+  listarCategorias(): Observable<CategoriaResponseDTO[]> {
+    return this.http.get<CategoriaResponseDTO[]>(
+      `${this.baseUrl}/listar/categorias`
+    );
   }
 
-  actualizarCategoria(id: number, categoria: Categoria): Observable<Categoria> {
-    return this.http.put<Categoria>(`${this.baseUrl}/put/categoria/${id}`, categoria);
+  editarCategoria(id: number, dto: CategoriaUpdateDTO): Observable<CategoriaResponseDTO> {
+    return this.http.put<CategoriaResponseDTO>(
+      `${this.baseUrl}/editar/categoria/${id}`,
+      dto
+    );
   }
 
-  eliminarCategoria(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/delete/categoria/${id}`);
+  desactivarCategoria(id: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.baseUrl}/desactivar/categoria/${id}`
+    );
   }
 
-  subirImagen(id: number, file: File): Observable<any> {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    return this.http.post(`${this.baseUrl}/post/png/${id}`, formData);
-  }
-
-  obtenerImagen(id: number): Observable<Blob> {
-    return this.http.get(`${this.baseUrl}/categoria/png/${id}`, {
-      responseType: 'blob'
-    });
+  activarCategoria(id: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.baseUrl}/activar/categoria/${id}`,
+      {}
+    );
   }
 }

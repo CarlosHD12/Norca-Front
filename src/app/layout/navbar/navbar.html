@@ -1,0 +1,128 @@
+<nav class="navbar">
+
+  <div class="navbar-left">
+
+    <div class="breadcrumb">
+
+      <span class="crumb">
+        TextilFlow
+      </span>
+
+      <i class="fi fi-br-angle-small-right"></i>
+
+      <span class="crumb">
+        {{ currentSection }}
+      </span>
+
+      <i class="fi fi-br-angle-small-right"></i>
+
+      <span class="crumb active">
+        {{ currentPage }}
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="navbar-center">
+
+    <div class="search-box">
+
+      <i class="fi fi-br-search"></i>
+
+      <input
+        type="text"
+        placeholder="Buscar..."
+      >
+
+    </div>
+
+  </div>
+
+  <div class="navbar-right">
+
+    <div
+      class="theme-selector"
+      (click)="toggleThemes()"
+    >
+
+      <i class="fi fi-br-palette"></i>
+
+      <span>
+        Tema
+      </span>
+
+      <i class="fi fi-br-angle-small-down"></i>
+
+      <div
+        class="theme-menu"
+        *ngIf="showThemes"
+      >
+
+        <div
+          class="theme-option"
+          (click)="changeTheme('theme-rose')"
+        >
+          <span class="color rose"></span>
+          Rose Textile
+        </div>
+
+        <div
+          class="theme-option"
+          (click)="changeTheme('theme-blue')"
+        >
+          <span class="color blue"></span>
+          Corporate Blue
+        </div>
+
+        <div
+          class="theme-option"
+          (click)="changeTheme('theme-green')"
+        >
+          <span class="color green"></span>
+          Emerald Green
+        </div>
+
+        <div
+          class="theme-option"
+          (click)="changeTheme('theme-dark')"
+        >
+          <span class="color dark"></span>
+          Dark Mode
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="notification-btn">
+
+      <i class="fi fi-br-bell"></i>
+
+    </div>
+
+    <div class="user-profile">
+
+      <div class="avatar">
+        A
+      </div>
+
+      <div class="user-info">
+
+        <span class="name">
+          Administrador
+        </span>
+
+        <span class="role">
+          Super Admin
+        </span>
+
+      </div>
+
+      <i class="fi fi-br-angle-small-down"></i>
+
+    </div>
+
+  </div>
+
+</nav>

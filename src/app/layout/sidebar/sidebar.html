@@ -1,0 +1,174 @@
+<div class="sidebar" [class.expanded]="isExpanded" (mouseenter)="expand()" (mouseleave)="collapse()">
+
+  <div class="sidebar-header">
+
+    <div class="brand">
+
+      <div class="logo-box">
+        <img src="/default.png" alt="logo">
+      </div>
+
+      <div class="header-text">
+
+        <span class="title">
+          Norca
+        </span>
+
+        <small class="subtitle">
+          ERP Inventario
+        </small>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sidebar-body">
+
+    <div class="menu-section">
+
+      <span class="section-title">
+        GENERAL
+      </span>
+
+      <div class="menu-item"
+           [class.active]="isActive('/home')"
+           (click)="goTo('/home')">
+
+        <div class="icon-box">
+          <i class="fi fi-br-house-chimney-blank"></i>
+        </div>
+
+        <span class="label">
+          Dashboard
+        </span>
+
+      </div>
+
+    </div>
+
+    <div class="menu-section">
+
+      <span class="section-title">
+        GESTIÓN
+      </span>
+
+      <div class="menu-item active"
+           [class.active]="isActive('/HomePrenda')"
+           (click)="goTo('/HomePrenda')">
+
+        <div class="icon-box">
+          <i class="fi fi-bs-shirt-long-sleeve"></i>
+        </div>
+
+        <span class="label">
+          Prendas
+        </span>
+
+      </div>
+
+      <div class="menu-item"
+           [class.active]="isActive('/inventario')"
+           (click)="goTo('/inventario')">
+
+        <div class="icon-box">
+          <i class="fi fi-br-boxes"></i>
+        </div>
+
+        <span class="label">
+          Catálogo
+        </span>
+
+      </div>
+
+      <div class="menu-item" [class.active]="isActive('/PrendaHome')" (click)="goTo('/PrendaHome')">
+
+        <div class="icon-box">
+          <i class="fi fi-br-box-open-full"></i>
+        </div>
+
+        <span class="label">
+          Lotes FIFO
+        </span>
+
+      </div>
+
+    </div>
+
+    <div class="menu-section">
+
+      <span class="section-title">
+        OPERACIONES
+      </span>
+
+      <div class="menu-item" [class.active]="isActive('/VentaHome')" (click)="goTo('/VentaHome')">
+
+        <div class="icon-box">
+          <i class="fi fi-br-shopping-cart"></i>
+        </div>
+
+        <span class="label">
+          Ventas
+        </span>
+
+      </div>
+
+      <div class="menu-item"
+           [class.active]="isActive('/reportes')"
+           (click)="goTo('/reportes')">
+
+        <div class="icon-box">
+          <i class="fi fi-br-chart-line-up"></i>
+        </div>
+
+        <span class="label">
+          Reportes
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="sidebar-footer">
+
+    <div class="footer-profile">
+
+      <div class="footer-avatar">
+        {{ usuario.charAt(0).toUpperCase() }}
+      </div>
+
+      <div class="footer-user">
+
+      <span class="footer-name">
+        {{ usuario }}
+      </span>
+
+        <small class="footer-role">
+          {{ rol }}
+        </small>
+
+      </div>
+
+    </div>
+
+    <div class="footer-action"
+         (click)="logout()">
+
+      <div class="footer-icon">
+        <i class="fi fi-br-power"></i>
+      </div>
+
+      <span class="footer-label">
+      Cerrar sesión
+    </span>
+
+    </div>
+
+  </div>
+
+</div>

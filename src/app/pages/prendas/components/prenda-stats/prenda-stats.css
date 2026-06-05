@@ -1,0 +1,138 @@
+.kpis-grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:16px;
+  margin-bottom:24px;
+}
+
+.kpi-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  transition:.25s;
+  min-width:0;
+}
+
+.kpi-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 28px rgba(184,56,71,.08);
+}
+
+.kpi-top{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.kpi-icon-box{
+  width:54px;
+  height:54px;
+  min-width:54px;
+  border-radius:14px;
+  background:rgba(184,56,71,.12);
+  color:var(--primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.kpi-icon-box i{
+  font-size:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.kpi-icon-box.success{
+  background:rgba(76,175,80,.12);
+  color:var(--success);
+}
+
+.kpi-icon-box.danger{
+  background:rgba(220,53,69,.12);
+  color:var(--danger);
+}
+
+.kpi-icon-box.warning{
+  background:rgba(245,158,11,.12);
+  color:var(--warning);
+}
+
+.kpi-icon-box.money{
+  background:rgba(59,130,246,.12);
+  color:var(--info);
+}
+
+.kpi-info{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+
+.kpi-title{
+  font-size:13px;
+  font-weight:600;
+  color:var(--text-secondary);
+}
+
+.kpi-value{
+  margin:4px 0 0;
+  font-size:28px;
+  font-weight:800;
+  color:var(--text-primary);
+  line-height:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.kpi-bottom{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding-top:12px;
+  border-top:1px solid var(--border);
+}
+
+.kpi-bottom mat-icon{
+  width:18px;
+  height:18px;
+  font-size:18px;
+}
+
+.kpi-bottom.positive mat-icon{
+  color:var(--success);
+}
+
+.kpi-bottom.negative mat-icon{
+  color:var(--danger);
+}
+
+.kpi-bottom span{
+  font-size:12px;
+  font-weight:500;
+  color:var(--text-secondary);
+  line-height:1.3;
+}
+
+@media (max-width:1400px){
+  .kpis-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+@media (max-width:900px){
+  .kpis-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media (max-width:600px){
+  .kpis-grid{
+    grid-template-columns:1fr;
+  }
+}

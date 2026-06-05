@@ -1,0 +1,267 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 92px;
+  height: 100vh;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: width 0.32s ease;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.sidebar.expanded {
+  width: 230px;
+}
+
+.sidebar-header {
+  padding: 17px 15px 15px;
+  border-bottom: 2px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-box {
+  min-width: 58px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(184, 56, 71, 0.2);
+}
+
+.logo-box img {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.sidebar.expanded .header-text {
+  opacity: 1;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--secondary);
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin-top: 2px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sidebar-body {
+  flex: 1;
+  padding: 10px 14px;
+  overflow-y: auto;
+}
+
+.sidebar-body::-webkit-scrollbar-thumb {
+  background: var(--bg-card);
+}
+
+.menu-section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  display: block;
+  margin: 0 0 5px 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+  color: var(--text-secondary);
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.sidebar.expanded .section-title {
+  opacity: 1;
+}
+
+.menu-item {
+  position: relative;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 0 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+.menu-item:hover {
+  background: var(--bg-hover);
+}
+
+.menu-item.active {
+  background: var(--primary);
+  color: #FFFFFF;
+  box-shadow: 0 14px 28px rgba(184, 56, 71, 0.22);
+}
+
+.icon-box {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-box i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.label {
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.sidebar.expanded .label {
+  opacity: 1;
+}
+
+.sidebar-footer {
+  padding: 10px 14px;
+  border-top: 2px solid var(--border);
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-profile,
+.footer-action {
+  height: 56px;
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: background 0.2s ease;
+}
+
+.footer-profile {
+  padding: 0 8px;
+  border: 1px solid var(--border);
+}
+
+.footer-action {
+  padding: 0 10px;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.footer-profile:hover,
+.footer-action:hover {
+  background: var(--bg-hover);
+}
+
+.footer-avatar,
+.footer-icon {
+  width: 45px;
+  height: 45px;
+  min-width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.footer-avatar {
+  border-radius: 50%;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.footer-icon i {
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-user,
+.footer-label {
+  white-space: nowrap;
+  opacity: 1;
+  letter-spacing: 0.5px;
+  transition: opacity 0.15s ease;
+}
+
+.footer-user {
+  display: flex;
+  flex-direction: column;
+  margin-left: 14px;
+  min-width: 0;
+}
+
+.footer-label {
+  margin-left: 7px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sidebar:not(.expanded) .footer-user,
+.sidebar:not(.expanded) .footer-label {
+  opacity: 0;
+  width: 0;
+  margin-left: 0;
+  overflow: hidden;
+}
+
+.footer-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.footer-role {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}

@@ -1,0 +1,167 @@
+<div class="right-sidebar" [class.open]="isOpen">
+
+  <div class="right-header">
+
+    <h3>Detalle Rápido</h3>
+
+    <button (click)="closeSidebar()">
+      ✕
+    </button>
+
+  </div>
+
+  <div
+    class="right-body"
+    *ngIf="detail as prenda">
+
+    <div class="product-card">
+
+      <div class="product-image">
+
+        <img
+          [src]="prenda.imagenUrl || '/default.png'"
+          [alt]="prenda.nombre">
+
+      </div>
+
+      <div class="product-info">
+
+        <h2 class="product-name">
+          {{ prenda.nombre }}
+        </h2>
+
+        <div class="product-tags">
+
+          <span class="code-tag">
+            {{ prenda.codigo }}
+          </span>
+
+          <span class="status-tag">
+            {{ prenda.estado }}
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="stats-grid">
+
+      <div class="stat-card">
+
+        <span class="stat-label">
+          Stock Total
+        </span>
+
+        <span class="stat-value">
+          {{ prenda.stockTotal }}
+        </span>
+
+      </div>
+
+      <div class="stat-card">
+
+        <span class="stat-label">
+          Lotes Activos
+        </span>
+
+        <span class="stat-value">
+          {{ prenda.lotesActivos }}
+        </span>
+
+      </div>
+
+    </div>
+
+    <div class="sales-card">
+
+      <span class="sales-label">
+        Ventas últimos 30 días
+      </span>
+
+      <span class="sales-value">
+        {{ prenda.unidadesVendidasUltimos30Dias }} uds.
+      </span>
+
+    </div>
+
+    <ng-container *ngIf="prenda.loteFIFO as fifo">
+
+      <div class="section-title">
+        Tallas Disponibles
+      </div>
+
+      <div class="sizes-container">
+
+        <div
+          class="size-pill"
+          *ngFor="let item of fifo.inventarios">
+
+          {{ item.talla }}
+
+        </div>
+
+      </div>
+
+      <div class="section-title">
+        Lote FIFO Activo
+      </div>
+
+      <div class="fifo-card">
+
+        <div class="fifo-header">
+
+          <div class="fifo-left">
+
+            <div class="fifo-icon">
+              ⏺
+            </div>
+
+            <div class="fifo-code">
+              FIFO · {{ fifo.codigoLote }}
+            </div>
+
+          </div>
+
+          <span class="fifo-active">
+            Activo
+          </span>
+
+        </div>
+
+        <div class="fifo-body">
+
+          <div class="fifo-item">
+
+            <span>
+              Ingreso
+            </span>
+
+            <strong>
+              {{ fifo.fechaIngreso | date:'dd MMM yyyy' }}
+            </strong>
+
+          </div>
+
+          <div class="fifo-item">
+
+            <span>
+              Stock lote
+            </span>
+
+            <strong>
+              {{ fifo.stockActual }} uds.
+            </strong>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </ng-container>
+
+  </div>
+
+</div>

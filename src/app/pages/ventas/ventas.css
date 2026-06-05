@@ -1,0 +1,17 @@
+.main-layout {
+  margin-left: 92px;
+
+  min-height: 100vh;
+
+  background: #fcf9fa;
+
+  transition: margin-left .32s ease;
+}
+
+.main-layout.expanded {
+  margin-left: 230px;
+}
+
+.page-content {
+  padding: 28px;
+}

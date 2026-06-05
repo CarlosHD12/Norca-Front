@@ -1,0 +1,463 @@
+<div class="modal-backdrop" [class.fade-out]="closing">
+
+  <div class="modal-container" [class.modal-close]="closing" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+
+      <div class="header-info">
+
+        <div class="header-icon">
+
+          <i class="fi fi-rr-shirt"></i>
+
+        </div>
+
+        <div class="header-text">
+
+          <h2>
+            {{ modoEdicion ? 'Editar Prenda' : 'Nueva Prenda' }}
+          </h2>
+
+          <p>
+            {{ modoEdicion ? 'Actualiza la información de la prenda.' : 'Registra una nueva prenda en el inventario.' }}
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="header-actions">
+
+        <button
+          type="button"
+          class="btn-header btn-search">
+
+          <i class="fi fi-rr-search"></i>
+
+          Buscar
+
+        </button>
+
+        <button
+          type="button"
+          class="btn-header btn-clear"
+          (click)="limpiarFormulario()">
+
+          <i class="fi fi-rr-trash"></i>
+
+          Limpiar
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <form [formGroup]="form" class="modal-body">
+
+      <div class="left-column">
+
+        <div class="form-group">
+
+          <label>
+            Nombre de Prenda
+            <span class="required">*</span>
+          </label>
+
+          <div
+            class="input-wrapper"
+            [class.invalid]="submitted && form.get('nombre')?.invalid">
+
+            <div class="input-icon">
+
+              T
+
+            </div>
+
+            <input
+              type="text"
+              formControlName="nombre"
+              placeholder="Ej: Hoodie Urbano Classic">
+
+            <i class="fi fi-rr-info"></i>
+
+          </div>
+
+          <span
+            class="error-text"
+            *ngIf="submitted && form.get('nombre')?.invalid">
+
+            Campo obligatorio
+
+          </span>
+
+        </div>
+
+        <div class="row-2">
+
+          <div class="form-group">
+
+            <label>
+              Categoría
+              <span class="required">*</span>
+            </label>
+
+            <select formControlName="categoriaId">
+
+              <option [ngValue]="null">
+                Seleccionar categoría
+              </option>
+
+              <option
+                *ngFor="let categoria of categorias"
+                [value]="categoria.idCategoria">
+
+                {{ categoria.nombre }}
+
+              </option>
+
+            </select>
+
+            <span
+              class="error-text"
+              *ngIf="submitted && form.get('categoriaId')?.invalid">
+
+              Campo obligatorio
+
+            </span>
+
+          </div>
+
+          <div class="form-group">
+
+            <label>
+              Marca
+              <span class="required">*</span>
+            </label>
+
+            <select formControlName="marcaId">
+
+              <option [ngValue]="null">
+                Seleccionar marca
+              </option>
+
+              <option
+                *ngFor="let marca of marcas"
+                [value]="marca.idMarca">
+
+                {{ marca.nombre }}
+
+              </option>
+
+            </select>
+
+            <span
+              class="error-text"
+              *ngIf="submitted && form.get('marcaId')?.invalid">
+
+              Campo obligatorio
+
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Material
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            formControlName="material"
+            placeholder="Ej: Algodón Premium">
+
+          <span
+            class="error-text"
+            *ngIf="submitted && form.get('material')?.invalid">
+
+            Campo obligatorio
+
+          </span>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Descripción
+          </label>
+
+          <textarea
+            rows="5"
+            formControlName="descripcion"
+            placeholder="Describe la prenda...">
+          </textarea>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Colores Disponibles
+          </label>
+
+          <div class="colors-card">
+
+            <div class="colors-header">
+
+              <button
+                type="button"
+                class="btn-add-color"
+                (click)="agregarColor()">
+
+                <i class="fi fi-rr-plus"></i>
+
+                Añadir
+
+              </button>
+
+            </div>
+
+            <div class="colors-list">
+
+              <div
+                *ngFor="let color of colores;let i=index"
+                class="color-chip">
+
+                <input
+                  [(ngModel)]="colores[i]"
+                  [ngModelOptions]="{standalone:true}"
+                  placeholder="Color">
+
+                <button
+                  type="button"
+                  (click)="eliminarColor(color)">
+
+                  <i class="fi fi-rr-cross-small"></i>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="right-column">
+
+        <div class="form-group">
+
+          <label>
+            URL Imagen
+          </label>
+
+          <input
+            type="text"
+            formControlName="imagenUrl"
+            placeholder="https://...">
+
+        </div>
+
+        <div class="image-preview-card">
+
+          <div
+            class="image-preview"
+            *ngIf="form.get('imagenUrl')?.value">
+
+            <img
+              [src]="form.get('imagenUrl')?.value"
+              alt="preview">
+
+          </div>
+
+          <div
+            class="empty-preview"
+            *ngIf="!form.get('imagenUrl')?.value">
+
+            <i class="fi fi-rr-picture"></i>
+
+            <span>
+              Sin imagen
+            </span>
+
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-remove-image"
+          (click)="eliminarImagen()">
+
+          <i class="fi fi-rr-trash"></i>
+
+          Eliminar Imagen
+
+        </button>
+
+      </div>
+
+    </form>
+
+    <div class="auto-fields-section">
+
+      <div class="auto-title">
+
+        <i class="fi fi-rr-bolt"></i>
+
+        CAMPOS GENERADOS AUTOMÁTICAMENTE
+
+      </div>
+
+      <div class="auto-grid">
+
+        <div class="auto-card">
+
+          <div class="auto-header">
+
+            Código
+
+            <span class="badge-auto">
+              Auto
+            </span>
+
+          </div>
+
+          <strong>
+            PRD-XXXX
+          </strong>
+
+          <small>
+            Secuencial único
+          </small>
+
+        </div>
+
+        <div class="auto-card">
+
+          <div class="auto-header">
+
+            Fecha Registro
+
+            <span class="badge-auto">
+              Auto
+            </span>
+
+          </div>
+
+          <strong>
+            {{ fechaActual }}
+          </strong>
+
+          <small>
+            Hora del servidor
+          </small>
+
+        </div>
+
+        <div class="auto-card">
+
+          <div class="auto-header">
+
+            Estado Inicial
+
+            <span class="badge-auto">
+              Auto
+            </span>
+
+          </div>
+
+          <strong>
+            SIN LOTES
+          </strong>
+
+          <small>
+            Cambia con primer lote
+          </small>
+
+        </div>
+
+        <div class="auto-card">
+
+          <div class="auto-header">
+
+            Activo
+
+            <span class="badge-auto">
+              Auto
+            </span>
+
+          </div>
+
+          <strong>
+            Sí
+          </strong>
+
+          <small>
+            Siempre activo al crear
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <div class="footer-info">
+
+        <i class="fi fi-rr-shield-check"></i>
+
+        Los datos se guardan de forma segura
+
+      </div>
+
+      <div class="footer-actions">
+
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="cancelar()">
+
+          Cancelar
+
+        </button>
+
+        <button
+          type="button"
+          class="btn-draft"
+          (click)="guardarBorrador()">
+
+          <i class="fi fi-rr-bookmark"></i>
+
+          Guardar borrador
+
+        </button>
+
+        <button
+          type="button"
+          class="btn-save"
+          (click)="guardar()">
+
+          <i class="fi fi-rr-check"></i>
+
+          {{ modoEdicion ? 'Actualizar Prenda' : 'Registrar Prenda' }}
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

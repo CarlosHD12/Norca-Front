@@ -8,33 +8,41 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import {Marca} from '../../model/Marca';
-import {Categoria} from '../../model/Categoria';
-import {Talla} from '../../model/Talla';
 import {PrendaService} from '../../services/prenda-service';
 import {MarcaService} from '../../services/marca-service';
 import {CategoriaService} from '../../services/categoria-service';
 import {TallaService} from '../../services/talla-service';
-import {Prenda} from '../../model/Prenda';
-import {SidebarComponent} from '../sidebar-component/sidebar-component';
 import {
   DatePipe,
   DecimalPipe,
   NgClass,
   NgForOf,
   NgIf,
-  SlicePipe
 } from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {PrendaListadoDTO} from '../../model/PrendaListadoDTO';
 import {Lote} from '../../model/Lote';
 import {LoteService} from '../../services/lote-service';
-import {startWith} from 'rxjs';
+import {interval, startWith, Subscription} from 'rxjs';
 import {PrendaDetalleDTO} from '../../model/PrendaDetalleDTO';
 import {Metrica} from '../../model/Metrica';
 import {MetricaService} from '../../services/metrica-service';
 import {LoteMetricasDTO} from '../../model/LoteMetricasDTO';
 import {LoteDetalleDTO} from '../../model/LoteDetalleDTO';
+import {PrendaListResponseDTO} from '../../model/PrendaListResponseDTO';
+import {CategoriaResponseDTO} from '../../model/CategoriaResponseDTO';
+import {CategoriaRegistroDTO} from '../../model/CategoriaRegistroDTO';
+import {MarcaResponseDTO} from '../../model/MarcaResponseDTO';
+import {TallaResponseDTO} from '../../model/TallaResponseDTO';
+import {MarcaRegistroDTO} from '../../model/MarcaRegistroDTO';
+import {TallaRegistroDTO} from '../../model/TallaRegistroDTO';
+import {PrendaRegistroDTO} from '../../model/PrendaRegistroDTO';
+import {UltimoLoteResponseDTO} from '../../model/UltimoLoteResponseDTO';
+import {InventarioRegistroDTO} from '../../model/InventarioRegistroDTO';
+import {LoteRegistroDTO} from '../../model/LoteRegistroDTO';
+import {MetricaLoteDTO} from '../../model/MetricaLoteDTO';
+import {LoteHistorialResponseDTO} from '../../model/LoteHistorialResponseDTO';
+import {Sidebar} from '../../layout/sidebar/sidebar';
 
 export enum Modales {
   PRENDA = 'prenda',
@@ -50,7 +58,6 @@ export enum Modales {
 @Component({
   selector: 'app-home-prenda',
   imports: [
-    SidebarComponent,
     FormsModule,
     NgIf,
     ReactiveFormsModule,
@@ -59,55 +66,1027 @@ export enum Modales {
     NgForOf,
     DatePipe,
     DecimalPipe,
-    SlicePipe,
+    Sidebar,
   ],
   templateUrl: './home-prenda.html',
   styleUrl: './home-prenda.css',
 })
 export class HomePrenda implements OnInit {
+  prendasLista: PrendaListResponseDTO[] = [];
+  prendasListaPaginada: PrendaListResponseDTO[] = [];
+
+  totalPages = 0;
+  totalElements = 0;
+  currentPage = 0;
+  pageSize = 20;
+  loading = false;
+
+  cargarPrendas(page: number = 0): void {
+    this.loading = true;
+    this.prendaService
+      .listarPrendas(page, this.itemsPorPagina)
+      .subscribe({
+
+        next: (response) => {
+
+          this.prendasLista = response.content;
+
+          this.prendasListaPaginada = response.content;
+
+          this.totalPaginas = response.totalPages;
+
+          this.totalElementos = response.totalElements;
+
+          this.paginaActual = response.number + 1;
+
+          this.paginaInput = this.paginaActual;
+
+          this.loading = false;
+        },
+
+        error: (error) => {
+
+          console.error('Error al listar prendas', error);
+
+          this.loading = false;
+        }
+      });
+  }
+
+  modoFijo: boolean = false;
+  selectedPrendaId: number | null = null;
+  prendaHover: PrendaListResponseDTO | null = null;
+  prendaSeleccionada: PrendaListResponseDTO | null = null;
+  mostrarMenuAcciones: boolean = false;
+  menuX: number = 0;
+  menuY: number = 0;
+
+  onHoverPrenda(prenda: PrendaListResponseDTO): void {
+    if (this.modoFijo) return;
+    this.prendaHover = prenda;
+    this.selectedPrendaId = prenda.idPrenda;
+  }
+
+  onLeavePrenda(): void {
+    if (this.modoFijo) return;
+    this.prendaHover = null;
+    this.selectedPrendaId = null;
+  }
+
+  seleccionarPrenda(prenda: PrendaListResponseDTO): void {
+    this.prendaSeleccionada = prenda;
+    this.selectedPrendaId = prenda.idPrenda;
+  }
+
+  activarModoFijo(): void {
+    this.modoFijo = true;
+  }
+
+  desactivarModoFijo(): void {
+    this.modoFijo = false;
+    this.selectedPrendaId = null;
+    this.prendaSeleccionada = null;
+    this.cerrarMenu();
+  }
+
+  abrirMenu(event: MouseEvent, prenda: PrendaListResponseDTO): void {
+    event.stopPropagation();
+    this.prendaSeleccionada = prenda;
+    this.selectedPrendaId = prenda.idPrenda;
+    this.menuX = event.clientX;
+    this.menuY = event.clientY;
+    this.menuVisible = true;
+  }
+
+  cerrarMenu(): void {
+    this.mostrarMenuAcciones = false;
+  }
+
+  accionMenu(accion: string): void {
+    if (!this.prendaSeleccionada) return;
+    switch (accion) {
+      case 'editar':
+        this.menuVisible = false;
+        this.abrirEditarPrenda(this.prendaSeleccionada);
+        break;
+      case 'lote':
+        this.menuVisible = false;
+        this.abrirModalLote(this.prendaSeleccionada);
+        break;
+      case 'detalle':
+        this.menuVisible = false;
+        this.abrirDetallePrenda(this.prendaSeleccionada);
+        break;
+      case 'historial':
+        this.menuVisible = false;
+        this.abrirHistorialLotes(this.prendaSeleccionada);
+        break;
+      case 'copiar':
+        this.menuVisible = false;
+        this.copiarPrenda(this.prendaSeleccionada);
+        break;
+      case 'desactivar':
+        this.menuVisible = false;
+        this.toggleEstadoPrenda(this.prendaSeleccionada);
+        break;
+      case 'eliminar':
+        this.menuVisible = false;
+        this.abrirModalEliminar(this.prendaSeleccionada);
+        break;
+    }
+  }
+
+  paginaActual: number = 1;
+  itemsPorPagina: number = 20;
+  totalPaginas: number = 1;
+  paginaInput: number = 1;
+  totalElementos: number = 0;
+  private stepperSubscription?: Subscription;
+
+  cambiarPagina(page: number): void {
+    if (page < 1 || page > this.totalPaginas) return;
+    this.cargarPrendas(page - 1);
+  }
+
+  irAPagina(page: number): void {
+    if (!page || page < 1) {
+      this.paginaInput = this.paginaActual;
+      return;
+    }
+    if (page > this.totalPaginas) {
+      this.paginaInput = this.totalPaginas;
+      return;
+    }
+    this.cambiarPagina(page);
+  }
+
+  getPaginas(): (number | string)[] {
+    const paginas: (number | string)[] = [];
+    if (this.totalPaginas <= 7) {
+      for (let i = 1; i <= this.totalPaginas; i++) {
+        paginas.push(i);
+      }
+      return paginas;
+    }
+    paginas.push(1);
+    if (this.paginaActual > 3) {
+      paginas.push('...');
+    }
+    const inicio = Math.max(2, this.paginaActual - 1);
+    const fin = Math.min(
+      this.totalPaginas - 1,
+      this.paginaActual + 1
+    );
+    for (let i = inicio; i <= fin; i++) {
+      paginas.push(i);
+    }
+    if (this.paginaActual < this.totalPaginas - 2) {
+      paginas.push('...');
+    }
+    paginas.push(this.totalPaginas);
+    return paginas;
+  }
+
+  aumentarItems(): void {
+    if (this.itemsPorPagina >= 50) return;
+    this.itemsPorPagina++;
+    this.cargarPrendas(0);
+  }
+
+  disminuirItems(): void {
+    if (this.itemsPorPagina <= 1) return;
+    this.itemsPorPagina--;
+    this.cargarPrendas(0);
+  }
+
+  startAumentar(): void {
+    this.aumentarItems();
+    this.stopStepper();
+    this.stepperSubscription = interval(120)
+      .subscribe(() => {
+        if (this.itemsPorPagina < 50) {
+          this.aumentarItems();
+        }
+      });
+  }
+
+  startDisminuir(): void {
+    this.disminuirItems();
+    this.stopStepper();
+    this.stepperSubscription = interval(120)
+      .subscribe(() => {
+        if (this.itemsPorPagina > 1) {
+          this.disminuirItems();
+        }
+      });
+  }
+
+  stopStepper(): void {
+    if (this.stepperSubscription) {
+      this.stepperSubscription.unsubscribe();
+      this.stepperSubscription = undefined;
+    }
+  }
+
+  modalActivo: Modales | null = null;
+
+  categoriaForm!: FormGroup;
+  categorias: CategoriaResponseDTO[] = [];
+  loadingCategoria: boolean = false;
+  marcaForm!: FormGroup;
+  marcas: MarcaResponseDTO[] = [];
+  loadingMarca: boolean = false;
+  tallaForm!: FormGroup;
+  tallas: TallaResponseDTO[] = [];
+  loadingTalla: boolean = false;
+  modoEdicion: boolean = false;
+  prendaForm!: FormGroup;
+  loadingPrenda: boolean = false;
+  dropdownCategoriaOpen: boolean = false;
+  dropdownMarcaOpen: boolean = false;
+  selectedCategoria: CategoriaResponseDTO | null = null;
+  selectedMarca: MarcaResponseDTO | null = null;
+  colorTemporalControl = new FormControl('');
+  fechaActual: Date = new Date();
+  loteForm!: FormGroup;
+  loadingLote: boolean = false;
+  ultimoLote: UltimoLoteResponseDTO | null = null;
+  metricasSimuladas: any = null;
+  selectorActivo: boolean = false;
+  inventarioIndexSeleccionado: number | null = null;
+  prendaDetalle: PrendaDetalleDTO | null = null;
+  metricaLoteDetalle: MetricaLoteDTO | null = null;
+  metricaVisible: boolean = false;
+  metricaDisponible: boolean = false;
+  historialPrenda: LoteHistorialResponseDTO[] = [];
+  hoverLote: number | null = null;
+  mostrarInventarioSiempre: boolean = false;
+  confirmacionEliminar: string = '';
+
+  initForms(): void {
+    this.categoriaForm = this.fb.group({
+      nombre: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(50)
+        ]
+      ]
+    });
+    this.marcaForm = this.fb.group({
+      nombre: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(50)
+        ]
+      ]
+
+    });
+    this.tallaForm = this.fb.group({
+      nombre: ['',
+        [
+          Validators.required,
+          Validators.maxLength(50)
+        ]
+      ]
+    });
+    this.prendaForm = this.fb.group({
+      material: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(50)
+        ]
+      ],
+      descripcion: [''],
+      imagenUrl: [''],
+      categoriaId: [null, Validators.required],
+      marcaId: [null, Validators.required],
+      colores: this.fb.array([])
+    });
+    this.loteForm = this.fb.group({
+      cantidadInicial: [
+        null,
+        [
+          Validators.required,
+          Validators.min(1)
+        ]
+      ],
+      precioCompraTotal: [
+        null,
+        [
+          Validators.required,
+          Validators.min(1)
+        ]
+      ],
+      precioVenta: [
+        null,
+        [
+          Validators.required,
+          Validators.min(1)
+        ]
+      ],
+      inventarios: this.fb.array([])
+    });
+    this.loteForm.valueChanges.subscribe(() => {
+      this.calcularMetricasSimuladas();
+    });
+  }
+
+  abrirModal(modal: Modales): void {
+    this.modalActivo = modal;
+  }
+
+  cerrarModal(): void {
+
+    this.modalActivo = null;
+
+    this.confirmacionEliminar = '';
+
+    this.prendaDetalle = null;
+
+    this.metricaLoteDetalle = null;
+
+    this.historialPrenda = [];
+
+    this.hoverLote = null;
+
+    this.mostrarInventarioSiempre = false;
+
+    this.metricaVisible = false;
+
+    this.selectorActivo = false;
+
+    this.inventarioIndexSeleccionado = null;
+
+    this.categoriaForm?.reset();
+
+    this.marcaForm?.reset();
+
+    this.tallaForm?.reset();
+
+    this.prendaForm?.reset();
+
+    this.loteForm?.reset();
+  }
+
+  listarCategorias(): void {
+    this.categoriaService
+      .listarCategorias()
+      .subscribe({
+        next: (response) => {
+          this.categorias = response;
+        },
+        error: (error) => {
+          console.error(error);
+          this.mostrarToastMensaje(
+            'Error al listar categorías',
+            'error'
+          );
+        }
+      });
+  }
+
+  crearCategoria(): void {
+    if (this.categoriaForm.invalid) {
+      this.categoriaForm.markAllAsTouched();
+      this.mostrarToastMensaje(
+        'Complete correctamente el formulario',
+        'error');
+      return;
+    }
+    if (this.loadingCategoria) return;
+    this.loadingCategoria = true;
+    const dto: CategoriaRegistroDTO = {
+      nombre: this.categoriaForm.value.nombre.trim()
+    };
+    this.categoriaService
+      .registrarCategoria(dto)
+      .subscribe({
+        next: (response) => {
+          this.categorias.unshift(response);
+          this.loadingCategoria = false;
+          this.mostrarToastMensaje(
+            'Categoría creada correctamente',
+            'success');
+          this.cerrarModal();
+        },
+        error: (error) => {
+          console.error(error);
+          this.loadingCategoria = false;
+          let mensaje = 'Error al crear categoría';
+          if (error?.error?.message) {
+            mensaje = error.error.message;
+          }
+          this.mostrarToastMensaje(
+            mensaje,
+            'error'
+          );
+        }
+      });
+  }
+
+  listarMarcas(): void {
+    this.marcaService
+      .listarMarcas()
+      .subscribe({
+        next: (response) => {
+          this.marcas = response;
+        },
+        error: (error) => {
+          console.error(error);
+          this.mostrarToastMensaje(
+            'Error al listar marcas',
+            'error'
+          );
+        }
+      });
+  }
+
+  crearMarca(): void {
+    if (this.marcaForm.invalid) {
+      this.marcaForm.markAllAsTouched();
+      this.mostrarToastMensaje(
+        'Complete correctamente el formulario',
+        'error');
+      return;
+    }
+    if (this.loadingMarca) return;
+    this.loadingMarca = true;
+    const dto: MarcaRegistroDTO = {
+      nombre: this.marcaForm.value.nombre.trim()
+    };
+    this.marcaService
+      .registrarMarca(dto)
+      .subscribe({
+        next: (response) => {
+          this.marcas.unshift(response);
+          this.loadingMarca = false;
+          this.mostrarToastMensaje(
+            'Marca creada correctamente',
+            'success'
+          );
+          this.cerrarModal();
+        },
+        error: (error) => {
+          console.error(error);
+          this.loadingMarca = false;
+          let mensaje = 'Error al crear marca';
+          if (error?.error?.message) {
+            mensaje = error.error.message;
+          }
+          this.mostrarToastMensaje(
+            mensaje,
+            'error'
+          );
+        }
+      });
+  }
+
+  listarTallas(): void {
+    this.tallaService
+      .listarTallas()
+      .subscribe({
+        next: (response) => {
+          this.tallas = response;
+        },
+        error: (error) => {
+          console.error(error);
+          this.mostrarToastMensaje(
+            'Error al listar tallas',
+            'error'
+          );
+        }
+      });
+  }
+
+  crearTalla(): void {
+    if (this.tallaForm.invalid) {
+      this.tallaForm.markAllAsTouched();
+      this.mostrarToastMensaje(
+        'Complete correctamente el formulario',
+        'error');
+      return;
+    }
+    if (this.loadingTalla) return;
+    this.loadingTalla = true;
+    const dto: TallaRegistroDTO = {
+      nombre: this.tallaForm.value.nombre.trim()
+    };
+    this.tallaService
+      .registrarTalla(dto)
+      .subscribe({
+        next: (response) => {
+          this.tallas.unshift(response);
+          this.loadingTalla = false;
+          this.mostrarToastMensaje(
+            'Talla creada correctamente',
+            'success');
+          this.cerrarModal();
+        },
+        error: (error) => {
+          console.error(error);
+          this.loadingTalla = false;
+          let mensaje = 'Error al crear talla';
+          if (error?.error?.message) {
+            mensaje = error.error.message;
+          }
+          this.mostrarToastMensaje(
+            mensaje,
+            'error'
+          );
+        }
+      });
+  }
+
+  get colores(): FormArray {
+    return this.prendaForm.get('colores') as FormArray;
+  }
+
+  get prendaTieneDatos(): boolean {
+    return !!(
+      this.prendaForm.get('material')?.value ||
+      this.prendaForm.get('descripcion')?.value ||
+      this.prendaForm.get('imagenUrl')?.value ||
+      this.colores.length > 0 ||
+      this.selectedCategoria ||
+      this.selectedMarca
+    );
+  }
+
+  toggleDropdown(tipo: string, event: Event): void {
+    event.stopPropagation();
+    if (tipo === 'categoria') {
+      this.dropdownCategoriaOpen =
+        !this.dropdownCategoriaOpen;
+      this.dropdownMarcaOpen = false;
+    }
+    if (tipo === 'marca') {
+      this.dropdownMarcaOpen =
+        !this.dropdownMarcaOpen;
+      this.dropdownCategoriaOpen = false;
+    }
+  }
+
+  selectCategoria(categoria: CategoriaResponseDTO, event: Event): void {
+    event.stopPropagation();
+    this.selectedCategoria = categoria;
+    this.prendaForm.patchValue({
+      categoriaId: categoria.idCategoria
+    });
+    this.dropdownCategoriaOpen = false;
+  }
+
+  selectMarca(marca: MarcaResponseDTO, event: Event): void {
+    event.stopPropagation();
+    this.selectedMarca = marca;
+    this.prendaForm.patchValue({
+      marcaId: marca.idMarca
+    });
+    this.dropdownMarcaOpen = false;
+  }
+
+  agregarColor(): void {
+    const color =
+      this.colorTemporalControl.value?.trim();
+    if (!color) return;
+    const existe =
+      this.colores.value.includes(color);
+    if (existe) {
+      this.mostrarToastMensaje(
+        'Ese color ya fue agregado',
+        'error');
+      return;
+    }
+    this.colores.push(
+      this.fb.control(color)
+    );
+    this.colorTemporalControl.reset();
+  }
+
+  eliminarColor(index: number): void {
+    this.colores.removeAt(index);
+  }
+
+  limpiarPrenda(): void {
+    this.prendaForm.reset();
+    this.colores.clear();
+    this.selectedCategoria = null;
+    this.selectedMarca = null;
+    this.colorTemporalControl.reset();
+  }
+
+  guardarPrenda(): void {
+    if (this.prendaForm.invalid) {
+      this.prendaForm.markAllAsTouched();
+      this.mostrarToastMensaje(
+        'Complete correctamente el formulario',
+        'error');
+      return;
+    }
+    if (this.loadingPrenda) return;
+    this.loadingPrenda = true;
+    const dto: PrendaRegistroDTO = {
+      nombre: this.prendaForm.value.nombre.trim(),
+      material: this.prendaForm.value.material.trim(),
+      descripcion: this.prendaForm.value.descripcion?.trim(),
+      imagenUrl: this.prendaForm.value.imagenUrl?.trim(),
+      categoriaId: this.prendaForm.value.categoriaId,
+      marcaId: this.prendaForm.value.marcaId,
+      colores: this.prendaForm.value.colores
+    };
+    this.prendaService
+      .registrarPrenda(dto)
+      .subscribe({
+        next: () => {
+          this.loadingPrenda = false;
+          this.mostrarToastMensaje(
+            'Prenda registrada correctamente',
+            'success');
+          this.cargarPrendas();
+          this.limpiarPrenda();
+          this.cerrarModal();
+        },
+        error: (error) => {
+          console.error(error);
+          this.loadingPrenda = false;
+          let mensaje = 'Error al registrar prenda';
+          if (error?.error?.message) {
+            mensaje = error.error.message;
+          }
+          this.mostrarToastMensaje(mensaje, 'error');
+        }
+      });
+  }
+
+  get inventarios(): FormArray {
+    return this.loteForm.get('inventarios') as FormArray;
+  }
+
+  get stockRestante(): number {
+    const cantidadInicial =
+      Number(this.loteForm.value.cantidadInicial || 0);
+    const sumaInventarios =
+      this.inventarios.controls.reduce((acc, inv) => {
+        return acc + Number(inv.get('stock')?.value || 0);
+      }, 0);
+    return cantidadInicial - sumaInventarios;
+  }
+
+  eliminarInventario(index: number): void {
+    this.inventarios.removeAt(index);
+  }
+
+  calcularMetricasSimuladas(): void {
+    const cantidad = Number(this.loteForm.value.cantidadInicial || 0);
+    const compra = Number(this.loteForm.value.precioCompraTotal || 0);
+    const venta = Number(this.loteForm.value.precioVenta || 0);
+    if (cantidad <= 0 || compra <= 0 || venta <= 0) {
+      this.metricasSimuladas = null;
+      return;
+    }
+    const costoUnitario = compra / cantidad;
+    const gananciaUnidad = venta - costoUnitario;
+    const ventaTotal = venta * cantidad;
+    const gananciaTotal = ventaTotal - compra;
+    const margenGanancia = venta !== 0 ? (gananciaUnidad / venta) * 100 : 0;
+    const radioInversion = compra !== 0 ? ventaTotal / compra : 0;
+    const puntoEquilibrio = gananciaUnidad > 0 ? Math.ceil(compra / gananciaUnidad) : 0;
+    this.metricasSimuladas = {
+      gananciaUnidad,
+      gananciaTotal,
+      margenGanancia,
+      ventaTotal,
+      radioInversion,
+      puntoEquilibrio,
+      icono: gananciaTotal > 0
+        ? 'trending_up'
+        : 'trending_down',
+      iconoColor:
+        gananciaTotal > 0
+          ? 'success'
+          : 'danger'
+    };
+  }
+
+  cargarUltimoLote(idPrenda: number): void {
+    this.loteService
+      .obtenerUltimoLotePrenda(idPrenda)
+      .subscribe({
+        next: (response) => {
+          this.ultimoLote = response;
+        },
+        error: () => {
+          this.ultimoLote = null;
+        }
+      });
+  }
+
+  abrirModalLote(prenda: PrendaListResponseDTO): void {
+    this.prendaSeleccionada = prenda;
+    this.modalActivo = Modales.LOTE;
+    this.agregarInventario();
+    this.cargarUltimoLote(prenda.idPrenda);
+  }
+
+  registrarLote(): void {
+    if (!this.prendaSeleccionada) {
+      this.mostrarToastMensaje(
+        'Seleccione una prenda',
+        'error');
+      return;
+    }
+    if (this.loteForm.invalid) {
+      this.loteForm.markAllAsTouched();
+      this.mostrarToastMensaje(
+        'Complete correctamente el formulario',
+        'error');
+      return;
+    }
+    if (this.stockRestante !== 0) {
+      this.mostrarToastMensaje(
+        'La suma de inventarios debe coincidir con la cantidad total',
+        'error');
+      return;
+    }
+    const tallasIds =
+      this.inventarios.controls.map(inv => inv.get('tallaId')?.value);
+    const tallasDuplicadas = new Set(tallasIds).size !== tallasIds.length;
+    if (tallasDuplicadas) {
+      this.mostrarToastMensaje(
+        'No se permiten tallas repetidas',
+        'error');
+      return;
+    }
+    if (this.loadingLote) return;
+    this.loadingLote = true;
+    const inventariosDTO: InventarioRegistroDTO[] = this.inventarios.controls.map(inv => ({
+      tallaId: inv.get('tallaId')?.value,
+      stock: Number(inv.get('stock')?.value)
+    }));
+    const dto: LoteRegistroDTO = {
+      cantidadInicial: Number(this.loteForm.value.cantidadInicial),
+      precioCompraTotal: Number(this.loteForm.value.precioCompraTotal),
+      precioVenta: Number(this.loteForm.value.precioVenta),
+      prendaId: this.prendaSeleccionada.idPrenda,
+      inventarios:
+      inventariosDTO
+    };
+    this.loteService
+      .registrarLote(dto)
+      .subscribe({
+        next: () => {
+          this.loadingLote = false;
+          this.mostrarToastMensaje(
+            'Lote registrado correctamente',
+            'success');
+          this.cargarPrendas();
+          this.cerrarModal();
+        },
+        error: (error) => {
+          console.error(error);
+          this.loadingLote = false;
+          let mensaje = 'Error al registrar lote';
+          if (error?.error?.message) {
+            mensaje = error.error.message;
+          }
+          this.mostrarToastMensaje(
+            mensaje,
+            'error'
+          );
+        }
+      });
+  }
+
+  abrirSelector(index: number): void {
+    this.inventarioIndexSeleccionado = index;
+    this.selectorActivo = true;
+  }
+
+  cerrarSelector(): void {
+    this.selectorActivo = false;
+    this.inventarioIndexSeleccionado = null;
+  }
+
+  seleccionarTalla(talla: TallaResponseDTO): void {
+    if (this.inventarioIndexSeleccionado === null) return;
+    const existe =
+      this.inventarios.controls.some((inv, index) => {
+        if (index === this.inventarioIndexSeleccionado) {
+          return false;
+        }
+        return inv.get('tallaId')?.value === talla.idTalla;
+      });
+    if (existe) {
+      this.mostrarToastMensaje(
+        'Esa talla ya fue seleccionada',
+        'error');
+      return;
+    }
+    this.inventarios
+      .at(this.inventarioIndexSeleccionado)
+      .patchValue({
+        tallaId: talla.idTalla
+      });
+    this.cerrarSelector();
+  }
+
+  obtenerNombreTalla(index: number): string {
+    const tallaId =
+      this.inventarios
+        .at(index)
+        .get('tallaId')
+        ?.value;
+    if (!tallaId) return 'Seleccionar talla';
+    const talla =
+      this.tallas.find(
+        t => t.idTalla === tallaId);
+    return talla?.nombre || 'Seleccionar talla';
+  }
+
+  agregarInventario(): void {
+    const inventarioForm = this.fb.group({
+      tallaId: [null, Validators.required],
+      stock: [
+        null,
+        [
+          Validators.required,
+          Validators.min(1)
+        ]
+      ]
+    });
+    this.inventarios.push(inventarioForm);
+  }
+
+  abrirDetallePrenda(prenda: PrendaListResponseDTO): void {
+    this.prendaSeleccionada = prenda;
+    this.modalActivo = Modales.DETALLE;
+    this.obtenerDetallePrenda(prenda.idPrenda);
+  }
+
+  obtenerDetallePrenda(idPrenda: number): void {
+    this.prendaService
+      .obtenerDetallePrenda(idPrenda)
+      .subscribe({
+        next: (response) => {
+          this.prendaDetalle = response;
+          this.metricaLoteDetalle = response.metricas;
+          this.metricaDisponible = !!response.metricas;},
+        error: (error) => {
+          console.error(error);
+          this.mostrarToastMensaje(
+            'Error al obtener detalle de la prenda',
+            'error');
+          this.cerrarModal();
+        }
+      });
+  }
+
+  abrirMetrica(): void {
+    if (!this.prendaDetalle?.metricas) return;
+    this.metricaVisible =
+      !this.metricaVisible;
+  }
+
+  abrirHistorialLotes(prenda: PrendaListResponseDTO): void {
+    this.prendaSeleccionada = prenda;
+    this.modalActivo = Modales.HISTORIAL;
+    this.obtenerHistorialLotes(
+      prenda.idPrenda);
+  }
+
+  obtenerHistorialLotes(idPrenda: number): void {
+    this.loteService
+      .listarHistorialLotes(idPrenda)
+      .subscribe({
+        next: (response) => {this.historialPrenda = response;},
+        error: (error) => {
+          console.error(error);
+          this.mostrarToastMensaje(
+            'Error al obtener historial de lotes',
+            'error');
+          this.cerrarModal();
+        }
+      });
+  }
+
+  toggleInventarioSiempre(): void {
+    this.mostrarInventarioSiempre =
+      !this.mostrarInventarioSiempre;
+  }
+
+  abrirModalEliminar(prenda: PrendaListResponseDTO): void {
+    this.prendaSeleccionada = prenda;
+    this.confirmacionEliminar = '';
+    this.modalActivo = Modales.ELIMINAR;
+  }
+
+  eliminarPrenda(): void {
+    if (!this.prendaSeleccionada) {
+      this.mostrarToastMensaje(
+        'No hay prenda seleccionada',
+        'error');
+      return;
+    }
+    if (this.confirmacionEliminar.trim() !== 'ELIMINAR') {
+      this.mostrarToastMensaje(
+        'Debe escribir ELIMINAR para confirmar',
+        'error');
+      return;
+    }
+    this.prendaService
+      .eliminarPrenda(this.prendaSeleccionada.idPrenda)
+      .subscribe({
+        next: () => {
+          this.mostrarToastMensaje(
+            'Prenda eliminada correctamente',
+            'success');
+          this.cargarPrendas();
+          this.cerrarModal();
+        },
+        error: (error) => {
+          console.error(error);
+          let mensaje =
+            'Error al eliminar la prenda';
+          if (error?.error?.message) {
+            mensaje = error.error.message;
+          }
+          this.mostrarToastMensaje(
+            mensaje,
+            'error'
+          );
+        }
+      });
+  }
+
+  copiarPrenda(prenda: PrendaListResponseDTO): void {
+    navigator.clipboard
+      .writeText(
+        JSON.stringify(prenda)
+      )
+      .then(() => {
+        this.mostrarToastMensaje(
+          'Prenda copiada',
+          'success'
+        );
+      })
+      .catch(() => {
+        this.mostrarToastMensaje(
+          'Error al copiar',
+          'error'
+        );
+      });
+  }
+
+  toggleEstadoPrenda(prenda: PrendaListResponseDTO): void {
+    if (prenda.estado === 'INHABILITADA') {
+      this.prendaService
+        .activarPrenda(prenda.idPrenda)
+        .subscribe({
+          next: () => {
+            this.mostrarToastMensaje(
+              'Prenda activada correctamente',
+              'success');
+            this.cargarPrendas();
+          },
+          error: (error) => {
+            console.error(error);
+            this.mostrarToastMensaje(
+              'Error al activar prenda',
+              'error'
+            );
+          }
+        });
+      return;
+    }
+    this.abrirModalEliminar(prenda);
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.cerrarMenu();
+  }
+
+  abrirEditarPrenda(prenda: PrendaListResponseDTO): void {
+    this.mostrarToastMensaje(
+      'Modo edición próximamente',
+      'success');
+  }
+
   // -------------------- TOAST --------------------
   mostrarToast = false;
   toastMensaje = '';
   toastTipo: 'success' | 'error' = 'success';
 
   // -------------------- MENÚ CONTEXTUAL --------------------
-  prendaSeleccionada: Prenda | null = null;
   prendaSeleccionadaId: number | null = null;
   menuVisible: boolean = false;
-  menuX: number = 0;
-  menuY: number = 0;
   menuWidth: number = 160;
   menuHeight: number = 200;
 
-  modoEdicion: boolean = false;
-
-  get colores(): FormArray {
-    return this.prendaForm.get('colores') as FormArray;
-  }
-
-  // -------------------- MODALES --------------------
-  modalActivo: Modales | null = null;
-
-  // -------------------- FORMULARIOS --------------------
-  prendaForm!: FormGroup;
-  categoriaForm!: FormGroup;
-  marcaForm!: FormGroup;
-  tallaForm!: FormGroup;
-  loteForm!: FormGroup;
-  colorTemporalControl = new FormControl('');
-
   // -------------------- DATOS --------------------
-  marcas: Marca[] = [];
-  categorias: Categoria[] = [];
-  tallas: Talla[] = [];
-
   hoverPrendaId: number | null = null;
-
-  selectedCategoria: Categoria | null = null;
-  selectedMarca: Marca | null = null;
-
-  dropdownCategoriaOpen = false;
-  dropdownMarcaOpen = false;
 
   sidebarExpanded = true;
 
@@ -124,22 +1103,12 @@ export class HomePrenda implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initPrendaForm();
-    this.initCategoriaForm();
-    this.initMarcaForm();
-    this.initTallaForm();
-    this.initLoteForm();
-    this.cargarItemsPorPagina();
     this.cargarPrendas();
-    this.cargarMarcas();
-    this.cargarCategorias();
-    this.cargarTallas();
-    this.detectarCambios();
-    this.loteForm.valueChanges.subscribe(() => {
-      this.calcularStockRestante();
-    });
-    const estadoGuardado = localStorage.getItem('filtrosAvanzados');
-    this.filtrosAvanzadosActivos = estadoGuardado === 'true';
+    this.initForms();
+    this.listarCategorias();
+    this.listarMarcas();
+    this.listarTallas();
+    this.cargarItemsPorPagina();
   }
 
   // -------------------- TOAST --------------------
@@ -160,735 +1129,6 @@ export class HomePrenda implements OnInit {
     }
   }
 
-  // -------------------- FORMULARIOS --------------------
-  initPrendaForm() {
-    this.prendaForm = this.fb.group({
-      material: ['', Validators.required],
-      fechaRegistro: [new Date(), Validators.required],
-      estado: [{value: 'SIN LOTES', disabled: false}, Validators.required],
-      descripcion: [''],
-      colores: this.fb.array<FormControl<string>>([], {validators: [], updateOn: 'change'}),
-      categoria: [null, Validators.required],
-      marca: [null, Validators.required],
-      lotes: this.fb.array([])
-    });
-  }
-
-  initLoteForm() {
-    this.loteForm = this.fb.group({
-      prenda: this.fb.group({
-        idPrenda: [null, Validators.required]
-      }),
-      cantidad: [null, [Validators.required, Validators.min(1)]],
-      precioCompraTotal: [null, [Validators.required, Validators.min(0)]],
-      precioVenta: [null, [Validators.required, Validators.min(0)]],
-      inventarios: this.fb.array([])
-    });
-    this.stockRestante = 0;
-  }
-
-  initCategoriaForm() {
-    this.categoriaForm = this.fb.group({nombre: ['', Validators.required]});
-  }
-
-  initMarcaForm() {
-    this.marcaForm = this.fb.group({nombre: ['', Validators.required]});
-  }
-
-  initTallaForm() {
-    this.tallaForm = this.fb.group({nombre: ['', Validators.required]});
-  }
-
-  agregarColor() {
-    const c = this.colorTemporalControl.value?.trim().toUpperCase() || '';
-    if (!c) return this.mostrarToastMensaje('Ingresa un color', 'error');
-    if (c.length > 20) return this.mostrarToastMensaje('El color no puede superar 20 caracteres', 'error');
-    if (this.colores.controls.some(ctrl => ctrl.value === c)) return this.mostrarToastMensaje('Este color ya existe', 'error');
-    this.colores.push(this.fb.control(c, {nonNullable: true}));
-    this.colorTemporalControl.setValue('');
-  }
-
-  eliminarColor(i: number) {
-    this.colores.removeAt(i);
-  }
-
-  // -------------------- DROPDOWNS --------------------
-  toggleDropdown(type: 'categoria' | 'marca', event: Event) {
-    event.stopPropagation();
-    if (type === 'categoria') {
-      this.dropdownCategoriaOpen = !this.dropdownCategoriaOpen;
-      this.dropdownMarcaOpen = false;
-    } else {
-      this.dropdownMarcaOpen = !this.dropdownMarcaOpen;
-      this.dropdownCategoriaOpen = false;
-    }
-  }
-
-  selectCategoria(categoria: Categoria, event: Event) {
-    event.stopPropagation();
-    if (this.selectedCategoria?.idCategoria === categoria.idCategoria) {
-      this.selectedCategoria = null;
-      this.prendaForm.get('categoria')?.setValue(null);
-    } else {
-      this.selectedCategoria = categoria;
-      this.prendaForm.get('categoria')?.setValue(categoria);
-    }
-    this.dropdownCategoriaOpen = false;
-  }
-
-  selectMarca(marca: Marca, event: Event) {
-    event.stopPropagation();
-    if (this.selectedMarca?.idMarca === marca.idMarca) {
-      this.selectedMarca = null;
-      this.prendaForm.get('marca')?.setValue(null);
-    } else {
-      this.selectedMarca = marca;
-      this.prendaForm.get('marca')?.setValue(marca);
-    }
-    this.dropdownMarcaOpen = false;
-  }
-
-  @HostListener('document:click')
-  onDocumentClick() {
-    this.dropdownCategoriaOpen = false;
-    this.dropdownMarcaOpen = false;
-  }
-
-  // -------------------- CARGA DE DATOS --------------------
-
-  cargarCategorias() {
-    this.categoriaService.listarCategorias().subscribe({next: res => this.categorias = res, error: console.error});
-  }
-
-  cargarMarcas() {
-    this.marcaService.listarMarcas().subscribe({next: res => this.marcas = res, error: console.error});
-  }
-
-  cargarTallas() {
-    this.tallaService.listarTallas().subscribe({next: res => this.tallas = res, error: console.error});
-  }
-
-  // -------------------- MODALES --------------------
-  crearPrendaModal() {
-    this.modoEdicion = false;
-    this.prendaForm.reset();
-    this.initPrendaForm();
-    this.modalActivo = Modales.PRENDA;
-    document.body.classList.add('modal-open');
-  }
-
-  abrirModal(tipo: Modales) {
-    this.modalActivo = tipo;
-    document.body.classList.add('modal-open');
-  }
-
-  cerrarModal() {
-    switch (this.modalActivo) {
-      case Modales.PRENDA:
-        this.prendaForm.reset({
-          material: '',
-          fechaRegistro: new Date(),
-          estado: 'SIN LOTES',
-          descripcion: '',
-          categoria: null,
-          marca: null
-        });
-        (this.prendaForm.get('colores') as FormArray).clear();
-        (this.prendaForm.get('lotes') as FormArray).clear();
-        this.selectedCategoria = null;
-        this.selectedMarca = null;
-        this.dropdownCategoriaOpen = false;
-        this.dropdownMarcaOpen = false;
-        this.prendaSeleccionada = null;
-        this.prendaSeleccionadaId = null;
-        this.modoEdicion = false;
-        this.colorTemporalControl.setValue('');
-        break;
-
-      case Modales.CATEGORIA:
-        this.categoriaForm.reset({nombre: ''});
-        break;
-
-      case Modales.MARCA:
-        this.marcaForm.reset({nombre: ''});
-        break;
-
-      case Modales.TALLA:
-        this.tallaForm.reset({nombre: ''});
-        break;
-
-      case Modales.LOTE:
-        this.initLoteForm();
-        this.stockRestante = 0;
-        this.metricasSimuladas = {};
-        if (this.metricasSub) {
-          this.metricasSub.unsubscribe();
-          this.metricasSub = null;
-        }
-        break;
-
-      case Modales.DETALLE:
-        this.prendaDetalle = null;
-        this.cerrarMetrica();
-        break;
-
-
-    }
-
-    this.modalActivo = null;
-    document.body.classList.remove('modal-open');
-  }
-
-  // -------------------- REGISTRO & EDICIÓN --------------------
-  crearCategoria(nombre: string) {
-    nombre = (nombre || '').trim();
-    if (!nombre) {
-      return this.mostrarToastMensaje('El nombre de la categoría no puede estar vacío', 'error');
-    }
-    if (nombre.length > 30) {
-      return this.mostrarToastMensaje('El nombre de la categoría es demasiado largo', 'error');
-    }
-    const existe = this.categorias.some(
-      c => (c.nombre ?? '').trim().toLowerCase() === nombre.toLowerCase()
-    );
-    if (existe) {
-      return this.mostrarToastMensaje(`La categoría "${nombre}" ya existe`, 'error');
-    }
-    const nuevaCategoria: Categoria = { idCategoria: 0, nombre };
-    this.categoriaService.crearCategoria(nuevaCategoria).subscribe({
-      next: res => {
-        this.mostrarToastMensaje(`Categoría "${res.nombre}" creada`, 'success');
-        this.cargarCategorias();
-        this.limpiarFiltros();
-        this.cerrarModal();
-      },
-      error: err => {
-        console.error('Error creando categoría', err);
-        this.mostrarToastMensaje('Error creando categoría', 'error');
-      }
-    });
-  }
-
-  crearMarca(nombre: string) {
-    nombre = (nombre || '').trim();
-    if (!nombre) {
-      return this.mostrarToastMensaje('El nombre de la marca no puede estar vacío', 'error');
-    }
-    if (nombre.length > 30) {
-      return this.mostrarToastMensaje('El nombre de la marca es demasiado largo', 'error');
-    }
-    const existe = this.marcas.some(
-      m => (m.nombre ?? '').trim().toLowerCase() === nombre.toLowerCase()
-    );
-    if (existe) {
-      return this.mostrarToastMensaje(`La marca "${nombre}" ya existe`, 'error');
-    }
-    const nuevaMarca: Marca = { idMarca: 0, nombre };
-    this.marcaService.crearMarca(nuevaMarca).subscribe({
-      next: res => {
-        this.mostrarToastMensaje(`Marca "${res.nombre}" creada`, 'success');
-        this.cargarMarcas();
-        this.limpiarFiltros();
-        this.cerrarModal();
-      },
-      error: err => {
-        console.error('Error creando marca', err);
-        this.mostrarToastMensaje('Error creando marca', 'error');
-      }
-    });
-  }
-
-  crearTalla(nombre: string) {
-    nombre = (nombre || '').trim();
-    if (!nombre) {
-      return this.mostrarToastMensaje('El nombre de la talla no puede estar vacío', 'error');
-    }
-    if (nombre.length > 10) {
-      return this.mostrarToastMensaje('El nombre de la talla es demasiado largo', 'error');
-    }
-    const existe = this.tallas.some(
-      t => (t.nombre ?? '').trim().toLowerCase() === nombre.toLowerCase()
-    );
-    if (existe) {
-      return this.mostrarToastMensaje(`La talla "${nombre}" ya existe`, 'error');
-    }
-    const nuevaTalla: Talla = { idTalla: 0, nombre };
-    this.tallaService.crearTalla(nuevaTalla).subscribe({
-      next: res => {
-        this.mostrarToastMensaje(`Talla "${res.nombre}" creada`, 'success');
-        this.cargarTallas();
-        this.limpiarFiltros();
-        this.cerrarModal();
-      },
-      error: err => {
-        console.error('Error creando talla', err);
-        this.mostrarToastMensaje('Error creando talla', 'error');
-      }
-    });
-  }
-
-  guardarPrenda() {
-    if (this.modoEdicion) {
-      this.editarPrenda();
-    } else {
-      this.registrarPrenda();
-    }
-  }
-
-  registrarPrenda() {
-    const formValue = this.prendaForm.value;
-
-    if (!this.selectedCategoria || !this.selectedMarca) {
-      return this.mostrarToastMensaje('Selecciona una categoría y marca válidas', 'error');
-    }
-    if (!formValue.material?.trim()) {
-      return this.mostrarToastMensaje('El material es obligatorio', 'error');
-    }
-    if (this.prendaForm.invalid) {
-      return this.mostrarToastMensaje('Completa los campos obligatorios', 'error');
-    }
-
-    const material = formValue.material.trim();
-    const descripcion = (formValue.descripcion || '').trim();
-    const categoriaId = this.selectedCategoria.idCategoria;
-    const marcaId = this.selectedMarca.idMarca;
-
-    const prendaData: Prenda = {
-      material,
-      descripcion,
-      colores: formValue.colores || [],
-      fechaRegistro: new Date(),
-      estado: 'SIN LOTES',
-      categoria: { idCategoria: categoriaId, nombre: this.selectedCategoria.nombre },
-      marca: { idMarca: marcaId, nombre: this.selectedMarca.nombre }
-    };
-
-    this.prendaService.obtenerPrendas().subscribe(prendasExistentes => {
-      const duplicada = prendasExistentes.some(p =>
-        p.material.trim().toLowerCase() === material.toLowerCase() &&
-        p.categoria.idCategoria === categoriaId &&
-        p.marca.idMarca === marcaId &&
-        (p.descripcion || '').trim().toLowerCase() === descripcion.toLowerCase()
-      );
-
-      if (duplicada) {
-        return this.mostrarToastMensaje(
-          'Ya existe una prenda con la misma categoría, marca, material y descripción',
-          'error'
-        );
-      }
-
-      this.prendaService.registrarPrenda(prendaData).subscribe({
-        next: () => {
-          this.mostrarToastMensaje('Prenda registrada correctamente', 'success');
-          this.cargarPrendas();
-          this.limpiarFiltros();
-          this.cerrarModal();
-        },
-        error: err => {
-          console.error('Error registrando prenda', err);
-          this.mostrarToastMensaje('Error al registrar la prenda', 'error');
-        }
-      });
-    });
-  }
-
-  abrirEditarPrenda() {
-    if (!this.prendaSeleccionada?.idPrenda) return;
-
-    this.modoEdicion = true;
-
-    this.prendaService.obtenerDetalle(this.prendaSeleccionada.idPrenda).subscribe({
-      next: data => {
-        this.prendaForm.patchValue({
-          material: data.material,
-          fechaRegistro: data.fechaRegistro,
-          estado: data.estado,
-          descripcion: data.descripcion
-        });
-
-        this.selectedCategoria = this.categorias.find(c => c.nombre === data.nombreCategoria) || null;
-        this.selectedMarca = this.marcas.find(m => m.nombre === data.nombreMarca) || null;
-
-        const colores = this.prendaForm.get('colores') as FormArray;
-        colores.clear();
-        data.colores?.forEach((c: string) => colores.push(this.fb.control(c)));
-
-        this.modalActivo = Modales.PRENDA;
-        document.body.classList.add('modal-open');
-      },
-      error: err => console.error('Error al abrir edición', err)
-    });
-  }
-
-  editarPrenda() {
-    if (!this.prendaSeleccionada?.idPrenda) return; // aseguras que exista
-
-    const idPrenda = this.prendaSeleccionada.idPrenda; // TS ya sabe que no es undefined
-    const formValue = this.prendaForm.value;
-    const material = formValue.material?.trim()!;
-    const descripcion = (formValue.descripcion || '').trim();
-    const categoriaId = this.selectedCategoria!.idCategoria;
-    const marcaId = this.selectedMarca!.idMarca;
-
-    if (!material || !categoriaId || !marcaId) {
-      return this.mostrarToastMensaje('Completa todos los campos obligatorios', 'error');
-    }
-
-    const huboCambios =
-      material !== this.prendaSeleccionada.material ||
-      descripcion !== this.prendaSeleccionada.descripcion ||
-      categoriaId !== this.prendaSeleccionada.categoria.idCategoria ||
-      marcaId !== this.prendaSeleccionada.marca.idMarca ||
-      JSON.stringify(formValue.colores) !== JSON.stringify(this.prendaSeleccionada.colores);
-
-    if (!huboCambios) {
-      return this.mostrarToastMensaje('No se detectaron cambios para guardar');
-    }
-
-    const prendaData: Prenda = {
-      idPrenda,
-      material,
-      descripcion,
-      colores: formValue.colores || [],
-      fechaRegistro: formValue.fechaRegistro,
-      estado: formValue.estado,
-      categoria: { idCategoria: categoriaId, nombre: this.selectedCategoria!.nombre },
-      marca: { idMarca: marcaId, nombre: this.selectedMarca!.nombre }
-    };
-
-    this.prendaService.obtenerPrendas().subscribe(prendasExistentes => {
-      const duplicada = prendasExistentes.some(p =>
-        p.idPrenda !== idPrenda &&
-        p.material.trim().toLowerCase() === material.toLowerCase() &&
-        p.categoria.idCategoria === categoriaId &&
-        p.marca.idMarca === marcaId &&
-        (p.descripcion || '').trim().toLowerCase() === descripcion.toLowerCase()
-      );
-
-      if (duplicada) {
-        return this.mostrarToastMensaje(
-          'Ya existe otra prenda con la misma categoría, marca, material y descripción',
-          'error'
-        );
-      }
-
-      this.prendaService.editarPrenda(idPrenda, prendaData).subscribe({
-        next: () => {
-          this.mostrarToastMensaje('Prenda editada correctamente', 'success');
-          this.cargarPrendas();
-          this.limpiarFiltros();
-          this.cerrarModal();
-          this.modoEdicion = false;
-        },
-        error: err => console.error('Error editando prenda', err)
-      });
-    });
-  }
-
-  get inventarios(): FormArray {
-    return this.loteForm.get('inventarios') as FormArray;
-  }
-
-  agregarInventario() {
-
-    const cantidad = this.loteForm.get('cantidad')?.value || 0;
-    this.calcularStockRestante();
-    if (cantidad > 0 && this.stockRestante <= 0) {
-      this.mostrarToastMensaje('Ya no puedes agregar más inventarios', 'error');
-      return;
-    }
-    const inventario = this.fb.group({
-      talla: this.fb.group({
-        idTalla: [null, Validators.required]
-      }),
-      stock: [null, [Validators.required, Validators.min(1)]]
-    });
-    inventario.get('stock')?.valueChanges.subscribe(() => {
-      this.calcularStockRestante();
-    });
-    this.inventarios.push(inventario);
-    this.calcularStockRestante();
-  }
-
-  eliminarInventario(index: number) {
-    this.inventarios.removeAt(index);
-    this.calcularStockRestante();
-  }
-
-  registrarLote() {
-    this.loteForm.markAllAsTouched();
-    if (this.loteForm.invalid) {
-      this.mostrarToastMensaje('Completa todos los campos del lote', 'error');
-      return;
-    }
-    if (this.inventarios.length === 0) {
-      this.mostrarToastMensaje('Debes agregar al menos un inventario', 'error');
-      return;
-    }
-    const cantidad = this.loteForm.get('cantidad')?.value || 0;
-
-    const totalInventarios = this.inventarios.controls
-      .map(inv => inv.get('stock')?.value || 0)
-      .reduce((a, b) => a + b, 0);
-
-    if (totalInventarios !== cantidad) {
-      this.mostrarToastMensaje('Debes distribuir todo el stock del lote', 'error');
-      return;
-    }
-
-    const lote: Lote = {
-      ...this.loteForm.value,
-      inventarios: this.inventarios.value
-    };
-
-    this.loteService.registrarLote(lote).subscribe({
-
-      next: () => {
-
-        this.mostrarToastMensaje('Lote registrado correctamente', 'success');
-
-        this.cerrarModal();
-        this.limpiarFiltros();
-        this.cargarPrendas();
-
-      },
-      error: () => {
-
-        this.mostrarToastMensaje('Error al registrar el lote', 'error');
-
-      }
-    });
-  }
-
-  stockRestante = 0;
-
-  calcularStockRestante() {
-    const cantidad = this.loteForm.get('cantidad')?.value || 0;
-    const totalInventarios = this.inventarios.controls
-      .map(inv => inv.get('stock')?.value || 0)
-      .reduce((a, b) => a + b, 0);
-    if (totalInventarios > cantidad) {
-      this.mostrarToastMensaje('El stock asignado supera la cantidad del lote', 'error');
-    }
-    this.stockRestante = cantidad - totalInventarios;
-  }
-
-  abrirRegistrarLote() {
-    if (!this.prendaSeleccionada) return;
-    this.initLoteForm();
-    this.loteForm.patchValue({
-      prenda: {
-        idPrenda: this.prendaSeleccionada.idPrenda
-      }
-    });
-    this.loteForm.get('cantidad')?.valueChanges.subscribe(() => {
-
-      this.inventarios.clear();
-      this.calcularStockRestante();
-
-    });
-    this.detectarCambios();
-    this.modalActivo = Modales.LOTE;
-  }
-
-  prendaDetalle: PrendaDetalleDTO | null = null;
-  metricaDetalle: Metrica | null = null;
-  metricaLoteDetalle: LoteMetricasDTO | null = null;
-  metricaDisponible: boolean = false;
-
-  abrirDetallePrenda() {
-    if (!this.prendaSeleccionada?.idPrenda) return;
-    const idPrenda = this.prendaSeleccionada.idPrenda;
-
-    this.prendaService.obtenerDetalle(idPrenda).subscribe({
-      next: (data) => {
-        this.prendaDetalle = data;
-        this.modalActivo = Modales.DETALLE;
-
-        this.metricaVisible = false;
-        this.metricaDetalle = null;
-        this.metricaLoteDetalle = null;
-        this.metricaDisponible = false;
-
-        this.metricaService.existeMetricaPorPrenda(idPrenda).subscribe({
-          next: (existe: boolean) => {
-            this.metricaDisponible = existe;
-            console.log('¿Existe métrica de la prenda?', existe);
-
-            if (existe) {
-              this.metricaService.obtenerMetricaPorPrenda(idPrenda).subscribe({
-                next: (metricas: Metrica) => {
-                  this.metricaDetalle = metricas;
-                  console.log('Métricas de la prenda', metricas);
-                },
-                error: (err) => console.error('Error al obtener métricas de la prenda', err)
-              });
-            }
-          },
-          error: () => {
-            this.metricaDisponible = false;
-            console.log('Error al verificar métricas de la prenda');
-          }
-        });
-
-        const idLote = data.loteActivo?.idLote;
-        if (idLote) {
-          this.loteService.getMetricas(idLote).subscribe({
-            next: (metricas: LoteMetricasDTO) => {
-              this.metricaLoteDetalle = metricas;
-              console.log('Métricas del lote', metricas);
-            },
-            error: (err) => {
-              this.metricaLoteDetalle = null;
-              console.error('Error al obtener métricas del lote', err);
-            }
-          });
-        }
-      },
-      error: (err) => console.error('Error al obtener detalle de prenda', err)
-    });
-  }
-
-  metricaVisible: boolean = false;
-
-  abrirMetrica() {
-    if (!this.prendaDetalle?.idPrenda) return;
-    if (this.metricaVisible) {
-      this.cerrarMetrica();
-      return;
-    }
-    console.log('Abriendo métrica con id:', this.prendaDetalle.idPrenda);
-    this.metricaService.obtenerMetricaPorPrenda(this.prendaDetalle.idPrenda)
-      .subscribe({
-        next: (data) => {
-          this.metricaDetalle = data;
-          this.metricaVisible = true;
-          console.log('Métrica cargada:', data);
-        },
-        error: (err) => {
-          console.error('Error al obtener métrica', err);
-          alert(`Error al obtener métrica: ${err.message || err.status}`);
-        }
-      });
-  }
-
-  cerrarMetrica() {
-    this.metricaVisible = false;
-    this.metricaDetalle = null;
-  }
-
-  historialPrenda: LoteDetalleDTO[] | null = null;
-
-  abrirHistorialLotes() {
-    if (!this.prendaSeleccionada?.idPrenda) return;
-    const idPrenda = this.prendaSeleccionada.idPrenda;
-    this.historialPrenda = null;
-    this.loteService.historialLotes(idPrenda).subscribe({
-      next: (historial: LoteDetalleDTO[]) => {
-        this.historialPrenda = historial;
-        this.modalActivo = Modales.HISTORIAL;
-        console.log('Historial de lotes', historial);
-      },
-      error: (err) => {
-        this.historialPrenda = null;
-        console.error('Error al obtener historial de lotes', err);
-      }
-    });
-  }
-
-  cambiarEstadoPrenda() {
-    if (!this.prendaSeleccionada?.idPrenda) return;
-    const idPrenda = this.prendaSeleccionada.idPrenda;
-    const estaInactiva = this.prendaSeleccionada.estado === 'INACTIVO';
-    const request = estaInactiva
-      ? this.prendaService.activarEstado(idPrenda)
-      : this.prendaService.cambiarEstado(idPrenda);
-    request.subscribe({
-      next: (mensaje: string) => {
-        console.log('Estado cambiado:', mensaje);
-        this.cargarPrendas();
-        this.menuVisible = false;
-        this.mostrarToastMensaje(mensaje, 'success');
-      },
-      error: (err) => {
-        console.error('Error al cambiar estado', err);
-        this.mostrarToastMensaje('No se pudo cambiar el estado', 'error');
-      }
-    });
-  }
-
-  copiarPrenda() {
-    if (!this.prendaSeleccionada?.idPrenda) return;
-    const idPrenda = this.prendaSeleccionada.idPrenda;
-    this.prendaService.obtenerDetalle(idPrenda).subscribe({
-      next: (data) => {
-        const prendaCopiada = {
-          material: data.material,
-          descripcion: data.descripcion,
-          categoria: data.nombreCategoria,
-          marca: data.nombreMarca,
-          colores: data.colores ?? []
-        };
-        navigator.clipboard.writeText(JSON.stringify(prendaCopiada))
-          .then(() => {
-            this.mostrarToastMensaje('Prenda copiada al portapapeles 📋', 'success');
-            this.clipboardDisponible = true;
-          })
-          .catch(() => {
-            this.mostrarToastMensaje('No se pudo copiar la prenda', 'error');
-            this.clipboardDisponible = false;
-          });
-      },
-      error: () => {
-        this.mostrarToastMensaje('Error al obtener la prenda', 'error');
-        this.clipboardDisponible = false;
-      }
-    });
-  }
-
-  pegarPrenda() {
-    navigator.clipboard.readText()
-      .then(async texto => {
-        const data = JSON.parse(texto);
-        this.prendaForm.patchValue({
-          material: data.material,
-          descripcion: data.descripcion
-        });
-        const categoria = this.categorias.find(c => c.nombre === data.categoria) || null;
-        this.selectedCategoria = categoria;
-        this.prendaForm.patchValue({ categoria: categoria?.idCategoria ?? null });
-        const marca = this.marcas.find(m => m.nombre === data.marca) || null;
-        this.selectedMarca = marca;
-        this.prendaForm.patchValue({ marca: marca?.idMarca ?? null });
-        const colores = this.prendaForm.get('colores') as FormArray;
-        colores.clear();
-        data.colores?.forEach((c: string) => colores.push(this.fb.control(c)));
-        this.mostrarToastMensaje('Prenda pegada correctamente ✨', 'success');
-        try {
-          await navigator.clipboard.writeText('');
-          this.clipboardDisponible = false;} catch {console.warn('No se pudo limpiar el portapapeles');}
-      })
-      .catch(() => {
-        this.mostrarToastMensaje('No hay una prenda válida en el portapapeles', 'error');
-        this.clipboardDisponible = false;
-      });
-  }
-
-  limpiarPrenda() {
-    this.prendaForm.reset({
-      material: '',
-      fechaRegistro: new Date(),
-      estado: 'SIN LOTES',
-      descripcion: ''
-    });
-    this.selectedCategoria = null;
-    this.selectedMarca = null;
-    const colores = this.prendaForm.get('colores') as FormArray;
-    colores.clear();
-    this.colorTemporalControl.setValue('');
-    this.mostrarToastMensaje('Formulario limpiado 🧹', 'success');
-  }
 
   // -------------------- MENÚ CONTEXTUAL --------------------
   private closeMenu = () => {
@@ -898,276 +1138,12 @@ export class HomePrenda implements OnInit {
     window.removeEventListener('wheel', this.closeMenu, true);
   };
 
-  abrirMenu(event: MouseEvent, prenda: PrendaListadoDTO) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (this.menuVisible) {
-      this.closeMenu();
-      return;
-    }
-    this.prendaSeleccionadaId = prenda.idPrenda;
-    this.prendaSeleccionada = {
-      idPrenda: prenda.idPrenda,
-      material: prenda.material,
-      descripcion: prenda.descripcion,
-      estado: prenda.estado,
-      fechaRegistro: new Date(),
-      colores: [],
-      categoria: {idCategoria: prenda.categoriaId, nombre: prenda.categoriaNombre},
-      marca: {idMarca: prenda.marcaId, nombre: prenda.marcaNombre}};
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const viewportHeight = window.innerHeight;
-    const viewportWidth = window.innerWidth;
-    this.menuY = (rect.bottom + this.menuHeight > viewportHeight) ? Math.max(8, rect.top - this.menuHeight) : rect.bottom + 5;
-    this.menuX = Math.min(viewportWidth - this.menuWidth - 8, Math.max(8, centerX - this.menuWidth / 2 + 15));
-    this.menuVisible = true;
-    setTimeout(() => {
-      window.addEventListener('click', this.closeMenu);
-      window.addEventListener('scroll', this.closeMenu, true);
-      window.addEventListener('wheel', this.closeMenu, true);});
-  }
-
-  accionMenu(accion: string) {
-    if (!this.prendaSeleccionada) return;
-
-    switch (accion) {
-      case 'editar':
-        this.abrirEditarPrenda();
-        break;
-      case 'lote':
-        this.abrirRegistrarLote();
-        break;
-      case 'detalle':
-        this.abrirDetallePrenda();
-        break;
-      case 'historial':
-        this.abrirHistorialLotes();
-        break;
-      case 'copiar':
-        this.copiarPrenda();
-        break;
-      case 'desactivar':
-        this.cambiarEstadoPrenda();
-        break;
-      case 'eliminar':
-        this.abrirModalEliminar();
-        break;
-      default:
-        console.warn('Acción no reconocida', accion);
-    }
-
-    this.menuVisible = false;
-  }
-
   // -------------------- UTILS --------------------
   onToggleSidebar(state: boolean) {
     this.sidebarExpanded = state;
   }
 
-  metricasSimuladas: any = {};
   metricasSub: any;
-
-  detectarCambios() {
-    this.metricasSub = this.loteForm.valueChanges
-      .pipe(startWith(this.loteForm.value))
-      .subscribe(values => {
-
-        const compraTotal = Number(values.precioCompraTotal);
-        const cantidad = Number(values.cantidad);
-        const precioVenta = Number(values.precioVenta);
-
-        if (!compraTotal || !cantidad || !precioVenta) {
-          this.metricasSimuladas = {
-            icono: 'hide_source',
-            iconoColor: 'off'
-          };
-          return;
-        }
-
-      const compraUnidad = compraTotal / cantidad;
-      const ventaTotal = precioVenta * cantidad;
-      const gananciaUnidad = precioVenta - compraUnidad;
-      const gananciaTotal = gananciaUnidad * cantidad;
-      const margenGanancia = (gananciaUnidad / precioVenta) * 100;
-      const radioInversion = ventaTotal / compraTotal;
-
-      let puntoEquilibrio = 0;
-
-      if (gananciaUnidad > 0) {
-        puntoEquilibrio = Math.ceil(compraTotal / gananciaUnidad);
-      }
-
-      let icono: string;
-      let iconoColor: string;
-
-      if (margenGanancia < 25 || radioInversion < 1.5) {
-        icono = 'trending_down';
-        iconoColor = 'off';
-      }
-      else if (margenGanancia <= 50 || radioInversion <= 3) {
-        icono = 'trending_flat';
-        iconoColor = 'off';
-      }
-      else {
-        icono = 'trending_up';
-        iconoColor = 'off';
-      }
-
-      const round = (v: number) => Number(v.toFixed(2));
-
-      this.metricasSimuladas = {
-        compraUnidad: round(compraUnidad),
-        ventaTotal: round(ventaTotal),
-        gananciaUnidad: round(gananciaUnidad),
-        gananciaTotal: round(gananciaTotal),
-        margenGanancia: round(margenGanancia),
-        radioInversion: round(radioInversion),
-        puntoEquilibrio, // entero
-        icono,
-        iconoColor
-      };
-
-    });
-  }
-
-  selectorActivo = false;
-  inventarioIndexSeleccionado: number | null = null;
-
-  abrirSelector(index: number) {
-    this.inventarioIndexSeleccionado = index;
-    this.selectorActivo = true;
-  }
-
-  cerrarSelector(){
-    this.selectorActivo = false;
-  }
-
-  seleccionarTalla(talla: any) {
-    if (this.inventarioIndexSeleccionado === null) return;
-    const indexActual = this.inventarioIndexSeleccionado;
-    const inventario = this.inventarios.at(indexActual);
-    const tallaActual = inventario.get('talla.idTalla')?.value;
-    if (tallaActual === talla.idTalla) {
-      inventario.get('talla.idTalla')?.setValue(null);
-      this.selectorActivo = false;
-      return;
-    }
-    const repetida = this.inventarios.controls.some((inv, i) => {
-      if (i === indexActual) return false;
-      const idTalla = inv.get('talla.idTalla')?.value;
-      return idTalla === talla.idTalla;
-    });
-    if (repetida) {
-      this.mostrarToastMensaje(`La talla "${talla.nombre}" ya fue agregada a otro inventario`, 'error');
-      return;
-    }
-    inventario.get('talla.idTalla')?.setValue(talla.idTalla);
-    this.selectorActivo = false;
-  }
-
-  obtenerNombreTalla(index: number){
-    const id = this.inventarios.at(index).get('talla.idTalla')?.value;
-    const talla = this.tallas.find(t => t.idTalla === id);
-    return talla ? talla.nombre : '';
-  }
-
-  hoverLote: number | null = null;
-  mostrarInventarioSiempre = false;
-
-  // Lista completa y lista paginada
-  prendasLista: PrendaListadoDTO[] = [];
-  prendasListaPaginada: PrendaListadoDTO[] = [];
-
-  // Paginación
-  paginaActual: number = 1;
-  itemsPorPagina: number = 20;
-  totalPaginas: number = 1;
-  paginaInput: number = 1;
-
-  // Modo fijo / selección
-  selectedPrendaId: number | null = null;
-  modoFijo: boolean = false;
-
-  cargarPrendas(): void {
-    this.cargarItemsPorPagina();
-    this.prendaService.listarPrendasTabla().subscribe({
-      next: (data) => {
-        this.prendasLista = data;
-        this.prendasFiltradas = [...data];
-        this.calcularTotalPaginas();
-        this.actualizarPaginacion();
-      },
-      error: () => this.mostrarToastMensaje('Error al cargar prendas', 'error')
-    });
-  }
-
-  calcularTotalPaginas(): void {
-    this.totalPaginas = Math.ceil(this.prendasFiltradas.length / this.itemsPorPagina) || 1;
-    if (this.paginaActual > this.totalPaginas)
-      this.paginaActual = this.totalPaginas;
-  }
-
-  actualizarPaginacion(): void {
-    const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
-    const fin = inicio + this.itemsPorPagina;
-    this.prendasListaPaginada = this.prendasFiltradas.slice(inicio, fin);
-    this.paginaInput = this.paginaActual;
-  }
-
-  cambiarPagina(pagina: number): void {
-    if (pagina < 1 || pagina > this.totalPaginas) return;
-    this.paginaActual = pagina;
-    this.actualizarPaginacion();
-  }
-
-  cambiarItemsPorPagina(): void {
-    this.calcularTotalPaginas();
-    this.actualizarPaginacion();
-  }
-
-  irAPagina(pagina: number): void {
-    this.cambiarPagina(pagina);
-  }
-
-  getPaginas(): (number | string)[] {
-    const paginas: (number | string)[] = [];
-    const total = this.totalPaginas;
-    const actual = this.paginaActual;
-    if (total <= 5) {
-      for (let i = 1; i <= total; i++) paginas.push(i);
-    } else {
-      if (actual <= 3) {
-        paginas.push(1, 2, 3, 4, '...', total);
-      } else if (actual >= total - 2) {
-        paginas.push(1, '...', total - 3, total - 2, total - 1, total);
-      } else {
-        paginas.push(1, '...', actual - 1, actual, actual + 1, '...', total);
-      }
-    }
-    return paginas;
-  }
-
-  seleccionarPrenda(dto: PrendaListadoDTO) {
-    this.prendaSeleccionada = {
-      idPrenda: dto.idPrenda,
-      material: dto.material,
-      descripcion: dto.descripcion,
-      estado: dto.estado,
-      categoria: {idCategoria: dto.categoriaId, nombre: dto.categoriaNombre},
-      marca: {idMarca: dto.marcaId, nombre: dto.marcaNombre},
-      colores: dto.colores?.map(c => c.toUpperCase()) || []
-    };
-    this.selectedPrendaId = dto.idPrenda;
-  }
-
-  onHoverPrenda(prenda: PrendaListadoDTO): void {
-    this.hoverPrendaId = prenda.idPrenda;
-  }
-
-  onLeavePrenda(): void {
-    this.hoverPrendaId = null;
-  }
 
   getEstadoClass(estado?: string) {
     const e = estado?.toLowerCase();
@@ -1176,8 +1152,6 @@ export class HomePrenda implements OnInit {
     if (e === 'sin lotes') return 'status-sinlotes';
     return 'status-otro';
   }
-
-  stepperInterval: any = null;
 
   cargarItemsPorPagina() {
     const valorGuardado = localStorage.getItem('itemsPorPagina');
@@ -1193,45 +1167,6 @@ export class HomePrenda implements OnInit {
     localStorage.setItem('itemsPorPagina', this.itemsPorPagina.toString());
   }
 
-  startAumentar() {
-    this.stopStepper();
-    this.incrementItems();
-    this.stepperInterval = setInterval(() => {
-      this.incrementItems(false);
-    }, 150);
-  }
-
-  startDisminuir() {
-    this.stopStepper();
-    this.decrementItems();
-    this.stepperInterval = setInterval(() => {
-      this.decrementItems(false);
-    }, 150);
-  }
-
-  incrementItems(guardar: boolean = true) {
-    if (this.itemsPorPagina < 50) {
-      this.itemsPorPagina++;
-      this.cambiarItemsPorPagina();
-      if (guardar) this.guardarItemsPorPagina();
-    }
-  }
-
-  decrementItems(guardar: boolean = true) {
-    if (this.itemsPorPagina > 1) {
-      this.itemsPorPagina--;
-      this.cambiarItemsPorPagina();
-      if (guardar) this.guardarItemsPorPagina();
-    }
-  }
-
-  stopStepper() {
-    if (this.stepperInterval) {
-      clearInterval(this.stepperInterval);
-      this.stepperInterval = null;
-      this.guardarItemsPorPagina();
-    }
-  }
 
   prendasFiltradas: PrendaListadoDTO[] = [];
   busquedaPrenda: string = '';
@@ -1247,60 +1182,6 @@ export class HomePrenda implements OnInit {
     const precioMin = this.filtroPrecioMin;
     const precioMax = this.filtroPrecioMax;
     const tieneColores = this.filtroTieneColores;
-    if (busqueda) {
-      const filtros = busqueda
-        .split(',')
-        .map(f => f.trim())
-        .filter(f => f.length > 0);
-      lista = lista.filter(prenda => {
-        const texto = `
-      ${prenda.categoriaNombre}
-      ${prenda.marcaNombre}
-      ${prenda.material}
-      ${prenda.descripcion}
-    `.toLowerCase();
-        return filtros.every(f => texto.includes(f));});
-    }
-
-    if (categoria !== null)
-      lista = lista.filter(p => p.categoriaId === categoria);
-
-    if (marca !== null)
-      lista = lista.filter(p => p.marcaId === marca);
-
-    if (estado !== null)
-      lista = lista.filter(p => p.estado === estado);
-
-    if (stockMin !== null && stockMax !== null) {
-      lista = lista.filter(p =>
-        p.stockActual >= stockMin &&
-        p.stockActual <= stockMax);
-    } else if (stockMin !== null) {
-      lista = lista.filter(p => p.stockActual >= stockMin);
-    } else if (stockMax !== null) {
-      lista = lista.filter(p => p.stockActual <= stockMax);
-    }
-
-    if (precioMin !== null && precioMax !== null) {
-      lista = lista.filter(p =>
-        p.precioVenta >= precioMin &&
-        p.precioVenta <= precioMax);
-    } else if (precioMin !== null) {
-      lista = lista.filter(p => p.precioVenta >= precioMin);
-    } else if (precioMax !== null) {
-      lista = lista.filter(p => p.precioVenta <= precioMax);
-    }
-
-    if (tieneColores !== null) {
-      lista = lista.filter(p =>
-        tieneColores
-          ? p.colores && p.colores.length > 0
-          : !p.colores || p.colores.length === 0);
-    }
-    this.prendasFiltradas = lista;
-    this.paginaActual = 1;
-    this.calcularTotalPaginas();
-    this.actualizarPaginacion();
   }
 
   limpiarFiltros() {
@@ -1469,21 +1350,6 @@ export class HomePrenda implements OnInit {
     localStorage.setItem('filtrosAvanzados', this.filtrosAvanzadosActivos.toString());
   }
 
-  get prendaTieneDatos(): boolean {
-    const form = this.prendaForm;
-    if (!form) return false;
-    const valores = form.value;
-    const colores = (form.get('colores') as FormArray)?.length || 0;
-
-    return !!(
-      valores.material?.trim() ||
-      valores.descripcion?.trim() ||
-      this.selectedCategoria ||
-      this.selectedMarca ||
-      colores > 0
-    );
-  }
-
   clipboardDisponible = false;
 
   async checkClipboard() {
@@ -1509,32 +1375,6 @@ export class HomePrenda implements OnInit {
     );
   }
 
-  confirmacionEliminar: string = '';
-
-  eliminarPrenda() {
-    if (!this.prendaSeleccionada?.idPrenda) return;
-    const id = this.prendaSeleccionada.idPrenda;
-    this.prendaService.eliminarPrenda(id).subscribe({
-      next: () => {
-        console.log('Prenda eliminada');
-        this.cerrarModal();
-        this.cargarPrendas();
-        this.prendaSeleccionada = null;
-        this.mostrarToastMensaje('Prenda eliminada correctamente', 'success');
-      },
-      error: (err) => {
-        console.error('Error al eliminar prenda', err);
-        this.mostrarToastMensaje('No se pudo eliminar la prenda', 'error');
-      }
-    });
-  }
-
-  abrirModalEliminar() {
-    if (!this.prendaSeleccionada) return;
-    this.menuVisible = false;
-    this.abrirModal(Modales.ELIMINAR);
-  }
-
   categoriaSeleccionadaId!: number;
   archivoSeleccionado!: File;
   previewUrl: string | ArrayBuffer | null = null;
@@ -1551,20 +1391,5 @@ export class HomePrenda implements OnInit {
       this.previewUrl = reader.result;
     };
     reader.readAsDataURL(file);
-  }
-
-  subirImagen() {
-    if (!this.archivoSeleccionado || !this.categoriaSeleccionadaId) return;
-
-    this.categoriaService
-      .subirImagen(this.categoriaSeleccionadaId, this.archivoSeleccionado)
-      .subscribe({
-        next: () => {
-          console.log("Imagen subida como campeón 🏆");
-        },
-        error: (err) => {
-          console.error("F en el chat 💀", err);
-        }
-      });
   }
 }

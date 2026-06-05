@@ -53,51 +53,62 @@ export class Login {
     });
   }
 
-  togglePassword() {
+  togglePassword(): void {
     this.hidePassword = !this.hidePassword;
   }
 
-  onSubmit() {
+  onSubmit(): void {
 
     this.errorLogin = '';
     this.successLogin = '';
 
-    if (this.loginForm.valid) {
-
-      const requestDto = new RequestDto();
-      requestDto.username = this.loginForm.get('username')?.value;
-      requestDto.password = this.loginForm.get('password')?.value;
-
-      this.loginService.login(requestDto).subscribe({
-
-        next: (data: ResponseDto) => {
-
-          console.log("LOGIN RESPONSE:", data);
-
-          const rol = data.roles?.[0];
-
-          this.authService.login(data.jwt);
-
-          localStorage.setItem('rol', rol);
-
-          this.successLogin = '¡Login exitoso! Redirigiendo...';
-
-          setTimeout(() => {
-            if (rol === 'ROLE_ADMIN') {
-              this.router.navigate(['/HomePrenda']);
-            } else {
-              this.errorLogin = 'Rol no válido.';
-            }
-          }, 700);
-        },
-
-        error: () => {
-          this.errorLogin = 'Usuario o contraseña incorrectos.';
-        }
-      });
-
-    } else {
+    if (this.loginForm.invalid) {
       this.errorLogin = 'El formulario está incompleto.';
+      return;
     }
+
+    const requestDto = new RequestDto();
+
+    requestDto.username = this.loginForm.get('username')?.value;
+    requestDto.password = this.loginForm.get('password')?.value;
+
+    this.loginService.login(requestDto).subscribe({
+
+      next: (data: ResponseDto) => {
+
+        const rol = data.roles?.[0];
+
+        this.authService.login(data.jwt);
+
+        localStorage.setItem('rol', rol);
+        localStorage.setItem('usuario', requestDto.username);
+
+        this.successLogin = '¡Login exitoso! Redirigiendo...';
+
+        setTimeout(() => {
+
+          switch (rol) {
+
+            case 'ROLE_ADMIN':
+              this.router.navigate(['/PrendaHome']);
+              break;
+
+            case 'ROLE_AYUDANTE':
+              this.router.navigate(['/PrendaHome']);
+              break;
+
+            default:
+              this.router.navigate(['/PrendaHome']);
+              break;
+          }
+
+        }, 700);
+      },
+
+      error: () => {
+        this.errorLogin = 'Usuario o contraseña incorrectos.';
+      }
+    });
   }
+
 }

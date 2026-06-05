@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {environment} from '../environments/environment';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Prenda} from '../model/Prenda';
 import {PrendaDetalleDTO} from '../model/PrendaDetalleDTO';
@@ -11,7 +11,14 @@ import {TopDTO} from '../model/TopDTO';
 import {StockBajoDTO} from '../model/StockBajoDTO';
 import {PrendasTotalesDTO} from '../model/PrendasTotalesDTO';
 import {StockCategoriaDTO} from '../model/StockCategoriaDTO';
-import {PrendaListadoDTO} from '../model/PrendaListadoDTO';
+import {PrendaRegistroDTO} from '../model/PrendaRegistroDTO';
+import {PrendaResponseDTO} from '../model/PrendaResponseDTO';
+import {PrendaUpdateDTO} from '../model/PrendaUpdateDTO';
+import {PageResponse} from '../model/PageResponse';
+import {PrendaListResponseDTO} from '../model/PrendaListResponseDTO';
+import {PrendaFiltros} from '../model/PrendaFiltros';
+import {PrendaKpiResponse} from '../model/PrendaKpiResponse';
+import {PrendaQuickDetailDTO} from '../model/PrendaQuickDetalleDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -20,32 +27,49 @@ export class PrendaService {
   private http: HttpClient = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}`;
 
-  registrarPrenda(prenda: Prenda): Observable<Prenda> {
-    return this.http.post<Prenda>(`${this.baseUrl}/post/prenda`, prenda);
+  constructor() {}
+
+  registrarPrenda(dto: PrendaRegistroDTO): Observable<PrendaResponseDTO> {
+    return this.http.post<PrendaResponseDTO>(
+      `${this.baseUrl}/crear/prenda`,
+      dto
+    );
   }
 
-  editarPrenda(id: number, prenda: Prenda): Observable<Prenda> {
-    return this.http.put<Prenda>(`${this.baseUrl}/put/prenda/${id}`, prenda);
+  actualizarPrenda(id: number, dto: PrendaUpdateDTO): Observable<PrendaResponseDTO> {
+    return this.http.put<PrendaResponseDTO>(
+      `${this.baseUrl}/editar/prenda/${id}`,
+      dto
+    );
   }
 
   eliminarPrenda(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/delete/prenda/${id}`);
+    return this.http.delete<void>(
+      `${this.baseUrl}/eliminar/prenda/${id}`
+    );
   }
 
-  listarPrendasTabla(): Observable<PrendaListadoDTO[]> {
-    return this.http.get<PrendaListadoDTO[]>(`${this.baseUrl}/listar/prendas`);
+  obtenerDetallePrenda(id: number): Observable<PrendaDetalleDTO> {
+    return this.http.get<PrendaDetalleDTO>(
+      `${this.baseUrl}/detalle/prenda/${id}`
+    );
   }
 
-  obtenerDetalle(id: number): Observable<PrendaDetalleDTO> {
-    return this.http.get<PrendaDetalleDTO>(`${this.baseUrl}/detalle/prenda/${id}`);
+  listarPrendas(page: number = 0, size: number = 20): Observable<PageResponse<PrendaListResponseDTO>> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+    return this.http.get<PageResponse<PrendaListResponseDTO>>(
+      `${this.baseUrl}/listar/prendas`,
+      { params }
+    );
   }
 
-  cambiarEstado(idPrenda: number): Observable<string> {
-    return this.http.put(`${this.baseUrl}/cambiar/estado/${idPrenda}`, null, { responseType: 'text' });
-  }
-
-  activarEstado(id: number): Observable<string> {
-    return this.http.put(`${this.baseUrl}/activar/prenda/${id}`, null, { responseType: 'text' });
+  activarPrenda(id: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.baseUrl}/activar/prenda/${id}`,
+      {}
+    );
   }
 
   listarPrendasDisponibles(): Observable<PrendaCarritoDTO[]> {
@@ -94,5 +118,95 @@ export class PrendaService {
 
   obtenerPrendas(): Observable<Prenda[]> {
     return this.http.get<Prenda[]>(`${this.baseUrl}/get/prendas`);
+  }
+
+  listarPrendasFiltradas(filtros: PrendaFiltros): Observable<PageResponse<PrendaListResponseDTO>> {
+    let params = new HttpParams();
+    if (filtros.search) {
+      params = params.set(
+        'search',
+        filtros.search
+      );
+    }
+    if (filtros.categoria) {
+      params = params.set(
+        'categoria',
+        filtros.categoria
+      );
+    }
+    if (filtros.marca) {
+      params = params.set(
+        'marca',
+        filtros.marca
+      );
+    }
+    if (filtros.estado) {
+      params = params.set(
+        'estado',
+        filtros.estado
+      );
+    }
+    if (
+      filtros.stockMin !== null &&
+      filtros.stockMin !== undefined
+    ) {
+      params = params.set(
+        'stockMin',
+        filtros.stockMin
+      );
+    }
+    if (
+      filtros.stockMax !== null &&
+      filtros.stockMax !== undefined
+    ) {
+      params = params.set(
+        'stockMax',
+        filtros.stockMax
+      );
+    }
+    if (
+      filtros.precioMin !== null &&
+      filtros.precioMin !== undefined
+    ) {
+      params = params.set(
+        'precioMin',
+        filtros.precioMin
+      );
+    }
+    if (
+      filtros.precioMax !== null &&
+      filtros.precioMax !== undefined
+    ) {
+      params = params.set(
+        'precioMax',
+        filtros.precioMax
+      );
+    }
+    params = params.set(
+      'page',
+      filtros.page ?? 0
+    );
+    params = params.set(
+      'size',
+      filtros.size ?? 20
+    );
+    return this.http.get<
+      PageResponse<PrendaListResponseDTO>
+    >(
+      `${this.baseUrl}/listar/prendas`,
+      { params }
+    );
+  }
+
+  obtenerKpis(): Observable<PrendaKpiResponse> {
+    return this.http.get<PrendaKpiResponse>(
+      `${this.baseUrl}/kpis/prendas`
+    );
+  }
+
+  getQuickDetail(idPrenda: number): Observable<PrendaQuickDetailDTO> {
+    return this.http.get<PrendaQuickDetailDTO>(
+      `${this.baseUrl}/detalle/rapido/${idPrenda}`
+    );
   }
 }

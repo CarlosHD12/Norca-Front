@@ -1,0 +1,57 @@
+<app-sidebar
+  (sidebarToggle)="onSidebarToggle($event)">
+</app-sidebar>
+
+<div class="main-layout" [class.expanded]="sidebarExpanded">
+
+  <app-navbar></app-navbar>
+
+  <div class="page-content" [class.right-expanded]="isRightSidebarOpen">
+
+    <app-prenda-header (nuevaPrenda)="abrirModalPrenda()"></app-prenda-header>
+
+
+    <app-prenda-stats></app-prenda-stats>
+
+    <!-- FILTROS -->
+    <app-prenda-filters
+      (filtersChange)="onFiltersChange($event)">
+
+    </app-prenda-filters>
+
+
+    <!-- TABLA -->
+    <app-prenda-table
+      [prendas]="prendas"
+      (quickDetail)="onPrendaSelected($event)"
+      (refresh)="reloadPrendas()">
+    </app-prenda-table>
+
+    <button (click)="openSidebar()">
+      Ver detalle
+    </button>
+
+
+
+
+    <!-- ROUTER -->
+    <router-outlet></router-outlet>
+
+  </div>
+
+</div>
+
+<app-right-sidebar
+  [isOpen]="isRightSidebarOpen"
+  [detail]="quickDetail"
+  (close)="closeSidebar()">
+</app-right-sidebar>
+
+
+<app-modal-prenda
+  *ngIf="mostrarModalPrenda"
+  [datosPrenda]="borradorPrenda"
+  (draftSaved)="guardarBorrador($event)"
+  (saved)="onPrendaGuardada()"
+  (modalClose)="cerrarModalPrenda()">
+</app-modal-prenda>
