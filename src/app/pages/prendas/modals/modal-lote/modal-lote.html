@@ -1,0 +1,585 @@
+<div class="modal-backdrop" [class.fade-out]="closing">
+  <div class="modal-container-2" [class.modal-close]="closing" (click)="$event.stopPropagation()">
+
+    <form [formGroup]="form">
+
+      <div class="app-modal-header">
+
+        <div class="app-modal-header-info">
+
+          <div class="app-modal-header-icon">
+            <i class="fi fi-br-add"></i>
+          </div>
+
+          <div class="app-modal-header-text">
+            <h2>Registrar Nuevo Lote</h2>
+            <p>Gestione el inventario, configure los precios y simule la rentabilidad.</p>
+          </div>
+
+        </div>
+
+        <div class="app-modal-header-actions">
+
+          <div class="app-modal-badge">
+            <i class="fi fi-rr-asterik"></i>
+            <span>Campo obligatorio</span>
+          </div>
+
+          <button
+            type="button"
+            class="app-modal-close-btn"
+            (click)="cerrarLote()">
+            <i class="fi fi-rr-cross-small"></i>
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="modal-body">
+
+        <div class="body-columns">
+
+          <!-- ================= IZQUIERDA ================= -->
+          <div class="left-column">
+
+            <div class="extra-card">
+
+              <div class="info-grid info-grid-2">
+
+                <!-- LOTE -->
+                <div class="info-card">
+                  <div class="info-card-header">
+                    <span>Código de Lote</span>
+                    <span class="info-badge">
+            <i class="fi fi-br-user-robot"></i>
+            Generado
+          </span>
+                  </div>
+
+                  <div class="info-value">
+                    <i class="fi fi-bs-qrcode"></i>
+                    <span class="info-text">LOT-XXXXXXXX</span>
+                    <i class="fi fi-br-lock"></i>
+                  </div>
+                </div>
+
+                <!-- PRENDA -->
+                <div class="info-card">
+                  <div class="info-card-header">
+                    <span>Código de Prenda</span>
+                    <span class="info-badge">
+            <i class="fi fi-br-bolt-auto"></i>
+            Sistema
+          </span>
+                  </div>
+
+                  <div class="info-value">
+                    <i class="fi fi-bs-qrcode"></i>
+                    <span class="info-text">{{ codigoPrenda || '-' }}</span>
+                    <i class="fi fi-br-lock"></i>
+                  </div>
+                </div>
+
+                <!-- FECHA -->
+                <div class="info-card">
+                  <div class="info-card-header">
+                    <span>Fecha de Registro</span>
+                    <span class="info-badge">
+            <i class="fi fi-br-bolt-auto"></i>
+            Sistema
+          </span>
+                  </div>
+
+                  <div class="info-value">
+                    <i class="fi fi-br-calendar-day"></i>
+                    <span class="info-text">
+            {{ fechaActual | date:'dd MMM yyyy, HH:mm' }}
+          </span>
+                    <i class="fi fi-br-lock"></i>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Información del lote -->
+            <div class="section-card">
+
+              <div class="section-content">
+
+                <div class="row-3">
+
+                  <div class="form-group primero">
+                    <label>
+                      Unidades
+                      <span class="required">
+                  <i class="fi fi-sr-asterik"></i>
+                </span>
+                    </label>
+
+                    <div
+                      class="input-wrapper"
+                      [class.invalid]="submitted && form.get('cantidadInicial')?.invalid">
+
+                      <div class="input-icon">
+                        <i class="fi fi-br-box-open-full"></i>
+                      </div>
+
+                      <input
+                        type="number"
+                        formControlName="cantidadInicial"
+                        placeholder="Ej: 50">
+                    </div>
+                  </div>
+
+                  <div class="form-group primero">
+                    <label>
+                      Precio de Compra
+                      <span class="required">
+                  <i class="fi fi-sr-asterik"></i>
+                </span>
+                    </label>
+
+                    <div
+                      class="input-wrapper"
+                      [class.invalid]="submitted && form.get('precioCompraTotal')?.invalid">
+
+                      <div class="input-icon">
+                        <i class="fi fi-bs-dollar"></i>
+                      </div>
+
+                      <input
+                        type="number"
+                        formControlName="precioCompraTotal"
+                        placeholder="Ej: 500">
+                    </div>
+                  </div>
+
+                  <div class="form-group primero">
+                    <label>
+                      Precio de Venta
+                      <span class="required">
+                  <i class="fi fi-sr-asterik"></i>
+                </span>
+                    </label>
+
+                    <div
+                      class="input-wrapper"
+                      [class.invalid]="submitted && form.get('precioVenta')?.invalid">
+
+                      <div class="input-icon">
+                        <i class="fi fi-bs-dollar"></i>
+                      </div>
+
+                      <input
+                        type="number"
+                        formControlName="precioVenta"
+                        placeholder="Ej: 80">
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Distribución -->
+            <div class="section-card">
+
+              <div class="section-content">
+
+                <div class="inventory-toolbar">
+
+                  <div class="inventory-info">
+
+                    <span class="inventory-title">Distribución por tallas</span>
+
+                    <span class="inventory-counter">{{ inventarios.length }} talla{{ inventarios.length === 1 ? '' : 's' }} registrada{{ inventarios.length === 1 ? '' : 's' }}</span>
+
+                  </div>
+
+                  <button type="button" class="btn-add-size" (click)="agregarTalla()" [disabled]="!puedeAgregarInventario()">
+                    <i class="fi fi-br-plus"></i>
+                  </button>
+
+                </div>
+
+                <div class="inventory-table" formArrayName="inventarios">
+
+                  <div class="table-empty" *ngIf="inventarios.length === 0">
+
+                    <div class="table-empty-icon">
+                      <i class="fi fi-br-box-open"></i>
+                    </div>
+
+                    <div class="table-empty-content">
+                      <h4>Sin tallas registradas</h4>
+                      <p>Agrega una talla para comenzar a distribuir el stock disponible.</p>
+                    </div>
+
+                  </div>
+
+                  <div
+                    class="inventory-card"
+                    *ngFor="let item of inventarios.controls; let i = index"
+                    [formGroupName]="i">
+
+                    <div class="inventory-main">
+
+                      <div class="inventory-field">
+
+      <span class="field-label">
+        TALLA
+      </span>
+
+                        <button
+                          type="button"
+                          class="size-button"
+                          (click)="abrirModalTallas(i)">
+
+                          <ng-container *ngIf="item.get('tallaId')?.value; else iconoTalla">
+                            {{ obtenerNombreTalla(item.get('tallaId')?.value) }}
+                          </ng-container>
+
+                          <ng-template #iconoTalla>
+                            <i class="fi fi-br-scissors"></i>
+                          </ng-template>
+
+                        </button>
+
+                      </div>
+
+                      <div class="inventory-field">
+
+      <span class="field-label">
+        STOCK
+      </span>
+
+                        <input class="input-stock" type="number" min="0" formControlName="stock" placeholder="0">
+                      </div>
+                      <div class="inventory-field progress-field">
+                        <div class="progress-header">
+                          <span class="field-label">DISTRIBUCIÓN</span>
+                          <span class="share-cell">{{ obtenerPorcentaje(item.get('stock')?.value) | number:'1.0-0' }}%</span>
+                        </div>
+                        <div class="distribution-bar">
+                          <div class="distribution-fill" [style.width.%]="obtenerPorcentaje(item.get('stock')?.value)">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button type="button" class="delete-button" (click)="eliminarTalla(i)">
+                      <i class="fi fi-bs-trash"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="stock-progress-card" [class.invalid]="submitted && inventarioInvalido">
+                  <div class="stock-summary">
+                    <div class="stock-summary-info">
+                      <span class="stock-summary-label">Distribución actual</span>
+                      <h4 class="stock-summary-title">Stock asignado</h4>
+                    </div>
+                    <div class="stock-summary-percent">{{ porcentajeDistribuido }}%</div>
+                  </div>
+                  <div class="stock-progress-bar">
+                    <div class="stock-progress-fill" [style.width.%]="porcentajeDistribuido">
+                    </div>
+                  </div>
+                  <div class="stock-stats">
+                    <div class="stock-stat">
+                      <span class="stock-stat-label">Asignado</span>
+                      <span class="stock-stat-value">{{ totalAsignado }}</span>
+                    </div>
+                    <div class="stock-divider"></div>
+                    <div class="stock-stat">
+                      <span class="stock-stat-label">Total</span>
+                      <span class="stock-stat-value">{{ form.get('cantidadInicial')?.value || 0 }}</span>
+                    </div>
+                    <div class="stock-divider"></div>
+                    <div class="stock-stat">
+                      <span class="stock-stat-label">Restante</span>
+                      <span class="stock-stat-value pending">{{ stockPendiente }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ================= DERECHA ================= -->
+          <div class="right-column">
+
+            <div class="section-card">
+
+              <div class="section-content">
+
+                <div class="simulation-grid">
+
+                  <div class="simulation-card">
+                    <div class="card-header">
+                      <span class="card-title">Venta Total</span>
+                    </div>
+                    <div class="card-value">
+                      {{ ingresoTotal || 0 | currency:'S/ ' }}
+                    </div>
+                    <div class="card-subtitle">
+                      Ingreso bruto esperado
+                    </div>
+                  </div>
+
+                  <div class="simulation-card">
+                    <div class="card-header">
+                      <span class="card-title">Ganancia Unit.</span>
+                      <span class="badge" [ngClass]="getEstadoIndicador(gananciaUnidad,10,30)">
+                        <i [class]="getIconoIndicador(gananciaUnidad,10,30)"></i>
+                      </span>
+                    </div>
+                    <div class="card-value">
+                      {{ gananciaUnidad || 0 | currency:'S/ ' }}
+                    </div>
+                    <div class="card-subtitle">
+                      Beneficio por unidad
+                    </div>
+                  </div>
+
+                  <div class="simulation-card">
+                    <div class="card-header">
+                      <span class="card-title">Ganancia Total</span>
+                      <span class="badge" [ngClass]="getEstadoIndicador(gananciaTotal,100,300)">
+                        <i [class]="getIconoIndicador(gananciaTotal,100,300)"></i>
+                      </span>
+                    </div>
+                    <div class="card-value">
+                      {{ gananciaTotal || 0 | currency:'S/ ' }}
+                    </div>
+                    <div class="card-subtitle">
+                      Utilidad estimada
+                    </div>
+                  </div>
+
+                  <div class="simulation-card">
+                    <div class="card-header">
+                      <span class="card-title">Punto de Equilibrio</span>
+                      <span class="badge" [ngClass]="getEstadoIndicador(puntoEquilibrio,5,2,true)">
+                        <i [class]="getIconoIndicador(puntoEquilibrio,5,2,true)"></i>
+                      </span>
+                    </div>
+                    <div class="card-value">
+                      {{ puntoEquilibrio ? (puntoEquilibrio + ' und.') : '0 und.' }}
+                    </div>
+                    <div class="card-subtitle">
+                      Recuperación de inversión
+                    </div>
+                  </div>
+
+                  <div class="simulation-card">
+                    <div class="card-header">
+                      <span class="card-title">Radio Inversión</span>
+                      <span class="badge" [ngClass]="getEstadoIndicador(radioInversion,2,4)">
+                        <i [class]="getIconoIndicador(radioInversion,2,4)"></i>
+                      </span>
+                    </div>
+                    <div class="card-value">
+                      x {{ radioInversion || 0 }}
+                    </div>
+                    <div class="card-subtitle">
+                      Multiplicador de la inversión
+                    </div>
+                  </div>
+
+                  <div class="simulation-card">
+                    <div class="card-header">
+                      <span class="card-title">Margen Ganancia</span>
+                      <span class="badge" [ngClass]="getEstadoIndicador(margenGanancia,30,60)">
+                        <i [class]="getIconoIndicador(margenGanancia,30,60)"></i>
+                      </span>
+                    </div>
+                    <div class="card-value">
+                      {{ margenGanancia || 0 }}%
+                    </div>
+                    <div class="card-subtitle">
+                      Rentabilidad sobre costo
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="simulation-card">
+
+                  <div class="revenue-header">
+                    <h4>Ingresos vs Costos</h4>
+                    <h4>por {{ form.get('cantidadInicial')?.value || 0 }} und.</h4>
+                  </div>
+
+                  <div class="metric-row">
+
+                    <div class="metric-label">
+                      <span>Venta Total</span>
+                      <div class="metric-valor">S/ {{ ingresoTotal | number:'1.2-2' }}</div>
+                    </div>
+
+                    <div class="metric-bar">
+                      <div
+                        class="metric-fill revenue-fill"
+                        [style.width.%]="porcentajeIngreso">
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="metric-row">
+
+                    <div class="metric-label">
+                      <span>Costo de Compra</span>
+                      <div class="metric-valor">S/ {{ form.get('precioCompraTotal')?.value || 0 | number:'1.2-2' }}</div>
+                    </div>
+
+                    <div class="metric-bar">
+                      <div class="metric-fill cost-fill" [style.width.%]="porcentajeCosto"></div>
+                    </div>
+
+                  </div>
+
+                  <div class="metric-row">
+
+                    <div class="metric-label">
+                      <span>Ganancia Estimada</span>
+                      <div class="metric-valor"> S/ {{ gananciaTotal | number:'1.2-2' }}</div>
+                    </div>
+
+                    <div class="metric-bar">
+                      <div class="metric-fill profit-fill" [style.width.%]="porcentajeGanancia">
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="financial-status-card" [ngClass]="estadoFinanciero">
+
+                  <div class="status-icon">
+                    <i [class]="iconoEstadoFinanciero"></i>
+                  </div>
+
+                  <div class="status-content">
+
+                    <h4>{{ tituloEstadoFinanciero }}</h4>
+
+                    <p>{{ descripcionEstadoFinanciero }}</p>
+
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="app-modal-footer">
+
+        <div class="app-modal-footer-left">
+
+          <button
+            type="button"
+            class="app-btn app-btn-secondary"
+            (click)="limpiarFormulario()">
+            <i class="fi fi-br-broom"></i>
+            <span>Limpiar</span>
+          </button>
+
+        </div>
+
+        <div class="app-modal-footer-right">
+
+          <button
+            type="button"
+            class="app-btn app-btn-secondary"
+            (click)="cerrarLote()">
+            <i class="fi fi-br-cross-small"></i>
+            <span>Cancelar</span>
+          </button>
+
+          <button
+            type="button"
+            class="app-btn app-btn-primary"
+            (click)="registrar()">
+            <i class="fi fi-br-disk"></i>
+            <span>Registrar Lote</span>
+          </button>
+
+        </div>
+
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+<div class="modal-tallas-backdrop" [class.open]="mostrarModalTallas" (click)="cerrarModalTallas()">
+  <div class="modal-tallas-container" (click)="$event.stopPropagation()">
+    <div class="modal-tallas-header">
+      <div class="modal-tallas-info">
+        <div class="modal-tallas-icon"><i class="fi fi-br-scissors"></i></div>
+        <div class="modal-tallas-text">
+          <h3>Seleccionar Talla</h3>
+          <p>Asigna una talla disponible al inventario actual.</p>
+        </div>
+      </div>
+      <button type="button" class="modal-tallas-close" (click)="cerrarModalTallas()">
+        <i class="fi fi-rr-cross-small"></i>
+      </button>
+    </div>
+    <div class="modal-tallas-body">
+      <div class="tallas-grid">
+        <div class="talla-card" *ngFor="let talla of tallas" [class.selected]="esTallaSeleccionada(talla.idTalla)"
+             [class.disabled]="estaTallaOcupada(talla.idTalla)" (click)="seleccionarTalla(talla)">
+          <div class="talla-name">{{ talla.nombre }}</div>
+          <div class="talla-state">
+            <ng-container *ngIf="esTallaSeleccionada(talla.idTalla)">
+              <i class="fi fi-br-check"></i>
+              Seleccionada
+            </ng-container>
+            <ng-container *ngIf="!esTallaSeleccionada(talla.idTalla) && estaTallaOcupada(talla.idTalla)">
+              <i class="fi fi-br-lock"></i>
+              Ocupada
+            </ng-container>
+            <ng-container *ngIf="!esTallaSeleccionada(talla.idTalla) && !estaTallaOcupada(talla.idTalla)">
+              <i class="fi fi-br-plus-small"></i>
+              Disponible
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-tallas-footer">
+      <div class="footer-legend">
+        <span class="legend-item">
+          <span class="legend-dot available"></span>
+          Disponible
+        </span>
+        <span class="legend-item">
+          <span class="legend-dot selected"></span>
+          Seleccionada
+        </span>
+        <span class="legend-item">
+          <span class="legend-dot occupied"></span>
+          Ocupada
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

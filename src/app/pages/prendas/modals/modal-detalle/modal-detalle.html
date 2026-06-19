@@ -1,0 +1,623 @@
+<div class="modal-backdrop detalle" [class.fade-out]="closing">
+
+  <div class="modal-container" (click)="$event.stopPropagation()">
+
+    <div class="app-modal-header">
+
+      <div class="app-modal-header-info">
+
+        <div class="app-modal-header-icon">
+          <i class="fi fi-br-file"></i>
+        </div>
+
+        <div class="app-modal-header-text">
+          <h2>Detalle de la Prenda</h2>
+          <p>Consulte la información general, el inventario y el historial del producto.</p>
+        </div>
+
+      </div>
+
+      <div class="app-modal-header-actions">
+
+        <div class="app-modal-badge">
+          <span>{{ detalle?.codigo }}</span>
+        </div>
+
+        <button
+          type="button"
+          class="app-modal-close-btn"
+          (click)="cerrarDetalle()">
+          <i class="fi fi-rr-cross-small"></i>
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="modal-body">
+
+      <div class="body-columns">
+
+        <div class="left-column">
+
+          <div class="section-card">
+            <div class="section-content">
+
+              <div class="prenda-info-card">
+
+                <div class="prenda-img-container">
+                  <img [src]="detalle?.imagenUrl || '/default.png'" [alt]="detalle?.nombre">
+                </div>
+
+                <div class="prenda-info-container">
+
+                  <div class="prenda-header">
+                    <span class="prenda-chip"><i class="fi fi-br-label"></i>Nombre de Prenda</span>
+                    <h3 class="prenda-title">{{ detalle?.nombre }}</h3>
+                  </div>
+
+                  <div class="prenda-details">
+
+                    <div class="detail-item">
+                      <div class="detail-icon">
+                        <i class="fi fi-br-apps"></i>
+                      </div>
+                      <div class="detail-content">
+                        <span class="detail-label">Categoría</span>
+                        <span class="detail-value">{{ detalle?.categoria }}</span>
+                      </div>
+                    </div>
+
+                    <div class="detail-item">
+                      <div class="detail-icon">
+                        <i class="fi fi-br-bookmark"></i>
+                      </div>
+                      <div class="detail-content">
+                        <span class="detail-label">Marca</span>
+                        <span class="detail-value">{{ detalle?.marca }}</span>
+                      </div>
+                    </div>
+
+                    <div class="detail-item">
+                      <div class="detail-icon">
+                        <i class="fi fi-br-layers"></i>
+                      </div>
+                      <div class="detail-content">
+                        <span class="detail-label">Material</span>
+                        <span class="detail-value">{{ detalle?.material }}</span>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="prenda-meta">
+
+                    <div class="meta-item">
+                      <i class="fi fi-br-calendar-day"></i>
+                      <span class="meta-label">Registrado:</span>
+                      <span class="meta-value">{{ detalle?.fechaRegistro | date:'dd MMM yyyy, HH:mm' }}</span>
+                    </div>
+
+                    <div class="meta-divider"></div>
+
+                    <div class="meta-item">
+                      <i class="fi fi-br-refresh"></i>
+                      <span class="meta-label">Estado:</span>
+                      <span class="estado-badge">{{ detalle?.estado }}</span>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="section-content">
+
+              <div class="colores-card">
+
+                <div class="colores-header">
+                  <div class="detail-icon">
+                    <i class="fi fi-rr-palette"></i>
+                  </div>
+
+                  <div class="colores-info">
+                    <span class="colores-title">Colores Disponibles</span>
+                    <span class="colores-subtitle">
+        {{ detalle?.colores?.length || 0 }} variantes registradas
+      </span>
+                  </div>
+                </div>
+
+                <div class="colores-lista" *ngIf="detalle?.colores?.length; else emptyColores">
+
+                  <div class="color-chip" *ngFor="let color of detalle?.colores">
+                    <i class="fi fi-ss-circle-small"></i>
+                    <span class="color-text">{{ color }}</span>
+                  </div>
+
+                </div>
+
+                <ng-template #emptyColores>
+                  <div class="colores-empty">
+                    <i class="fi fi-rr-palette"></i>
+                    <span>No hay colores registrados</span>
+                  </div>
+                </ng-template>
+
+              </div>
+
+              <div class="descripcion-item">
+
+                <div class="detail-icon">
+                  <i class="fi fi-rr-align-left"></i>
+                </div>
+
+                <div class="descripcion-content">
+                  <span class="detail-label">Descripción</span>
+
+                  <ng-container *ngIf="detalle?.descripcion?.trim(); else emptyDescripcion">
+                    <p class="descripcion-text">
+                      {{ detalle?.descripcion }}
+                    </p>
+                  </ng-container>
+
+                  <ng-template #emptyDescripcion>
+                    <p class="descripcion-text empty">
+                      No se ha registrado una descripción para esta prenda.
+                    </p>
+                  </ng-template>
+
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="right-column">
+
+          <div class="section-card">
+
+            <div class="lote-card">
+
+              <div class="lote-top">
+
+                <div class="lote-header">
+                  <div class="lote-icon">
+                    <i class="fi fi-rr-box-open-full"></i>
+                  </div>
+
+                  <div class="lote-header-info">
+                    <span class="lote-label-top">LOTE FIFO ACTIVO</span>
+                    <h3 class="lote-title">{{ detalle?.codigoLote }}</h3>
+                  </div>
+                </div>
+
+                <div class="stock-percent">
+                  {{ ((detalle?.stockActual || 0) * 100 / (detalle?.cantidadInicial || 1)).toFixed(0) }}%
+                </div>
+
+              </div>
+
+              <div class="stock-summary">
+
+                <div class="stock-summary-header">
+                  <span class="stock-title">Stock Disponible</span>
+                  <span class="stock-value">
+        {{ detalle?.stockActual }} de {{ detalle?.cantidadInicial }} unidades
+      </span>
+                </div>
+
+                <div class="stock-bar">
+                  <div
+                    class="stock-fill"
+                    [style.width.%]="(detalle?.stockActual || 0) * 100 / (detalle?.cantidadInicial || 1)">
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="lote-metrics">
+
+                <div class="metric-card">
+                  <span class="metric-label">Precio Compra</span>
+                  <span class="metric-value">S/ {{ detalle?.precioCompra | number:'1.2-2'}}</span>
+                </div>
+
+                <div class="metric-card">
+                  <span class="metric-label">Precio Venta</span>
+                  <span class="metric-value">S/ {{ detalle?.precioVenta | number:'1.2-2'}}</span>
+                </div>
+
+              </div>
+
+              <div class="inventario-section">
+
+                <div class="inventario-header">
+                  <span class="inventario-title">INVENTARIO POR TALLA</span>
+                </div>
+
+                <div class="inventario-list" *ngIf="detalle?.inventarios?.length; else emptyInventario">
+
+                  <div
+                    class="inventario-item"
+                    *ngFor="let item of detalle?.inventarios">
+
+                    <span class="talla">{{ item.talla }}</span>
+
+                    <div class="talla-bar">
+                      <div
+                        class="talla-fill"
+                        [style.width.%]="(item.stock * 100 / (detalle?.stockActual || 1))">
+                      </div>
+                    </div>
+
+                    <span class="talla-stock">{{ item.stock }} u.</span>
+
+                  </div>
+
+                </div>
+
+                <ng-template #emptyInventario>
+                  <div class="inventario-empty">
+                    <i class="fi fi-rr-box-open"></i>
+                    <span>No hay inventario registrado.</span>
+                  </div>
+                </ng-template>
+
+              </div>
+
+              <div class="insight-grid">
+
+                <div class="insight-card">
+
+                  <div class="insight-tooltip">
+                    Tiempo transcurrido desde el registro del lote.
+                  </div>
+
+                  <div class="insight-header">
+                    <span class="insight-title">Antigüedad</span>
+
+                    <div class="insight-icon">
+                      <i class="fi fi-rr-calendar"></i>
+                    </div>
+                  </div>
+
+                  <div class="insight-value">
+                    {{ resumen?.antiguedadDias }} días
+                  </div>
+
+                  <div class="insight-subtitle">
+                    Tiempo en inventario
+                  </div>
+
+                </div>
+
+                <div class="insight-card">
+
+                  <div class="insight-tooltip">
+                    Nivel de desempeño del lote según el porcentaje vendido.
+                  </div>
+
+                  <div class="insight-header">
+                    <span class="insight-title">Estado Comercial</span>
+
+                    <div class="insight-icon">
+                      <i class="fi fi-rr-chart-line-up"></i>
+                    </div>
+                  </div>
+
+                  <div class="insight-value">
+                    {{ resumen?.estadoComercial }}
+                  </div>
+
+                  <div class="insight-subtitle">
+                    Rendimiento actual
+                  </div>
+
+                </div>
+
+                <div class="insight-card">
+
+                  <div class="insight-tooltip">
+                    Capital que permanece invertido en el stock disponible.
+                  </div>
+
+                  <div class="insight-header">
+                    <span class="insight-title">Valor Inventario</span>
+
+                    <div class="insight-icon">
+                      <i class="fi fi-rr-box-open"></i>
+                    </div>
+                  </div>
+
+                  <div class="insight-value">
+                    S/ {{ resumen?.valorInventario | number:'1.2-2' }}
+                  </div>
+
+                  <div class="insight-subtitle">
+                    Capital inmovilizado
+                  </div>
+
+                </div>
+
+                <div class="insight-card">
+
+                  <div class="insight-tooltip">
+                    Ganancia estimada si se vende todo el stock restante.
+                  </div>
+
+                  <div class="insight-header">
+                    <span class="insight-title">Ganancia Potencial</span>
+
+                    <div class="insight-icon">
+                      <i class="fi fi-rr-sack-dollar"></i>
+                    </div>
+                  </div>
+
+                  <div class="insight-value">
+                    S/ {{ resumen?.gananciaPotencial | number:'1.2-2' }}
+                  </div>
+
+                  <div class="insight-subtitle">
+                    Utilidad proyectada
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="app-modal-footer">
+
+      <div class="app-modal-footer-left">
+
+        <button type="button" class="app-btn app-btn-secondary" (click)="mostrarDrawer ? cerrarDrawer() : abrirDrawer()">
+          <i class="fa-solid fa-sidebar"></i>
+          <span>Panel lateral</span>
+        </button>
+
+      </div>
+
+      <div class="app-modal-footer-right">
+
+        <button
+          type="submit"
+          class="app-btn app-btn-primary"
+          (click)="cerrarDetalle()"
+        >
+          <span>Cancelar</span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="drawer-modal" [class.drawer-open]="mostrarDrawer" [class.drawer-close]="closingDrawer" (click)="$event.stopPropagation()">
+
+    <div class="drawer-header">
+
+      <div class="sales-drawer-info">
+
+        <div class="drawer-icon">
+          <i class="fi fi-rr-chart-line-up"></i>
+        </div>
+
+        <div class="sales-drawer-content">
+          <h2 class="sales-drawer-title">
+            Resumen de Ventas
+          </h2>
+
+          <div class="sales-drawer-badge">
+            <i class="fi fi-rr-shopping-bag"></i>
+            <span>
+    {{ (detalle?.cantidadInicial || 0) - (detalle?.stockActual || 0) }}
+              und. vendidas
+  </span>
+          </div>
+        </div>
+
+      </div>
+
+      <button type="button" class="app-modal-close-btn" (click)="cerrarDrawer()">
+        <i class="fi fi-rr-cross-small"></i>
+      </button>
+
+    </div>
+
+    <div class="drawer-body">
+
+      <div class="sales-metrics-grid">
+
+        <!-- Unidades vendidas -->
+        <div class="sales-metric-item">
+          <div class="sales-metric-main">
+            <div class="sales-metric-left">
+              <div class="sales-metric-icon">
+                <i class="fi fi-rr-shopping-bag"></i>
+              </div>
+
+              <div class="sales-metric-info">
+          <span class="sales-metric-title">
+            Unidades Vendidas
+          </span>
+                <span class="sales-metric-value">
+            {{ metricaVenta?.unidadesVendidas || 0 }} und.
+          </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sales-metric-expand">
+            Total de prendas vendidas desde que el producto fue registrado.
+          </div>
+        </div>
+
+        <!-- Ingresos totales -->
+        <div class="sales-metric-item">
+          <div class="sales-metric-main">
+            <div class="sales-metric-left">
+              <div class="sales-metric-icon">
+                <i class="fi fi-rr-coins"></i>
+              </div>
+
+              <div class="sales-metric-info">
+          <span class="sales-metric-title">
+            Ingresos Totales
+          </span>
+                <span class="sales-metric-value">
+            S/ {{ metricaVenta?.ingresosTotales | number:'1.2-2' }}
+          </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sales-metric-expand">
+            Monto bruto acumulado obtenido por las ventas de esta prenda.
+          </div>
+        </div>
+
+        <!-- Ganancia acumulada -->
+        <div class="sales-metric-item">
+          <div class="sales-metric-main">
+            <div class="sales-metric-left">
+              <div class="sales-metric-icon">
+                <i class="fi fi-rr-chart-line-up"></i>
+              </div>
+
+              <div class="sales-metric-info">
+          <span class="sales-metric-title">
+            Ganancia Acumulada
+          </span>
+                <span class="sales-metric-value">
+            S/ {{ metricaVenta?.gananciaAcumulada | number:'1.2-2' }}
+          </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sales-metric-expand">
+            Beneficio neto generado después de descontar la inversión realizada.
+          </div>
+        </div>
+
+        <!-- Inversión total -->
+        <div class="sales-metric-item">
+          <div class="sales-metric-main">
+            <div class="sales-metric-left">
+              <div class="sales-metric-icon">
+                <i class="fi fi-rr-hand-holding-usd"></i>
+              </div>
+
+              <div class="sales-metric-info">
+          <span class="sales-metric-title">
+            Inversión Total
+          </span>
+                <span class="sales-metric-value">
+            S/ {{ metricaVenta?.inversionTotal | number:'1.2-2' }}
+          </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sales-metric-expand">
+            Capital invertido en la adquisición de las unidades comercializadas.
+          </div>
+        </div>
+
+        <!-- Ventas realizadas -->
+        <div class="sales-metric-item">
+          <div class="sales-metric-main">
+            <div class="sales-metric-left">
+              <div class="sales-metric-icon">
+                <i class="fi fi-rr-receipt"></i>
+              </div>
+
+              <div class="sales-metric-info">
+          <span class="sales-metric-title">
+            Ventas Realizadas
+          </span>
+                <span class="sales-metric-value">
+            {{ metricaVenta?.ventasRealizadas || 0 }} ventas
+          </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sales-metric-expand">
+            Número total de transacciones en las que se vendió esta prenda.
+          </div>
+        </div>
+
+        <!-- Última venta -->
+        <div class="sales-metric-item">
+          <div class="sales-metric-main">
+            <div class="sales-metric-left">
+              <div class="sales-metric-icon">
+                <i class="fi fi-rr-calendar-clock"></i>
+              </div>
+
+              <div class="sales-metric-info">
+          <span class="sales-metric-title">
+            Última Venta
+          </span>
+                <span class="sales-metric-value">
+            {{ metricaVenta?.ultimaVenta | date:'dd MMM yyyy, HH:mm' }}
+          </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sales-metric-expand">
+            Fecha en la que se registró la venta más reciente de esta prenda.
+          </div>
+        </div>
+
+        <!-- Tiempo promedio entre ventas -->
+        <div class="sales-metric-item">
+          <div class="sales-metric-main">
+            <div class="sales-metric-left">
+              <div class="sales-metric-icon">
+                <i class="fi fi-rr-time-fast"></i>
+              </div>
+
+              <div class="sales-metric-info">
+          <span class="sales-metric-title">
+            Tiempo Promedio
+          </span>
+                <span class="sales-metric-value">
+            {{ metricaVenta?.tiempoPromedioEntreVentas || 0 }} días
+          </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sales-metric-expand">
+            Intervalo promedio de tiempo transcurrido entre una venta y la siguiente.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,59 @@
+<div class="modal-backdrop" [class.fade-out]="closing">
+
+  <div class="modal-container" [class.modal-close]="closing" (click)="$event.stopPropagation()">
+
+    <form [formGroup]="form">
+
+      <div class="modal-footer">
+
+        <!-- Acciones secundarias -->
+        <div class="footer-left">
+
+
+          <button type="button" class="btn-footer btn-clear">
+
+            <i class="fi fi-br-broom"></i>
+
+            <span>Limpiar</span>
+
+          </button>
+
+        </div>
+
+        <!-- Acciones principales -->
+        <div class="footer-right">
+
+          <button
+            type="button"
+            class="btn-footer btn-cancel"
+            (click)="cerrarDesactivar()">
+
+            <i class="fi fi-br-cross-small"></i>
+
+            <span>Cancelar</span>
+
+          </button>
+
+          <button
+            type="button"
+            class="btn-footer btn-save"
+          >
+
+            <i class="fi fi-br-disk"></i>
+
+            <span>
+      XDDDDD
+      </span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+    </form>
+
+  </div>
+
+</div>

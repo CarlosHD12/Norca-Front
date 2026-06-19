@@ -1,241 +1,242 @@
 <div class="modal-backdrop" [class.fade-out]="closing">
 
   <div class="modal-container" [class.modal-close]="closing" (click)="$event.stopPropagation()">
+    <form [formGroup]="form">
 
-    <div class="modal-header">
+    <!-- HEADER -->
+      <div class="app-modal-header">
 
-      <div class="header-info">
+        <div class="app-modal-header-info">
 
-        <div class="header-icon">
+          <div class="app-modal-header-icon">
+            <i [class]="modoEdicion ? 'fi fi-br-refresh' : 'fi fi-br-add'"></i>
+          </div>
 
-          <i class="fi fi-rr-shirt"></i>
+          <div class="app-modal-header-text">
+            <h2>{{ modoEdicion ? 'Editar Prenda' : 'Registrar Nueva Prenda' }}</h2>
+            <p>
+              {{ modoEdicion
+              ? 'Modifica los datos y características de la prenda seleccionada'
+              : 'Completa la información para agregar una nueva prenda al catálogo' }}
+            </p>
+          </div>
 
         </div>
 
-        <div class="header-text">
+        <div class="app-modal-header-actions">
 
-          <h2>
-            {{ modoEdicion ? 'Editar Prenda' : 'Nueva Prenda' }}
-          </h2>
+          <div class="app-modal-badge">
+            <i class="fi fi-rr-asterik"></i>
+            <span>Campo Obligatorio</span>
+          </div>
 
-          <p>
-            {{ modoEdicion ? 'Actualiza la información de la prenda.' : 'Registra una nueva prenda en el inventario.' }}
-          </p>
+          <button
+            type="button"
+            class="app-modal-close-btn"
+            (click)="cancelar()">
+
+            <i class="fi fi-rr-cross-small"></i>
+
+          </button>
 
         </div>
 
       </div>
 
-      <div class="header-actions">
+    <!-- BODY -->
+    <div class="modal-body">
 
-        <button
-          type="button"
-          class="btn-header btn-search">
+      <div class="body-columns">
 
-          <i class="fi fi-rr-search"></i>
-
-          Buscar
-
-        </button>
-
-        <button
-          type="button"
-          class="btn-header btn-clear"
-          (click)="limpiarFormulario()">
-
-          <i class="fi fi-rr-trash"></i>
-
-          Limpiar
-
-        </button>
-
-      </div>
-
-    </div>
-
-    <form [formGroup]="form" class="modal-body">
-
+      <!-- IZQUIERDA -->
       <div class="left-column">
 
-        <div class="form-group">
+        <div class="section-card">
+          <div class="section-content">
 
-          <label>
-            Nombre de Prenda
-            <span class="required">*</span>
-          </label>
+          <!-- Nombre -->
+          <div class="form-group primero">
 
-          <div
-            class="input-wrapper"
-            [class.invalid]="submitted && form.get('nombre')?.invalid">
+            <label>
+              Nombre de Prenda
+              <span class="required">
+                <i class="fi fi-sr-asterik"></i>
+              </span>
+            </label>
 
-            <div class="input-icon">
+            <div class="input-wrapper" [class.invalid]="submitted && form.get('nombre')?.invalid">
+              <div class="input-icon"><i class="fi fi-br-label"></i></div>
+              <input type="text" formControlName="nombre" placeholder="Ej: Hoodie Urbano Classic">
+            </div>
 
-              T
+          </div>
+
+          <!-- Categoría y Marca -->
+          <div class="row-2">
+
+            <div class="form-group">
+
+              <label>
+                Categoría
+                <span class="required">
+                  <i class="fi fi-sr-asterik"></i>
+                </span>
+              </label>
+
+              <div class="custom-select" [class.invalid]="submitted && form.get('categoriaId')?.invalid" [class.active]="showCategoriaDropdown" (click)="toggleCategoriaDropdown($event)">
+
+                <div class="select-display">
+
+      <span class="selected-text" [class.placeholder]="!selectedCategoriaNombre">
+        {{ selectedCategoriaNombre || 'Seleccionar categoría' }}
+      </span>
+
+                  <i class="fi fi-br-angle-small-down" [class.rotate]="showCategoriaDropdown"></i>
+
+                </div>
+
+                <div
+                  class="select-dropdown"
+                  [class.open]="showCategoriaDropdown">
+
+                  <div
+                    class="select-option clear-option"
+                    [class.active]="form.get('categoriaId')?.value === null"
+                    (click)="selectCategoria(null,''); $event.stopPropagation()">
+
+                    Ninguna
+
+                  </div>
+
+                  <div
+                    *ngFor="let categoria of categorias"
+                    class="select-option"
+                    [class.active]="form.get('categoriaId')?.value === categoria.idCategoria"
+                    (click)="selectCategoria(categoria.idCategoria,categoria.nombre); $event.stopPropagation()">
+
+        <span>
+          {{ categoria.nombre }}
+        </span>
+
+                    <i
+                      *ngIf="form.get('categoriaId')?.value === categoria.idCategoria"
+                      class="fi fi-rr-check">
+                    </i>
+
+                  </div>
+
+                </div>
+
+              </div>
+
 
             </div>
 
-            <input
-              type="text"
-              formControlName="nombre"
-              placeholder="Ej: Hoodie Urbano Classic">
+            <div class="form-group">
 
-            <i class="fi fi-rr-info"></i>
+              <label>
+                Marca
+                <span class="required">
+                  <i class="fi fi-sr-asterik"></i>
+                </span>
+              </label>
 
-          </div>
+              <div class="custom-select" [class.invalid]="submitted && form.get('marcaId')?.invalid" [class.active]="showMarcaDropdown" (click)="toggleMarcaDropdown($event)">
 
-          <span
-            class="error-text"
-            *ngIf="submitted && form.get('nombre')?.invalid">
+                <div class="select-display">
 
-            Campo obligatorio
+      <span
+        class="selected-text"
+        [class.placeholder]="!selectedMarcaNombre">
 
-          </span>
+        {{ selectedMarcaNombre || 'Seleccionar marca' }}
 
-        </div>
+      </span>
 
-        <div class="row-2">
+                  <i
+                    class="fi fi-br-angle-small-down"
+                    [class.rotate]="showMarcaDropdown">
+                  </i>
 
-          <div class="form-group">
+                </div>
 
-            <label>
-              Categoría
-              <span class="required">*</span>
-            </label>
+                <div
+                  class="select-dropdown"
+                  [class.open]="showMarcaDropdown">
 
-            <select formControlName="categoriaId">
+                  <div
+                    class="select-option clear-option"
+                    [class.active]="form.get('marcaId')?.value === null"
+                    (click)="selectMarca(null,''); $event.stopPropagation()">
 
-              <option [ngValue]="null">
-                Seleccionar categoría
-              </option>
+                    Ninguna
 
-              <option
-                *ngFor="let categoria of categorias"
-                [value]="categoria.idCategoria">
+                  </div>
 
-                {{ categoria.nombre }}
+                  <div
+                    *ngFor="let marca of marcas"
+                    class="select-option"
+                    [class.active]="form.get('marcaId')?.value === marca.idMarca"
+                    (click)="selectMarca(marca.idMarca,marca.nombre); $event.stopPropagation()">
 
-              </option>
+        <span>
+          {{ marca.nombre }}
+        </span>
 
-            </select>
+                    <i *ngIf="form.get('marcaId')?.value === marca.idMarca" class="fi fi-rr-check"></i>
 
-            <span
-              class="error-text"
-              *ngIf="submitted && form.get('categoriaId')?.invalid">
+                  </div>
 
-              Campo obligatorio
+                </div>
 
-            </span>
-
-          </div>
-
-          <div class="form-group">
-
-            <label>
-              Marca
-              <span class="required">*</span>
-            </label>
-
-            <select formControlName="marcaId">
-
-              <option [ngValue]="null">
-                Seleccionar marca
-              </option>
-
-              <option
-                *ngFor="let marca of marcas"
-                [value]="marca.idMarca">
-
-                {{ marca.nombre }}
-
-              </option>
-
-            </select>
-
-            <span
-              class="error-text"
-              *ngIf="submitted && form.get('marcaId')?.invalid">
-
-              Campo obligatorio
-
-            </span>
-
-          </div>
-
-        </div>
-
-        <div class="form-group">
-
-          <label>
-            Material
-            <span class="required">*</span>
-          </label>
-
-          <input
-            type="text"
-            formControlName="material"
-            placeholder="Ej: Algodón Premium">
-
-          <span
-            class="error-text"
-            *ngIf="submitted && form.get('material')?.invalid">
-
-            Campo obligatorio
-
-          </span>
-
-        </div>
-
-        <div class="form-group">
-
-          <label>
-            Descripción
-          </label>
-
-          <textarea
-            rows="5"
-            formControlName="descripcion"
-            placeholder="Describe la prenda...">
-          </textarea>
-
-        </div>
-
-        <div class="form-group">
-
-          <label>
-            Colores Disponibles
-          </label>
-
-          <div class="colors-card">
-
-            <div class="colors-header">
-
-              <button
-                type="button"
-                class="btn-add-color"
-                (click)="agregarColor()">
-
-                <i class="fi fi-rr-plus"></i>
-
-                Añadir
-
-              </button>
+              </div>
 
             </div>
+          </div>
 
-            <div class="colors-list">
+          <!-- Material -->
+          <div class="form-group">
+
+            <label>
+              Material
+              <span class="required">
+                <i class="fi fi-sr-asterik"></i>
+              </span>
+            </label>
+
+            <div class="input-wrapper" [class.invalid]="submitted && form.get('material')?.invalid">
+              <div class="input-icon"><i class="fi fi-br-reel"></i></div>
+              <input type="text" formControlName="material" placeholder="Ej: 100% Algodón, Denim Stretch...">
+            </div>
+
+          </div>
+
+          <!-- Colores -->
+          <div class="form-group">
+
+            <label>Colores</label>
+
+            <div class="colors-container"
+                 [class.shift-right]="animAgregar"
+                 [class.shift-left]="animEliminar">
 
               <div
-                *ngFor="let color of colores;let i=index"
-                class="color-chip">
+                class="color-chip"
+                *ngFor="let color of colores; let i = index; trackBy: trackByIndex">
+
+                <span class="color-dot"></span>
 
                 <input
+                  type="text"
                   [(ngModel)]="colores[i]"
                   [ngModelOptions]="{standalone:true}"
+                  [style.width.px]="Math.max(40, (colores[i]?.length || 0) * 9)"
                   placeholder="Color">
 
                 <button
                   type="button"
-                  (click)="eliminarColor(color)">
+                  class="chip-remove"
+                  (click)="eliminarColor(i)">
 
                   <i class="fi fi-rr-cross-small"></i>
 
@@ -243,220 +244,247 @@
 
               </div>
 
+              <button
+                type="button"
+                class="add-color-btn"
+                (click)="agregarColor()">
+
+                + Color
+
+              </button>
+
             </div>
 
           </div>
 
+          <!-- Descripción -->
+          <div class="form-group">
+
+            <label>
+              Descripción
+            </label>
+
+            <textarea
+              rows="4"
+              formControlName="descripcion"
+              placeholder="Características especiales, uso recomendado..."></textarea>
+
+          </div>
+
         </div>
+        </div>
+
 
       </div>
 
+      <!-- DERECHA -->
       <div class="right-column">
 
-        <div class="form-group">
+        <div class="section-card">
+          <div class="section-content">
 
-          <label>
-            URL Imagen
-          </label>
+            <div class="form-group primero">
+              <label>URL de Imágen</label>
 
-          <input
-            type="text"
-            formControlName="imagenUrl"
-            placeholder="https://...">
-
-        </div>
-
-        <div class="image-preview-card">
-
-          <div
-            class="image-preview"
-            *ngIf="form.get('imagenUrl')?.value">
-
-            <img
-              [src]="form.get('imagenUrl')?.value"
-              alt="preview">
+            <div class="input-wrapper" [class.invalid]="form.get('imagenUrl')?.value && !esUrlValida(form.get('imagenUrl')?.value)">
+              <div class="input-icon"><i class="fi fi-br-link-alt"></i></div>
+              <input type="text" formControlName="imagenUrl" placeholder="https://...">
+            </div>
 
           </div>
 
-          <div
-            class="empty-preview"
-            *ngIf="!form.get('imagenUrl')?.value">
+          <!-- Vista previa -->
+          <div class="image-preview-card">
 
-            <i class="fi fi-rr-picture"></i>
+            <ng-container *ngIf="form.get('imagenUrl')?.value; else emptyImage">
+
+              <ng-container *ngIf="esUrlValida(form.get('imagenUrl')?.value); else invalidImage">
+
+                <div class="image-preview">
+
+                  <img
+                    [src]="form.get('imagenUrl')?.value"
+                    alt="Vista previa">
+
+                </div>
+
+              </ng-container>
+
+            </ng-container>
+
+            <ng-template #invalidImage>
+
+              <div class="empty-preview">
+
+                <i class="fi fi-rr-picture"></i>
+
+                <span>URL inválida</span>
+
+              </div>
+
+            </ng-template>
+
+            <ng-template #emptyImage>
+
+              <div class="empty-preview">
+
+                <i class="fi fi-rr-picture"></i>
+
+                <span>Sin imagen</span>
+
+              </div>
+
+            </ng-template>
+
+          </div>
+
+          <button type="button" class="btn-remove-image" (click)="eliminarImagen()">
+            <i class="fi fi-rr-trash"></i>
+            Quitar Imágen
+          </button>
+
+        </div>
+        </div>
+
+      </div>
+
+      </div>
+
+      <div class="extra-card espacio-arriba">
+        <!-- Contenido del cuadro -->
+        <div class="info-grid">
+
+            <!-- Código -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <span>Código de Prenda</span>
+              <span class="info-badge"><i [class]="modoEdicion? 'fi fi-br-bolt-auto': 'fi fi-br-user-robot'"></i>{{ modoEdicion ? 'Sistema' : 'Generado' }}</span>
+            </div>
+            <div class="info-value">
+              <i class="fi fi-br-qrcode"></i>
+              <span class="info-text">{{ modoEdicion ? datosPrenda?.codigo : 'PRD-XXXXXXXX' }}</span>
+              <i class="fi fi-br-lock"></i>
+            </div>
+          </div>
+
+            <!-- Fecha -->
+            <div class="info-card">
+
+              <div class="info-card-header">
+                <span>Fecha de Registro</span>
+
+                <span class="info-badge"><i class="fi fi-br-bolt-auto"></i>Sistema</span>
+              </div>
+
+              <div class="info-value">
+
+                <i class="fi fi-br-calendar-day"></i>
+
+                <span class="info-text">{{modoEdicion ? (datosPrenda?.fechaRegistro | date:'dd MMM yyyy, HH:mm') : fechaActual | date:'dd MMM yyyy, HH:mm'}}</span>
+                <i class="fi fi-br-lock"></i>
+
+              </div>
+
+            </div>
+
+            <!-- Estado -->
+            <div class="info-card">
+
+              <div class="info-card-header">
+                <span>Estado</span>
+
+                <span class="info-badge"><i class="fi fi-br-bolt-auto"></i>Sistema</span>
+
+              </div>
+
+              <div class="info-value">
+              <i class="fi fi-br-refresh"></i>
+
+              <span class="info-text">{{modoEdicion ? (datosPrenda?.estado === 'SIN_LOTES' ? 'SIN LOTES' : datosPrenda?.estado) : 'SIN LOTES' }}</span>
+
+              <i class="fi fi-br-lock"></i>
+            </div>
+
+            </div>
+
+            <!-- Activo -->
+            <div class="info-card">
+
+              <div class="info-card-header">
+                <span>Activo</span>
+
+                <span class="info-badge"><i class="fi fi-br-bolt-auto"></i>Sistema</span>
+
+              </div>
+
+              <div class="info-value">
+                <span class="switch-preview" [class.active]="!modoEdicion || datosPrenda?.estado !== 'INHABILITADA'"></span>
+                <span class="info-text">{{!modoEdicion || datosPrenda?.estado !== 'INHABILITADA' ? 'True' : 'False' }}</span>
+              </div>
+
+            </div>
+
+          </div>
+
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+      <div class="app-modal-footer">
+
+        <div class="app-modal-footer-left">
+
+          <button type="button" class="app-btn app-btn-secondary" [disabled]="!puedeBuscar()" (click)="buscarPrenda()">
+
+            <i class="fi fi-br-search"></i>
+
+            <span>Buscar</span>
+
+          </button>
+
+          <button type="button" class="app-btn app-btn-secondary" (click)="limpiarFormulario()">
+
+            <i class="fi fi-br-broom"></i>
+
+            <span>Limpiar</span>
+
+          </button>
+
+        </div>
+
+        <div class="app-modal-footer-right">
+
+          <button
+            type="button"
+            class="app-btn app-btn-secondary"
+            (click)="cancelar()">
+
+            <i class="fi fi-br-cross-small"></i>
 
             <span>
-              Sin imagen
-            </span>
+        Cancelar
+      </span>
 
-          </div>
+          </button>
+
+          <button
+            type="button"
+            class="app-btn app-btn-primary"
+            (click)="guardar()">
+
+            <i class="fi fi-br-disk"></i>
+
+            <span>
+        {{ modoEdicion ? 'Actualizar Prenda' : 'Registrar Prenda' }}
+      </span>
+
+          </button>
 
         </div>
 
-        <button
-          type="button"
-          class="btn-remove-image"
-          (click)="eliminarImagen()">
-
-          <i class="fi fi-rr-trash"></i>
-
-          Eliminar Imagen
-
-        </button>
-
       </div>
-
     </form>
-
-    <div class="auto-fields-section">
-
-      <div class="auto-title">
-
-        <i class="fi fi-rr-bolt"></i>
-
-        CAMPOS GENERADOS AUTOMÁTICAMENTE
-
-      </div>
-
-      <div class="auto-grid">
-
-        <div class="auto-card">
-
-          <div class="auto-header">
-
-            Código
-
-            <span class="badge-auto">
-              Auto
-            </span>
-
-          </div>
-
-          <strong>
-            PRD-XXXX
-          </strong>
-
-          <small>
-            Secuencial único
-          </small>
-
-        </div>
-
-        <div class="auto-card">
-
-          <div class="auto-header">
-
-            Fecha Registro
-
-            <span class="badge-auto">
-              Auto
-            </span>
-
-          </div>
-
-          <strong>
-            {{ fechaActual }}
-          </strong>
-
-          <small>
-            Hora del servidor
-          </small>
-
-        </div>
-
-        <div class="auto-card">
-
-          <div class="auto-header">
-
-            Estado Inicial
-
-            <span class="badge-auto">
-              Auto
-            </span>
-
-          </div>
-
-          <strong>
-            SIN LOTES
-          </strong>
-
-          <small>
-            Cambia con primer lote
-          </small>
-
-        </div>
-
-        <div class="auto-card">
-
-          <div class="auto-header">
-
-            Activo
-
-            <span class="badge-auto">
-              Auto
-            </span>
-
-          </div>
-
-          <strong>
-            Sí
-          </strong>
-
-          <small>
-            Siempre activo al crear
-          </small>
-
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="modal-footer">
-
-      <div class="footer-info">
-
-        <i class="fi fi-rr-shield-check"></i>
-
-        Los datos se guardan de forma segura
-
-      </div>
-
-      <div class="footer-actions">
-
-        <button
-          type="button"
-          class="btn-cancel"
-          (click)="cancelar()">
-
-          Cancelar
-
-        </button>
-
-        <button
-          type="button"
-          class="btn-draft"
-          (click)="guardarBorrador()">
-
-          <i class="fi fi-rr-bookmark"></i>
-
-          Guardar borrador
-
-        </button>
-
-        <button
-          type="button"
-          class="btn-save"
-          (click)="guardar()">
-
-          <i class="fi fi-rr-check"></i>
-
-          {{ modoEdicion ? 'Actualizar Prenda' : 'Registrar Prenda' }}
-
-        </button>
-
-      </div>
-
-    </div>
 
   </div>
 

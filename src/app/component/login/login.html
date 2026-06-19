@@ -1,53 +1,103 @@
-<div class="auth-container">
-  <!-- Panel Izquierdo -->
-  <div class="welcome-panel">
+<div class="auth-container" [class.login-success]="animandoLogin">
+  <section class="welcome-panel">
+    <div class="overlay"></div>
     <div class="welcome-content">
+      <div class="logo-box">
+        <i class="fi fi-rr-shirt-long-sleeve"></i>
+      </div>
+      <span class="tag">Sistema de Inventario</span>
       <h1>Boutique Norca</h1>
-      <p>Nice to see you again</p>
-      <p class="subtitle">Gestiona tu inventario de prendas con facilidad y eficiencia.</p>
+      <p class="subtitle">
+        Gestiona tu catálogo, stock y ventas de prendas desde una sola plataforma.
+      </p>
+      <div class="features">
+        <div class="feature-item">
+          <i class="fi fi-rr-box-open-full"></i>
+          <span>Control de inventario en tiempo real</span>
+        </div>
+        <div class="feature-item">
+          <i class="fi fi-rr-tags"></i>
+          <span>Gestión de prendas, marcas y categorías</span>
+        </div>
+        <div class="feature-item">
+          <i class="fi fi-rr-chart-line-up"></i>
+          <span>Seguimiento de lotes y movimientos</span>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Panel Derecho -->
-  <div class="form-panel">
-    <mat-card class="form-card login-card">
-      <h2 class="titulo">Iniciar Sesión</h2>
+  <section class="form-panel">
+    <div class="login-card">
+      <div class="login-header">
+        <span class="login-badge">Acceso al Sistema</span>
+        <h2>Iniciar Sesión</h2>
+        <p>Ingresa tus credenciales para continuar.</p>
+      </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form-content">
-        <mat-form-field appearance="outline" class="campo-form">
-          <mat-label>Email ID:</mat-label>
-          <input matInput formControlName="username" placeholder="Enter your email" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="campo-form">
-          <mat-label>Password:</mat-label>
-          <input
-            matInput
-            [type]="hidePassword ? 'password' : 'text'"
-            formControlName="password"
-            placeholder="Enter your password"
-          />
-          <button mat-icon-button matSuffix (click)="togglePassword()" type="button">
-            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-        </mat-form-field>
-
-        <div *ngIf="errorLogin" class="alert-error">
-          {{ errorLogin }}
+        <div class="input-group">
+          <label for="username">Usuario</label>
+          <div class="input-wrapper">
+            <i class="fi fi-rr-user"></i>
+            <input
+              id="username"
+              type="text"
+              formControlName="username"
+              placeholder="Ingresa tu usuario"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              name="login_username"
+            />
+          </div>
         </div>
 
-        <button mat-raised-button color="primary" type="submit" class="btn-login">
+        <div class="input-group">
+          <label for="password">Contraseña</label>
+          <div class="input-wrapper">
+            <i class="fi fi-rr-lock"></i>
+            <input
+              id="password"
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Ingresa tu contraseña"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="togglePassword()"
+            >
+              <i [class]="hidePassword ? 'fi fi-rr-eye-crossed' : 'fi fi-rr-eye'"></i>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="errorLogin" class="alert-error">
+          <i class="fi fi-rr-exclamation"></i>
+          <span>{{ errorLogin }}</span>
+        </div>
+
+        <button type="submit" class="btn-login" [disabled]="animandoLogin">
           Iniciar Sesión
         </button>
 
-        <p class="texto">
-          ¿Olvidaste tu contraseña?
-        </p>
-        <p class="texto">
-          ¿Nuevo en Boutique Norca?
-          <a routerLink="/home" class="enlace">Crear una cuenta</a>
-        </p>
+        <div class="login-links">
+          <a href="#">¿Olvidaste tu contraseña?</a>
+          <p>
+            ¿Nuevo en Boutique Norca?
+            <a routerLink="/home" class="register-link">Crear una cuenta</a>
+          </p>
+        </div>
       </form>
-    </mat-card>
+    </div>
+  </section>
+
+  <div class="loading-overlay" [class.active]="animandoLogin">
+    <div class="loading-card">
+      <div class="loader"></div>
+      <h3>Ingresando al sistema</h3>
+      <p>Preparando tu espacio de trabajo...</p>
+    </div>
   </div>
 </div>

@@ -1,0 +1,882 @@
+/* ========================== CUERPO DEL MODAL CON DRAWER ========================== */
+.modal-backdrop.detalle{
+  position: fixed;
+  inset: 0;
+}
+
+.modal-backdrop.detalle .modal-container{
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.drawer-modal{
+  position: absolute;
+  top: 50%;
+  left: calc(50% + 600px + 20px);
+  transform: translateY(-50%);
+  max-height: 98vh;
+  background: #fff;
+  border-radius: 15px;
+  display: flex;
+  width: 300px;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.drawer-modal.drawer-open{
+  visibility: visible;
+  pointer-events: auto;
+  transform-origin: left center;
+  animation: drawerReveal .32s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+.drawer-modal.drawer-close{
+  visibility: visible;
+  pointer-events: none;
+  transform-origin: left center;
+  animation: drawerHide .24s cubic-bezier(.4, 0, .2, 1) forwards;
+}
+
+@keyframes drawerReveal{
+  from{
+    opacity: 0;
+    transform: translateY(-50%) scaleX(.85);
+    filter: blur(4px);
+  }
+  to{
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes drawerHide{
+  from{
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1);
+    filter: blur(0);
+  }
+  to{
+    opacity: 0;
+    transform: translateY(-50%) scaleX(.85);
+    filter: blur(4px);
+  }
+}
+
+.drawer-header{
+  height: 85px;
+  min-height: 85px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ececec;
+}
+
+.drawer-body{
+  flex: 1;
+}
+
+/* ========================== INFORMACIÓN BASICA DE PRENDA ========================== */
+.prenda-info-card{
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.prenda-img-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  border-right: 1px solid #ececec;
+  min-height: 230px;
+}
+
+.prenda-img-container img{
+  width: 100%;
+  height: 100%;
+  max-width: 150px;
+  max-height: 150px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+
+.prenda-info-container{
+  display: flex;
+  flex-direction: column;
+}
+
+.prenda-header{
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #ececec;
+}
+
+.prenda-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #707070;
+  margin-bottom: 10px;
+}
+
+.prenda-chip i {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.prenda-title{
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #252525;
+  line-height: 1.2;
+}
+
+.prenda-details{
+  display: flex;
+  border-bottom: 1px solid #ececec;
+}
+
+.detail-item{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  border-right: 1px solid #ececec;
+}
+
+.detail-item:last-child{
+  border-right: none;
+}
+
+.detail-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  background: #f7f7f7;
+  border: 1px solid #ececec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.detail-icon i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #444;
+  line-height: 1;
+}
+
+.detail-content{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detail-label{
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .8px;
+  color: #8c8c8c;
+}
+
+.detail-value{
+  font-size: 15px;
+  font-weight: 600;
+  color: #2b2b2b;
+}
+
+.prenda-meta{
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 20px;
+  background: #fcfcfc;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #666;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.meta-item i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #555;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.meta-label,
+.meta-value {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.meta-label {
+  font-weight: 600;
+  color: #888;
+}
+
+.meta-value {
+  font-weight: 600;
+  color: #333;
+}
+
+.meta-divider{
+  width: 1px;
+  height: 18px;
+  background: #e3e3e3;
+}
+
+.estado-badge{
+  padding: 7px 10px;
+  border-radius: 50px;
+  background: #f5f5f5;
+  border: 1px solid #e8e8e8;
+  color: #2b2b2b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ========================== CONTENEDOR DE COLORES DE PRENDA ========================== */
+.colores-card{
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.colores-header{
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  border-bottom: 1px solid #ececec;
+}
+
+.colores-info{
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.colores-title{
+  font-size: 15px;
+  font-weight: 600;
+  color: #2b2b2b;
+}
+
+.colores-subtitle{
+  font-size: 12px;
+  font-weight: 500;
+  color: #8a8a8a;
+}
+
+.colores-lista{
+  height: 98px;
+  padding: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.color-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 50px;
+}
+
+.color-chip i{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.color-text{
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #444;
+}
+
+.colores-empty{
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #9a9a9a;
+}
+
+.colores-empty i{
+  font-size: 28px;
+  line-height: 1;
+}
+
+.colores-empty span{
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ========================== CONTENEDOR DE DESCRIPCIÓN DE PRENDA ========================== */
+.descripcion-item{
+  margin-top: 15px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+}
+
+.descripcion-content{
+  flex: 1;
+  min-width: 0;
+  height: 65px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.descripcion-text{
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+  word-break: break-word;
+}
+
+.descripcion-text.empty{
+  color: #9b9b9b;
+  font-weight: 500;
+}
+
+/* ========================== INFORMACIÓN DEL LOTE FIFO DE PRENDA ========================== */
+.lote-card{
+  background: #FFFFFF;
+  border: 1px solid #e8e8e8;
+  overflow: hidden;
+}
+
+.lote-top{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.lote-header{
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.lote-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  background: #f7f7f7;
+  border: 1px solid #ececec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.lote-icon i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #555;
+  line-height: 1;
+}
+
+.lote-header-info{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 700;
+}
+
+.lote-label-top{
+  font-size: 11px;
+  letter-spacing: .8px;
+  color: #888;
+}
+
+.lote-title{
+  margin: 0;
+  font-size: 22px;
+  color: #222;
+}
+
+.stock-percent{
+  font-size: 22px;
+  color: #b22e40;
+  font-weight: 600;
+}
+
+.stock-summary{
+  padding: 0 15px 15px;
+}
+
+.stock-summary-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.stock-title{
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+}
+
+.stock-value{
+  font-size: 12px;
+  font-weight: 500;
+  color: #8b8b8b;
+}
+
+.stock-bar{
+  height: 8px;
+  background: #ece6e7;
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+.stock-fill{
+  height: 100%;
+  background: linear-gradient(90deg,#d84861,#b22e40);
+  border-radius: 50px;
+}
+
+.lote-metrics{
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 10px;
+  padding: 0 15px;
+}
+
+.metric-card{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid #ececec;
+  background: #fafafa;
+  border-radius: 10px;
+}
+
+.metric-label{
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: #8b8b8b;
+}
+
+.metric-value{
+  font-size: 17px;
+  font-weight: 700;
+  color: #252525;
+}
+
+.inventario-section{
+  padding: 18px 15px 0 18px;
+}
+
+.inventario-header{
+  margin-bottom: 12px;
+}
+
+.inventario-title{
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #888;
+}
+
+.inventario-list{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 100px;
+  height: 100px;
+  overflow-y: auto;
+}
+
+.inventario-item{
+  display: grid;
+  grid-template-columns: 35px 1fr 35px;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.talla{
+  font-size: 14px;
+  color: #222;
+  text-transform: uppercase;
+}
+
+.talla-bar{
+  height: 8px;
+  background: #ece6e7;
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+.talla-fill{
+  height: 100%;
+  background: #B83847;
+  border-radius: 50px;
+}
+
+.talla-stock{
+  text-align: right;
+  font-size: 13px;
+  color: #222;
+}
+
+.inventario-empty{
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #999;
+}
+
+.inventario-empty i{
+  font-size: 28px;
+  line-height: 1;
+}
+
+.inventario-empty span{
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ========================== INFORMACIÓN DE METRICAS DEL LOTE FIFO DE PRENDA ========================== */
+.insight-grid{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.insight-card{
+  position: relative;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  transition: all .18s ease;
+  overflow: visible;
+}
+
+.insight-card:hover{
+  transform: translateY(-2px);
+  border-color: #e2e2e2;
+  box-shadow: 0 8px 20px rgba(0,0,0,.06);
+}
+
+.insight-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.insight-title{
+  font-size: 12px;
+  font-weight: 600;
+  color: #9b6f72;
+}
+
+.insight-icon{
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #e5f8ea;
+  flex-shrink: 0;
+}
+
+.insight-icon i{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  line-height: 1;
+  color: #179c42;
+}
+
+.insight-value{
+  font-size: 22px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.1;
+}
+
+.insight-value span{
+  font-size: 12px;
+  font-weight: 500;
+  color: #777;
+}
+
+.insight-subtitle{
+  margin-top: 6px;
+  font-size: .72rem;
+  color: #999;
+  line-height: 1.3;
+}
+
+.insight-tooltip{
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translate(-50%, 8px);
+  width: 180px;
+  padding: 10px 12px;
+  background: #1f2937;
+  color: white;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all .2s ease;
+  z-index: 100;
+}
+
+.insight-tooltip::after{
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1f2937;
+}
+
+.insight-card:hover .insight-tooltip{
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+/* ========================== INFORMACIÓN DE METRICAS DE VENTAS HEADER ========================== */
+.sales-drawer-info{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.drawer-icon{
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  background: #fbecef;
+  border: 1px solid #f3d9df;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.drawer-icon i{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #b22e40;
+  line-height: 1;
+}
+
+.sales-drawer-content{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sales-drawer-title{
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f1f1f;
+  line-height: 1;
+}
+
+.sales-drawer-badge{
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #fafafa;
+  border: 1px solid #ececec;
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sales-drawer-badge i{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b22e40;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* ========================== INFORMACIÓN DE METRICAS DE VENTAS DE PRENDA ========================== */
+.sales-metrics-grid{
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.sales-metric-item{
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  padding: 15px;
+  overflow: hidden;
+  transition: .25s ease;
+}
+
+.sales-metric-item:hover{
+  border-color: #dfd2d5;
+  box-shadow: 0 8px 22px rgba(178,46,64,.05);
+}
+
+.sales-metric-main{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sales-metric-expand{
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    max-height .3s ease,
+    padding .3s ease,
+    margin-top .3s ease,
+    opacity .2s ease;
+  background: #faf8f9;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.7;
+  color: #767676;
+}
+
+.sales-metric-item:hover .sales-metric-expand{
+  max-height: 80px;
+  margin-top: 15px;
+  padding: 10px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.sales-metric-left{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sales-metric-icon{
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  background: #fbecef;
+  border: 1px solid #f5dde2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sales-metric-icon i{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #b22e40;
+  line-height: 1;
+}
+
+.sales-metric-info{
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sales-metric-title{
+  font-size: 12px;
+  font-weight: 500;
+  color: #3d3d3d;
+}
+
+.sales-metric-value{
+  font-size: 16px;
+  font-weight: 600;
+  color: #171717;
+}

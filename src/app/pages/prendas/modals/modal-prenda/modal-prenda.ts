@@ -1,7 +1,7 @@
 import {Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {PrendaService} from '../../../../services/prenda-service';
-import {NgForOf, NgIf} from '@angular/common';
+import {DatePipe, NgForOf, NgIf} from '@angular/common';
 import {CategoriaResponseDTO} from '../../../../model/CategoriaResponseDTO';
 import {MarcaResponseDTO} from '../../../../model/MarcaResponseDTO';
 import {CategoriaService} from '../../../../services/categoria-service';
@@ -15,30 +15,168 @@ import {PrendaRegistroDTO} from '../../../../model/PrendaRegistroDTO';
     ReactiveFormsModule,
     FormsModule,
     NgForOf,
-    NgIf
+    NgIf,
+    DatePipe
   ],
   templateUrl: './modal-prenda.html',
   styleUrl: './modal-prenda.css',
 })
 export class ModalPrenda  implements OnInit {
+  private datosOriginales = '';
+  showMarcaDropdown = false;
+  selectedMarcaNombre = '';
+  showCategoriaDropdown = false;
+  selectedCategoriaNombre = '';
+
+  toggleCategoriaDropdown(event: Event): void {
+
+    event.stopPropagation();
+
+    this.showCategoriaDropdown =
+      !this.showCategoriaDropdown;
+
+    this.showMarcaDropdown = false;
+
+  }
+
+  toggleMarcaDropdown(event: Event): void {
+
+    event.stopPropagation();
+
+    this.showMarcaDropdown =
+      !this.showMarcaDropdown;
+
+    this.showCategoriaDropdown = false;
+
+  }
+
+  selectMarca(
+    idMarca: number | null,
+    nombre: string
+  ): void {
+
+    const actual =
+      this.form.get('marcaId')?.value;
+
+    if (actual === idMarca) {
+
+      this.form.patchValue({
+        marcaId: null
+      });
+
+      this.selectedMarcaNombre = '';
+
+    } else {
+
+      this.form.patchValue({
+        marcaId: idMarca
+      });
+
+      this.selectedMarcaNombre = nombre;
+
+    }
+
+    this.showMarcaDropdown = false;
+
+  }
+
+  selectCategoria(
+    idCategoria: number | null,
+    nombre: string
+  ): void {
+
+    const actual =
+      this.form.get('categoriaId')?.value;
+
+    if (actual === idCategoria) {
+
+      this.form.patchValue({
+        categoriaId: null
+      });
+
+      this.selectedCategoriaNombre = '';
+
+    } else {
+
+      this.form.patchValue({
+        categoriaId: idCategoria
+      });
+
+      this.selectedCategoriaNombre = nombre;
+
+    }
+
+    this.showCategoriaDropdown = false;
+
+  }
+
+  @HostListener('document:click')
+  closeDropdowns(): void {
+    this.showCategoriaDropdown = false;
+    this.showMarcaDropdown = false;
+  }
 
   @Output()
-  draftSaved = new EventEmitter<any>();
+  buscar = new EventEmitter<any>();
 
-  @Input()
-  modoEdicion = false;
+  buscarPrenda(): void {
 
-  @Input()
-  idPrenda: number | null = null;
+    const nombre =
+      this.form.value.nombre?.trim() ?? '';
 
-  @Input()
-  datosPrenda: any = null;
+    const categoria =
+      this.selectedCategoriaNombre;
 
-  @Output()
-  modalClose = new EventEmitter<void>();
+    const marca =
+      this.selectedMarcaNombre;
 
-  @Output()
-  saved = new EventEmitter<void>();
+    if (
+      !nombre &&
+      !categoria &&
+      !marca
+    ) {
+      return;
+    }
+
+    this.buscar.emit({
+
+      search: nombre,
+
+      categoria,
+
+      marca
+
+    });
+
+    this.cerrarModal();
+
+  }
+
+  animarAgregarColor = false;
+
+  puedeBuscar(): boolean {
+
+    return !!(
+
+      this.form.value.nombre?.trim() ||
+
+      this.form.value.categoriaId ||
+
+      this.form.value.marcaId
+
+    );
+
+  }
+
+  @Input() modoEdicion = false;
+
+  @Input() idPrenda: number | null = null;
+
+  @Input() datosPrenda: any = null;
+
+  @Output() modalClose = new EventEmitter<void>();
+
+  @Output() saved = new EventEmitter<void>();
 
   form!: FormGroup;
 
@@ -63,14 +201,18 @@ export class ModalPrenda  implements OnInit {
     private prendaService: PrendaService
   ) {}
 
+
   ngOnInit(): void {
 
-    this.fechaActual = new Date().toLocaleDateString(
+    this.fechaActual = new Date().toLocaleString(
       'es-PE',
       {
         day: '2-digit',
         month: 'short',
-        year: 'numeric'
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
       }
     );
 
@@ -102,7 +244,8 @@ export class ModalPrenda  implements OnInit {
       imagenUrl: [
         '',
         [
-          Validators.maxLength(500)
+          Validators.maxLength(500),
+          Validators.pattern(/^https?:\/\/.+/i)
         ]
       ],
 
@@ -140,11 +283,39 @@ export class ModalPrenda  implements OnInit {
 
       });
 
+      this.selectedCategoriaNombre =
+        this.datosPrenda.categoria ?? '';
+
+      this.selectedMarcaNombre =
+        this.datosPrenda.marca ?? '';
+
       this.colores = [
         ...(this.datosPrenda.colores || [])
       ];
 
+      this.datosOriginales = JSON.stringify({
+
+        ...this.form.getRawValue(),
+
+        colores: [...this.colores]
+
+      });
+
     }
+
+  }
+
+  private huboCambios(): boolean {
+
+    const actual = JSON.stringify({
+
+      ...this.form.getRawValue(),
+
+      colores: [...this.colores]
+
+    });
+
+    return actual !== this.datosOriginales;
 
   }
 
@@ -192,29 +363,33 @@ export class ModalPrenda  implements OnInit {
 
   }
 
-  agregarColor(): void {
+  animAgregar = false;
+  animEliminar = false;
 
+  agregarColor(): void {
     this.colores.push('');
 
+    this.animAgregar = true;
+
+    setTimeout(() => {
+      this.animAgregar = false;
+    }, 180);
   }
 
-  eliminarColor(color: string): void {
+  eliminarColor(index: number): void {
+    this.colores.splice(index, 1);
 
-    this.colores =
-      this.colores.filter(
-        c => c !== color
-      );
+    this.animEliminar = true;
 
+    setTimeout(() => {
+      this.animEliminar = false;
+    }, 180);
   }
 
   eliminarImagen(): void {
-
     this.form.patchValue({
-
       imagenUrl: ''
-
     });
-
   }
 
   limpiarFormulario(): void {
@@ -222,6 +397,14 @@ export class ModalPrenda  implements OnInit {
     this.submitted = false;
 
     this.colores = [];
+
+    this.selectedMarcaNombre = '';
+
+    this.selectedCategoriaNombre = '';
+
+    this.showMarcaDropdown = false;
+
+    this.showCategoriaDropdown = false;
 
     this.form.reset({
 
@@ -242,34 +425,54 @@ export class ModalPrenda  implements OnInit {
   }
 
   cancelar(): void {
-
-    this.limpiarFormulario();
-
     this.cerrarModal();
-
-  }
-
-  guardarBorrador(): void {
-    this.draftSaved.emit({
-
-      ...this.form.value,
-
-      colores: [...this.colores]
-
-    });
-
-    this.cerrarModal();
-
   }
 
   guardar(): void {
 
+    if (this.form.invalid) {
+
+      this.submitted = false;
+
+      setTimeout(() => {
+        this.submitted = true;
+        this.form.markAllAsTouched();
+      });
+
+      return;
+    }
+
     this.submitted = true;
 
+    let imagenUrl =
+      this.form.value.imagenUrl?.trim() ?? '';
+
     if (
-      this.form.invalid
+      imagenUrl &&
+      !this.esUrlValida(imagenUrl)
     ) {
-      return;
+
+      imagenUrl = '';
+
+      this.form.patchValue({
+        imagenUrl: ''
+      });
+
+    }
+
+    if (
+      this.modoEdicion &&
+      this.idPrenda
+    ) {
+
+      if (!this.huboCambios()) {
+
+        this.cerrarModal(false);
+
+        return;
+
+      }
+
     }
 
     this.loading = true;
@@ -291,7 +494,7 @@ export class ModalPrenda  implements OnInit {
         this.form.value.descripcion,
 
         imagenUrl:
-        this.form.value.imagenUrl,
+        imagenUrl,
 
         categoriaId:
         this.form.value.categoriaId,
@@ -323,6 +526,8 @@ export class ModalPrenda  implements OnInit {
 
             this.saved.emit();
 
+            this.limpiarFormulario();
+
             this.cerrarModal();
 
           },
@@ -351,7 +556,7 @@ export class ModalPrenda  implements OnInit {
         this.form.value.descripcion,
 
         imagenUrl:
-        this.form.value.imagenUrl,
+        imagenUrl,
 
         categoriaId:
         this.form.value.categoriaId,
@@ -380,6 +585,8 @@ export class ModalPrenda  implements OnInit {
 
             this.saved.emit();
 
+            this.limpiarFormulario();
+
             this.cerrarModal();
 
           },
@@ -398,14 +605,16 @@ export class ModalPrenda  implements OnInit {
 
   }
 
-  cerrarModal(): void {
+  cerrarModal(limpiar = true): void {
+
+    if (limpiar) {
+      this.limpiarFormulario();
+    }
 
     this.closing = true;
 
     setTimeout(() => {
-
       this.modalClose.emit();
-
     }, 250);
 
   }
@@ -417,4 +626,33 @@ export class ModalPrenda  implements OnInit {
 
   }
 
+  esUrlValida(url: string): boolean {
+
+    if (!url) {
+      return false;
+    }
+
+    try {
+
+      const parsed =
+        new URL(url);
+
+      return (
+        parsed.protocol === 'http:' ||
+        parsed.protocol === 'https:'
+      );
+
+    } catch {
+
+      return false;
+
+    }
+
+  }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
+
+  protected readonly Math = Math;
 }

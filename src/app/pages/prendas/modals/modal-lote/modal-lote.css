@@ -1,0 +1,908 @@
+/* ========================== TABLA DE INVENTARIO ========================== */
+.inventory-toolbar{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.inventory-info{
+  display: flex;
+  flex-direction: column;
+}
+
+.inventory-title{
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.inventory-counter{
+  font-size: 12px;
+  color: #888;
+  font-weight: 500;
+}
+
+.btn-add-size{
+  padding: 14px;
+  border: 1px dashed #d8d8d8;
+  background: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.btn-add-size:hover:not(:disabled){
+  background: #fafafa;
+  border-color: #c9c9c9;
+  color: #222;
+}
+
+.btn-add-size:disabled{
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.btn-add-size i{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #666;
+  line-height: 1;
+}
+
+.inventory-table{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 190px;
+  max-height: 190px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-right: 8px;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.inventory-card{
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition: .2s ease;
+}
+
+.inventory-card:hover{
+  background: #fff;
+  border-color: #dddddd;
+  box-shadow: 0 8px 18px rgba(0,0,0,.04);
+}
+
+.inventory-main{
+  flex: 1;
+  display: grid;
+  grid-template-columns: 60px 90px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.inventory-field{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progress-field{
+  justify-content: flex-start;
+}
+
+.field-label{
+  height: 18px;
+  display: flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #999;
+  letter-spacing: .5px;
+  line-height: 1;
+}
+
+.size-button{
+  width: 100%;
+  height: 44px;
+  border: 1px solid #ececec;
+  background: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #444;
+  transition: .2s ease;
+}
+
+.size-button:hover{
+  background: #fafafa;
+  border-color: #d7d7d7;
+}
+
+.size-button i{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.input-stock{
+  width: 100%;
+  height: 44px;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  background: #fff;
+  padding: 0 12px;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  transition: .2s ease;
+}
+
+.input-stock:focus{
+  border-color: #d7d7d7;
+}
+
+.progress-header{
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.progress-header .share-cell{
+  min-width: 44px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #f6f2f3;
+  border: 1px solid #eadbdf;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: #5C0B15;
+}
+
+.distribution-bar{
+  width: 100%;
+  height: 8px;
+  margin-top: 13px;
+  background: #efefef;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.distribution-fill{
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg,#5C0B15 0%,#8b3a48 100%);
+  transition: width .3s ease;
+}
+
+.delete-button{
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .2s ease,border-color .2s ease,transform .2s ease;
+}
+
+.delete-button:hover{
+  background: #f8f1f3;
+  border-color: #d8a7b3;
+}
+
+.delete-button:active{
+  transform: scale(.95);
+}
+
+.delete-button i{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
+  color: #777;
+  transition: color .2s ease,transform .2s ease;
+}
+
+.delete-button:hover i{
+  color: #5C0B15;
+  transform: scale(1.08);
+}
+
+/* ========================== TABLA VACIA DE INVENTARIO ========================== */
+.table-empty{
+  flex: 1;
+  min-height: 160px;
+  border: 1px dashed #d8d8d8;
+  border-radius: 12px;
+  background: #fcfcfc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+.table-empty-icon{
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: #f5f5f5;
+  border: 1px solid #ececec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.table-empty-icon i{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  color: #7b7b7b;
+}
+
+.table-empty-content{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.table-empty-content h4{
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+}
+
+.table-empty-content p{
+  margin: 0;
+  max-width: 280px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #888;
+}
+
+/* ========================== BARRA DE DISTRIBUCIÓN ========================== */
+.stock-progress-card{
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  transition: .25s ease;
+}
+
+.stock-progress-card.invalid{
+  border-color: #d8a7b3;
+  box-shadow: 0 0 0 3px rgba(216,167,179,.12);
+}
+
+.stock-summary{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.stock-summary-info{
+  display: flex;
+  flex-direction: column;
+}
+
+.stock-summary-label{
+  font-size: 10px;
+  font-weight: 500;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+.stock-summary-title{
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+.stock-summary-percent{
+  padding: 7px 22px;
+  border-radius: 50px;
+  background: #f6f2f3;
+  border: 1px solid #eadbdf;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5C0B15;
+}
+
+.stock-progress-bar{
+  width: 100%;
+  height: 8px;
+  background: #ececec;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.stock-progress-fill{
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg,#5C0B15,#94404f);
+  transition: width .3s ease;
+}
+
+.stock-stats{
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 25px;
+  margin-top: 15px;
+}
+
+.stock-stat{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stock-stat-label{
+  font-size: 12px;
+  color: #999;
+  font-weight: 500;
+  letter-spacing: .4px;
+}
+
+.stock-stat-value{
+  font-size: 17px;
+  font-weight: 600;
+  color: #333;
+}
+
+.stock-stat-value.pending{
+  color: #B22E40;
+}
+
+.stock-divider{
+  width: 2px;
+  height: 30px;
+  background: #B22E40;
+}
+/* ========================== SIMULACION FINANCIERA ========================== */
+.simulation-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.simulation-card{
+  background:#fff;
+  border:1px solid #ececec;
+  border-radius:10px;
+  padding: 10px;
+}
+
+.simulation-grid .simulation-card{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.card-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.card-title{
+  font-size: 12px;
+  font-weight:600;
+  color:#666;
+}
+
+.badge {
+  width: 26px;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 1px solid #ececec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 12px;
+  line-height: 1;
+  transform: translateY(1px);
+  color: inherit;
+}
+
+.badge.neutral {
+  color: #7a7a7a;
+  background: #f5f5f5;
+}
+
+.badge.good {
+  color: #23814f;
+  background: #eef8f1;
+}
+
+.badge.medium {
+  color: #c28a1b;
+  background: #fff8e9;
+}
+
+.badge.bad {
+  color: #d84b4b;
+  background: #fff0f0;
+}
+
+.card-value{
+  margin: 4px 0 5px;
+  font-size: 22px;
+  font-weight:700;
+  color:#1f1f1f;
+  line-height:1.1;
+}
+
+.card-subtitle{
+  font-size:11px;
+  font-weight:500;
+  color:#8a8a8a;
+}
+
+/* ========================== CARD DE COSTOS VS INGRESOS ========================== */
+.revenue-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.revenue-header h4{
+  margin: 0;
+  font-size: 14px;
+  font-weight:600;
+  color:#202020;
+}
+
+.metric-row{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.metric-row:last-child{
+  margin-bottom:0;
+}
+
+.metric-label{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font-weight: 500;
+}
+
+.metric-label span{
+  font-size: 12px;
+  color:#666;
+}
+
+.metric-valor{
+  font-size: 13px;
+  font-weight: 600;
+  color:#202020;
+}
+
+.metric-bar{
+  width:100%;
+  height:10px;
+  background:#f0f0f0;
+  border-radius: 50px;
+  overflow:hidden;
+}
+
+.metric-fill{
+  height:100%;
+  border-radius: 50px;
+  transition:width .25s ease;
+}
+
+.revenue-fill {
+  background: #7c6cf2;
+}
+
+.cost-fill {
+  background: #e07a5f;
+}
+
+.profit-fill {
+  background: #4f9d8f;
+}
+
+/* ========================== CARD DE STATUS FINANCIERO ========================== */
+.financial-status-card {
+  margin-top: 15px;
+  border-radius: 10px;
+  border: 1px solid #ececec;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  height: 102px;
+  box-sizing: border-box;
+}
+
+.financial-status-card.good{
+  background:#eef8f1;
+  border-color:#d7ecde;
+}
+
+.financial-status-card.medium{
+  background:#fff8e9;
+  border-color:#f3e4ba;
+}
+
+.financial-status-card.bad{
+  background:#fff0f0;
+  border-color:#f1d0d0;
+}
+
+.status-icon {
+  width: 50px;
+  min-width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-icon i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.financial-status-card.good .status-icon i{
+  color:#23814f;
+}
+
+.financial-status-card.medium .status-icon i{
+  color:#c28a1b;
+}
+
+.financial-status-card.bad .status-icon i{
+  color:#d84b4b;
+}
+
+.status-content{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.status-content h4{
+  margin:0;
+  font-size:16px;
+  font-weight:650;
+  color:#202020;
+}
+
+.status-content p{
+  margin:0;
+  font-size:13px;
+  color:#666;
+  line-height:1.4;
+}
+
+@media(max-width:1100px){
+
+  .simulation-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:700px){
+
+  .simulation-grid{
+    grid-template-columns:1fr;
+  }
+
+  .revenue-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:4px;
+  }
+
+}
+
+/* ========================== MODAL DE TALLAS ========================== */
+.modal-tallas-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(18,18,18,.35);
+  backdrop-filter:blur(3px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index: 500;
+  cursor: default;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .22s ease, visibility .22s ease;
+}
+
+.modal-tallas-container{
+  width:520px;
+  max-width:92vw;
+  background:#fff;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.12);
+
+  opacity:0;
+  transform:translateY(12px) scale(.96);
+  transition:opacity .22s ease, transform .22s ease;
+}
+
+.modal-tallas-backdrop.open{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+.modal-tallas-backdrop.open .modal-tallas-container{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+
+.modal-tallas-backdrop.closing{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+.modal-tallas-backdrop.closing .modal-tallas-container{
+  opacity:0;
+  transform:translateY(12px) scale(.96);
+}
+
+.modal-tallas-header{
+  height:88px;
+  padding:0 22px;
+  border-bottom:1px solid #ececec;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.modal-tallas-info{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.modal-tallas-icon{
+  width:50px;
+  height:50px;
+  border-radius:14px;
+  background:#fafafa;
+  border:1px solid #ececec;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-tallas-icon i{
+  font-size:20px;
+  color:#555;
+}
+
+.modal-tallas-text{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.modal-tallas-text h3{
+  margin:0;
+  font-size:20px;
+  font-weight:700;
+  color:#202020;
+}
+
+.modal-tallas-text p{
+  margin:0;
+  font-size:13px;
+  color:#8b8b8b;
+}
+
+.modal-tallas-close{
+  width:42px;
+  height:42px;
+  background:#fafafa;
+  border:1px solid #ececec;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.modal-tallas-close:hover{
+  background:#f2f2f2;
+}
+
+.modal-tallas-close i{
+  font-size:16px;
+  color:#555;
+}
+
+.modal-tallas-body{
+  padding:22px;
+}
+
+.tallas-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.talla-card{
+  min-height:82px;
+  border:1px solid #ececec;
+  border-radius:14px;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  cursor:pointer;
+  transition:all .2s ease;
+  user-select:none;
+}
+
+.talla-card:hover:not(.disabled){
+  transform:translateY(-2px);
+  border-color:#d8d8d8;
+  background:#fafafa;
+}
+
+.talla-name{
+  font-size:18px;
+  font-weight:700;
+  color:#222;
+}
+
+.talla-state{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  font-size:11px;
+  color:#8a8a8a;
+}
+
+.talla-state i{
+  font-size:11px;
+}
+
+.talla-card.selected{
+  background:#eef8f1;
+  border-color:#d8eadf;
+}
+
+.talla-card.selected .talla-name,
+.talla-card.selected .talla-state{
+  color:#2f7a4d;
+}
+
+.talla-card.disabled{
+  background:#f8f8f8;
+  border-color:#ededed;
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.talla-card.disabled .talla-name,
+.talla-card.disabled .talla-state{
+  color:#999;
+}
+
+.modal-tallas-footer{
+  height:58px;
+  border-top:1px solid #ececec;
+  padding:0 22px;
+  display:flex;
+  align-items:center;
+}
+
+.footer-legend{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  flex-wrap:wrap;
+}
+
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:12px;
+  color:#777;
+}
+
+.legend-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+}
+
+.legend-dot.available{
+  background:#d9d9d9;
+}
+
+.legend-dot.selected{
+  background:#5ca779;
+}
+
+.legend-dot.occupied{
+  background:#a9a9a9;
+}

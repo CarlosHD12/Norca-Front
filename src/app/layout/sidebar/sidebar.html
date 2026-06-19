@@ -1,23 +1,20 @@
-<div class="sidebar" [class.expanded]="isExpanded" (mouseenter)="expand()" (mouseleave)="collapse()">
+<div class="sidebar" [class.expanded]="isExpanded">
 
   <div class="sidebar-header">
 
     <div class="brand">
 
       <div class="logo-box">
-        <img src="/default.png" alt="logo">
+        <img src="/default2.png" alt="logo">
       </div>
 
       <div class="header-text">
-
         <span class="title">
-          Norca
+          {{ usuario }}
         </span>
-
         <small class="subtitle">
-          ERP Inventario
+          {{ rol }}
         </small>
-
       </div>
 
     </div>
@@ -30,7 +27,7 @@
 
     <div class="menu-section">
 
-      <span class="section-title">
+      <span class="section-title" *ngIf="isExpanded">
         GENERAL
       </span>
 
@@ -52,20 +49,29 @@
 
     <div class="menu-section">
 
-      <span class="section-title">
+      <span class="section-title" *ngIf="isExpanded">
         GESTIÓN
       </span>
 
-      <div class="menu-item active"
-           [class.active]="isActive('/HomePrenda')"
-           (click)="goTo('/HomePrenda')">
+      <div class="divider section-divider" *ngIf="!isExpanded"></div>
 
-        <div class="icon-box">
+      <div class="menu-item"
+           [class.active]="isActive('/PrendaHome')"
+           (click)="goTo('/PrendaHome')">
+
+        <div class="icon-box notification-parent">
           <i class="fi fi-bs-shirt-long-sleeve"></i>
+          <span class="notification-badge" *ngIf="!isExpanded">
+            3
+          </span>
         </div>
 
         <span class="label">
           Prendas
+        </span>
+
+        <span class="notification-badge-right" *ngIf="isExpanded">
+          3
         </span>
 
       </div>
@@ -84,7 +90,9 @@
 
       </div>
 
-      <div class="menu-item" [class.active]="isActive('/PrendaHome')" (click)="goTo('/PrendaHome')">
+      <div class="menu-item"
+           [class.active]="isActive('/XD')"
+           (click)="goTo('/XD')">
 
         <div class="icon-box">
           <i class="fi fi-br-box-open-full"></i>
@@ -100,11 +108,15 @@
 
     <div class="menu-section">
 
-      <span class="section-title">
+      <span class="section-title" *ngIf="isExpanded">
         OPERACIONES
       </span>
 
-      <div class="menu-item" [class.active]="isActive('/VentaHome')" (click)="goTo('/VentaHome')">
+      <div class="divider section-divider" *ngIf="!isExpanded"></div>
+
+      <div class="menu-item"
+           [class.active]="isActive('/VentaHome')"
+           (click)="goTo('/VentaHome')">
 
         <div class="icon-box">
           <i class="fi fi-br-shopping-cart"></i>
@@ -120,12 +132,19 @@
            [class.active]="isActive('/reportes')"
            (click)="goTo('/reportes')">
 
-        <div class="icon-box">
+        <div class="icon-box notification-parent">
           <i class="fi fi-br-chart-line-up"></i>
+          <span class="notification-badge" *ngIf="!isExpanded">
+            5
+          </span>
         </div>
 
         <span class="label">
           Reportes
+        </span>
+
+        <span class="notification-badge-right" *ngIf="isExpanded">
+          5
         </span>
 
       </div>
@@ -134,40 +153,18 @@
 
   </div>
 
+  <div class="divider"></div>
+
   <div class="sidebar-footer">
 
-    <div class="footer-profile">
+    <button class="toggle-btn"
+            type="button"
+            (click)="toggleSidebar()">
 
-      <div class="footer-avatar">
-        {{ usuario.charAt(0).toUpperCase() }}
-      </div>
-
-      <div class="footer-user">
-
-      <span class="footer-name">
-        {{ usuario }}
-      </span>
-
-        <small class="footer-role">
-          {{ rol }}
-        </small>
-
-      </div>
-
-    </div>
-
-    <div class="footer-action"
-         (click)="logout()">
-
-      <div class="footer-icon">
-        <i class="fi fi-br-power"></i>
-      </div>
-
-      <span class="footer-label">
-      Cerrar sesión
-    </span>
-
-    </div>
+      <i class="fi fi-br-circle-half-stroke"
+         [class.icon-mirror]="!isExpanded">
+      </i>
+    </button>
 
   </div>
 

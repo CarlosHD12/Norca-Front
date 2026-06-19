@@ -1,6 +1,6 @@
-export interface Metrica {
+export interface MetricaVentaDTO {
   idMetrica: number;
-  prendaId: number;
+  idPrenda: number;
   unidadesVendidas: number;
   ingresosTotales: number;
   gananciaAcumulada: number;
@@ -8,6 +8,4 @@ export interface Metrica {
   ventasRealizadas: number;
   ultimaVenta: string;
   tiempoPromedioEntreVentas: number;
-  roi: number;
-  ranking: number;
 }

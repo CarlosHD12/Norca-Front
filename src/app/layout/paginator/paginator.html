@@ -1,0 +1,129 @@
+<div
+  class="paginator"
+  *ngIf="totalPages > 0">
+
+  <div class="left-section">
+
+    <div class="page-size-container">
+
+      <span class="label">
+        Filas por página
+      </span>
+
+      <div class="custom-select">
+
+        <select
+          [value]="size"
+          (change)="onSizeChange($event)">
+
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+          <option [value]="100">100</option>
+
+        </select>
+
+        <i class="fi fi-rr-angle-small-down"></i>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="center-section">
+
+    <span class="records-count">
+      {{ totalElements | number }} registros
+    </span>
+
+  </div>
+
+  <div class="right-section">
+
+    <div class="pagination-controls">
+
+      <button
+        class="nav-btn"
+        (click)="goFirst()"
+        [disabled]="page === 0">
+
+        <i class="fi fi-rr-angle-double-small-left"></i>
+
+      </button>
+
+      <button
+        class="nav-btn"
+        (click)="previous()"
+        [disabled]="page === 0">
+
+        <i class="fi fi-rr-angle-small-left"></i>
+
+      </button>
+
+      <button
+        *ngFor="let p of visiblePages"
+        class="page-btn"
+        [class.active]="p === page"
+        (click)="goToPage(p)">
+
+        {{ p + 1 }}
+
+      </button>
+
+      <span
+        class="ellipsis"
+        *ngIf="totalPages > 5">
+
+        ...
+
+      </span>
+
+      <button
+        *ngIf="totalPages > 4"
+        class="page-btn"
+        [class.active]="page === totalPages - 1"
+        (click)="goToPage(totalPages - 1)">
+
+        {{ totalPages }}
+
+      </button>
+
+      <button
+        class="nav-btn"
+        (click)="next()"
+        [disabled]="page === totalPages - 1">
+
+        <i class="fi fi-rr-angle-small-right"></i>
+
+      </button>
+
+      <button
+        class="nav-btn"
+        (click)="goLast()"
+        [disabled]="page === totalPages - 1">
+
+        <i class="fi fi-rr-angle-double-small-right"></i>
+
+      </button>
+
+    </div>
+
+    <div class="jump-page">
+
+      <span class="label">
+        Ir a
+      </span>
+
+      <input
+        type="number"
+        min="1"
+        [max]="totalPages"
+        [ngModel]="page + 1"
+        (change)="jumpToPage($any($event.target).value)">
+
+    </div>
+
+  </div>
+
+</div>

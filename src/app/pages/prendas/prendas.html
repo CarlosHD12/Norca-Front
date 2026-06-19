@@ -2,56 +2,93 @@
   (sidebarToggle)="onSidebarToggle($event)">
 </app-sidebar>
 
-<div class="main-layout" [class.expanded]="sidebarExpanded">
+<div
+  class="main-layout"
+  [class.expanded]="sidebarExpanded">
 
   <app-navbar></app-navbar>
 
-  <div class="page-content" [class.right-expanded]="isRightSidebarOpen">
+  <div
+    class="page-content"
+    [class.right-expanded]="isRightSidebarOpen">
 
-    <app-prenda-header (nuevaPrenda)="abrirModalPrenda()"></app-prenda-header>
+    <app-prenda-header
+      (nuevaPrenda)="abrirModalPrenda()">
+    </app-prenda-header>
 
+    <app-prenda-stats>
+    </app-prenda-stats>
 
-    <app-prenda-stats></app-prenda-stats>
-
-    <!-- FILTROS -->
     <app-prenda-filters
       (filtersChange)="onFiltersChange($event)">
-
     </app-prenda-filters>
 
-
-    <!-- TABLA -->
     <app-prenda-table
       [prendas]="prendas"
+      [loadingTabla]="loadingTabla"
+      (refresh)="reloadPrendas()"
+      (nuevoLote)="abrirModalLote($event)"
+      (detalle)="abrirModalDetalle($event)"
+      (historial)="abrirModalHistorial($event)"
+      (desactivar)="abrirModalDesactivar($event)"
       (quickDetail)="onPrendaSelected($event)"
-      (refresh)="reloadPrendas()">
+      (editarPrenda)="onEditarPrenda($event)">
     </app-prenda-table>
 
-    <button (click)="openSidebar()">
-      Ver detalle
-    </button>
+    <app-paginator
+      [page]="page"
+      [size]="filters.size ?? 10"
+      [totalPages]="totalPages"
+      [totalElements]="totalElements"
+      (pageChange)="onPageChange($event)"
+      (sizeChange)="onSizeChange($event)">
+    </app-paginator>
 
-
-
-
-    <!-- ROUTER -->
     <router-outlet></router-outlet>
 
   </div>
 
+  <app-right-sidebar
+    [isOpen]="isRightSidebarOpen"
+    [detail]="quickDetail"
+    (close)="closeSidebar()">
+  </app-right-sidebar>
+
 </div>
-
-<app-right-sidebar
-  [isOpen]="isRightSidebarOpen"
-  [detail]="quickDetail"
-  (close)="closeSidebar()">
-</app-right-sidebar>
-
 
 <app-modal-prenda
   *ngIf="mostrarModalPrenda"
-  [datosPrenda]="borradorPrenda"
-  (draftSaved)="guardarBorrador($event)"
+  [modoEdicion]="modoEdicion"
+  [idPrenda]="prendaSeleccionada?.idPrenda ?? null"
+  [datosPrenda]="prendaSeleccionada"
+  (buscar)="onBuscarPrenda($event)"
   (saved)="onPrendaGuardada()"
   (modalClose)="cerrarModalPrenda()">
 </app-modal-prenda>
+
+<app-modal-lote
+  *ngIf="mostrarModalLote"
+  [idPrenda]="idPrendaSeleccionada"
+  [codigoPrenda]="codigoPrendaSeleccionada"
+  (closeLote)="cerrarModalLote()"
+  (saved)="onLoteGuardado()">
+</app-modal-lote>
+
+<app-modal-detalle
+  *ngIf="mostrarModalDetalle"
+  [idPrenda]="idPrendaSeleccionada"
+  [codigoPrenda]="codigoPrendaSeleccionada"
+  (closeDetalle)="cerrarModalDetalle()">
+</app-modal-detalle>
+
+<app-modal-historial
+  *ngIf="mostrarModalHistorial"
+  [idPrenda]="idPrendaSeleccionada"
+  (closeHistorial)="cerrarModalHistorial()">
+</app-modal-historial>
+
+<app-modal-desactivar
+  *ngIf="mostrarModalDesactivar"
+  [idPrenda]="idPrendaSeleccionada"
+  (closeDesactivar)="cerrarModalDesactivar()">
+</app-modal-desactivar>

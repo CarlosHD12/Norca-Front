@@ -2,175 +2,120 @@
 
   <div class="kpi-card">
 
-    <div class="kpi-top">
+    <div class="kpi-header">
+
+      <span class="kpi-title">
+        Total prendas
+      </span>
 
       <div class="kpi-icon-box">
         <i class="fi fi-bs-shirt-long-sleeve"></i>
       </div>
 
-      <div class="kpi-info">
-
-        <span class="kpi-title">
-          Total prendas
-        </span>
-
-        <h2 class="kpi-value">
-          {{ kpis.totalPrendas }}
-        </h2>
-
-      </div>
-
     </div>
 
-    <div class="kpi-bottom positive">
+    <div class="kpi-value">
+      {{ kpis?.totalPrendas }}
+    </div>
 
-      <mat-icon>trending_up</mat-icon>
-
-      <span>
-        +{{ kpis.prendasUltimoMes }}
-        registradas el último mes
-      </span>
-
+    <div class="kpi-footer positive">
+      +{{ kpis?.prendasUltimoMes }} registradas este mes
     </div>
 
   </div>
 
   <div class="kpi-card">
 
-    <div class="kpi-top">
+    <div class="kpi-header">
+
+      <span class="kpi-title">
+        Disponibles
+      </span>
 
       <div class="kpi-icon-box success">
         <i class="fi fi-br-check-circle"></i>
       </div>
 
-      <div class="kpi-info">
-
-        <span class="kpi-title">
-          Disponibles
-        </span>
-
-        <h2 class="kpi-value">
-          {{ kpis.prendasDisponibles }}
-        </h2>
-
-      </div>
-
     </div>
 
-    <div class="kpi-bottom positive">
+    <div class="kpi-value">
+      {{ kpis?.prendasDisponibles }}
+    </div>
 
-      <mat-icon>trending_up</mat-icon>
-
-      <span>
-        +{{ kpis.disponiblesUltimaSemana }}
-        disponibles esta semana
-      </span>
-
+    <div class="kpi-footer positive">
+      +{{ kpis?.disponiblesUltimaSemana }} esta semana
     </div>
 
   </div>
 
   <div class="kpi-card">
 
-    <div class="kpi-top">
+    <div class="kpi-header">
+
+      <span class="kpi-title">
+        Agotadas
+      </span>
 
       <div class="kpi-icon-box danger">
         <i class="fi fi-br-cross-circle"></i>
       </div>
 
-      <div class="kpi-info">
-
-        <span class="kpi-title">
-          Agotadas
-        </span>
-
-        <h2 class="kpi-value">
-          {{ kpis.prendasAgotadas }}
-        </h2>
-
-      </div>
-
     </div>
 
-    <div class="kpi-bottom negative">
+    <div class="kpi-value">
+      {{ kpis?.prendasAgotadas }}
+    </div>
 
-      <mat-icon>trending_down</mat-icon>
-
-      <span>
-        {{ kpis.agotadasUltimaSemana }}
-        agotadas esta semana
-      </span>
-
+    <div class="kpi-footer negative">
+      {{ kpis?.agotadasUltimaSemana }} esta semana
     </div>
 
   </div>
 
   <div class="kpi-card">
 
-    <div class="kpi-top">
+    <div class="kpi-header">
+
+      <span class="kpi-title">
+        Lotes activos
+      </span>
 
       <div class="kpi-icon-box warning">
         <i class="fi fi-br-box-open-full"></i>
       </div>
 
-      <div class="kpi-info">
-
-        <span class="kpi-title">
-          Lotes activos
-        </span>
-
-        <h2 class="kpi-value">
-          {{ kpis.lotesActivos }}
-        </h2>
-
-      </div>
-
     </div>
 
-    <div class="kpi-bottom positive">
+    <div class="kpi-value">
+      {{ kpis?.lotesActivos }}
+    </div>
 
-      <mat-icon>trending_up</mat-icon>
-
-      <span>
-        +{{ kpis.lotesUltimoMes }}
-        registrados el último mes
-      </span>
-
+    <div class="kpi-footer positive">
+      +{{ kpis?.lotesUltimoMes }} nuevos este mes
     </div>
 
   </div>
 
   <div class="kpi-card">
 
-    <div class="kpi-top">
+    <div class="kpi-header">
+
+      <span class="kpi-title">
+        Valor inventario
+      </span>
 
       <div class="kpi-icon-box money">
         <i class="fi fi-br-sack-dollar"></i>
       </div>
 
-      <div class="kpi-info">
-
-        <span class="kpi-title">
-          Valor inventario
-        </span>
-
-        <h2 class="kpi-value">
-          S/{{ kpis.valorTotalInventario | number:'1.2-2' }}
-        </h2>
-
-      </div>
-
     </div>
 
-    <div class="kpi-bottom positive">
+    <div class="kpi-value">
+      S/ {{ kpis?.valorTotalInventario | number:'1.0-0' }}
+    </div>
 
-      <mat-icon>trending_up</mat-icon>
-
-      <span>
-        S/{{ kpis.inversionUltimoMes | number:'1.2-2' }}
-        inversión del último mes
-      </span>
-
+    <div class="kpi-footer positive">
+      S/ {{ kpis?.inversionUltimoMes | number:'1.0-0' }} este mes
     </div>
 
   </div>

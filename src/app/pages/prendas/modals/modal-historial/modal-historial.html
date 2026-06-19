@@ -1,0 +1,389 @@
+<div class="modal-backdrop" [class.fade-out]="closing">
+
+  <div class="modal-container" [class.modal-close]="closing" (click)="$event.stopPropagation()">
+
+      <div class="modal-footer">
+
+        <div class="app-modal-header">
+
+          <div class="app-modal-header-info">
+
+            <div class="app-modal-header-icon">
+              <i class="fi fi-br-file"></i>
+            </div>
+
+            <div class="app-modal-header-text">
+              <h2>Detalle de la Prenda</h2>
+              <p>Consulte la información general, el inventario y el historial del producto.</p>
+            </div>
+
+          </div>
+
+          <div class="app-modal-header-actions">
+
+            <div class="app-modal-badge">
+              <h4>{{ historial?.codigoPrenda }}</h4>
+            </div>
+
+            <button
+              type="button"
+              class="app-modal-close-btn"
+              (click)="cerrarHistorial()">
+              <i class="fi fi-rr-cross-small"></i>
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="modal-body">
+
+          <div class="body-columns">
+
+            <div class="left-column">
+
+              <div class="section-card">
+
+                <div class="historial-container">
+
+                  @for (lote of historial?.lotes ?? []; track lote.idLote) {
+
+                    <div class="lote-card" [class.selected]="esLoteSeleccionado(lote.idLote)" (click)="seleccionarLote(lote)">
+
+                      <div class="lote-header">
+
+                        <div class="lote-main">
+
+                          <div class="lote-icon">
+                            <i [class]="lote.activo ? 'fi fi-rr-box-open-full' : 'fi fi-rr-box-open'"></i>
+                          </div>
+
+                          <div class="lote-info">
+
+                            <h3>{{ lote.codigoLote }}</h3>
+
+                            <span>
+                              <i class="fi fi-rr-calendar-day"></i>
+                              {{ lote.fechaIngreso | date:'dd MMM yyyy, HH:mm' }}
+                            </span>
+
+                          </div>
+
+                        </div>
+
+                        <div class="lote-status" [class.active]="lote.activo" [class.selected-status]="esLoteSeleccionado(lote.idLote)">
+                          <i [class]="  esLoteSeleccionado(lote.idLote) ? 'fi fi-rr-check-circle' : (lote.activo ? 'fi fi-br-check' : 'fi fi-br-minus-circle')"></i>
+                          {{esLoteSeleccionado(lote.idLote) ? 'Seleccionado' : (lote.activo ? 'Activo' : 'Finalizado') }}
+                        </div>
+
+                      </div>
+
+                      <div class="lote-stats">
+
+                        <div class="stat">
+
+                          <div class="stat-icon">
+                            <i class="fi fi-rr-layer-plus"></i>
+                          </div>
+
+                          <div class="stat-content">
+                            <span>Inicial</span>
+                            <strong>{{ lote.cantidadInicial }}</strong>
+                          </div>
+
+                        </div>
+
+                        <div class="stat">
+
+                          <div class="stat-icon">
+                            <i class="fi fi-rr-layers"></i>
+                          </div>
+
+                          <div class="stat-content">
+                            <span>Disponible</span>
+                            <strong>{{ lote.stockActual }}</strong>
+                          </div>
+
+                        </div>
+
+                        <div class="stat">
+
+                          <div class="stat-icon">
+                            <i class="fi fi-rr-dollar"></i>
+                          </div>
+
+                          <div class="stat-content">
+                            <span>Venta</span>
+                            <strong>S/ {{ lote.precioVenta | number:'1.2-2' }}</strong>
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                      <div class="purchase-row">
+
+                        <div class="purchase-label">
+                          <i class="fi fi-rr-receipt"></i>
+                          <span>Inversión del lote</span>
+                        </div>
+
+                        <strong>
+                          S/ {{ lote.precioCompraTotal | number:'1.2-2'}}
+                        </strong>
+
+                      </div>
+
+                      <div class="progress-info">
+                        <span>{{ lote.cantidadInicial - lote.stockActual }} vendidos</span>
+                        <span>{{ ((lote.cantidadInicial - lote.stockActual) / lote.cantidadInicial * 100).toFixed(0) }}%</span>
+                      </div>
+
+                      <div class="progress-bar">
+                        <div
+                          class="progress-fill"
+                          [style.width.%]="((lote.cantidadInicial - lote.stockActual) / lote.cantidadInicial) * 100">
+                        </div>
+                      </div>
+                    </div>
+                  } @empty {
+
+                    <div class="historial-empty">
+
+                      <div class="empty-icon">
+                        <i class="fi fi-rr-box-open-full"></i>
+                      </div>
+
+                      <h3>Sin historial registrado</h3>
+
+                      <p>
+                        Esta prenda todavía no cuenta con lotes registrados.
+                      </p>
+
+                    </div>
+
+                  }
+
+                </div>
+
+              </div>
+
+
+            </div>
+
+            <div class="right-column">
+
+              <div class="section-card">
+
+                @if (loteSeleccionado) {
+
+                  <!-- INVENTARIO -->
+
+                  <div class="inventario-section">
+
+                    <div class="block-title">
+
+                      <div class="block-title-icon">
+                        <i class="fi fi-rr-boxes"></i>
+                      </div>
+
+                      <div>
+                        <h4>Inventario por Talla</h4>
+                        <span>{{ loteSeleccionado.codigoLote }}</span>
+                      </div>
+
+                    </div>
+
+                  <div class="inventario-distribucion">
+
+                    @for (inventario of loteSeleccionado.inventarios; track inventario.idInventario) {
+
+                      <div class="talla-row">
+
+                        <div class="talla-label">
+                          {{ inventario.talla }}
+                        </div>
+
+                        <div class="talla-progress">
+
+                          <div
+                            class="talla-progress-fill"
+                            [style.width.%]="(inventario.stock / loteSeleccionado.stockActual) * 100">
+                          </div>
+
+                        </div>
+
+                        <div class="talla-stock">
+                          {{ inventario.stock }}
+                        </div>
+
+                      </div>
+
+                    }
+
+                  </div>
+
+
+                  </div>
+
+                  <!-- RESUMEN -->
+
+                  <div class="inventario-summary">
+
+                    <div class="summary-item">
+
+                      <span>Total de Tallas</span>
+
+                      <strong>
+                        {{ loteSeleccionado.inventarios.length }}
+                      </strong>
+
+                    </div>
+
+                    <div class="summary-item">
+
+                      <span>Stock Disponible</span>
+
+                      <strong>
+                        {{ loteSeleccionado.stockActual }}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+                  <!-- MÉTRICAS -->
+
+                  @if (metricasLote) {
+
+                  <div class="metricas-dashboard">
+
+                    <div class="metrica-principal">
+
+                      <div class="metrica-principal-icon">
+                        <i class="fi fi-rr-chart-line-up"></i>
+                      </div>
+
+                      <span>Ganancia Total</span>
+
+                      <strong>
+                        S/ {{ metricasLote.gananciaTotal | number:'1.2-2' }}
+                      </strong>
+
+                    </div>
+
+                    <div class="metricas-grid">
+
+                      <div class="mini-metrica">
+
+                        <span>Ventas</span>
+
+                        <strong>
+                          S/ {{ metricasLote.ventaTotal | number:'1.2-2' }}
+                        </strong>
+
+                      </div>
+
+                      <div class="mini-metrica">
+
+                        <span>Ganancia Unidad</span>
+
+                        <strong>
+                          S/ {{ metricasLote.gananciaPorUnidad | number:'1.2-2' }}
+                        </strong>
+
+                      </div>
+
+                      <div class="mini-metrica">
+
+                        <span>Margen</span>
+
+                        <strong>
+                          {{ metricasLote.margenGanancia | number:'1.0-2' }}%
+                        </strong>
+
+                      </div>
+
+                      <div class="mini-metrica">
+
+                        <span>ROI</span>
+
+                        <strong>
+                          {{ metricasLote.radioInversion | number:'1.0-2' }}%
+                        </strong>
+
+                      </div>
+
+                      <div class="mini-metrica full-width">
+
+                        <span>Punto de Equilibrio</span>
+
+                        <strong>
+                          {{ metricasLote.puntoEquilibrio | number:'1.0-0' }}
+                        </strong>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+                  
+                  }
+
+                } @else {
+
+                  <div class="inventario-empty">
+
+                    <div class="empty-icon">
+                      <i class="fi fi-rr-hand-pointer"></i>
+                    </div>
+
+                    <h3>Seleccione un lote</h3>
+
+                    <p>
+                      Elija un lote del historial para visualizar el inventario y métricas.
+                    </p>
+
+                  </div>
+
+                }
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="app-modal-footer">
+
+          <div class="app-modal-footer-left">
+
+
+          </div>
+
+          <div class="app-modal-footer-right">
+
+            <button
+              type="submit"
+              class="app-btn app-btn-primary"
+              (click)="cerrarHistorial()"
+            >
+              <span>Cancelar</span>
+            </button>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+
+
+  </div>
+
+</div>

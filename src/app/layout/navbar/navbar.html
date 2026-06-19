@@ -5,7 +5,7 @@
     <div class="breadcrumb">
 
       <span class="crumb">
-        TextilFlow
+        Norca
       </span>
 
       <i class="fi fi-br-angle-small-right"></i>
@@ -24,39 +24,17 @@
 
   </div>
 
-  <div class="navbar-center">
-
-    <div class="search-box">
-
-      <i class="fi fi-br-search"></i>
-
-      <input
-        type="text"
-        placeholder="Buscar..."
-      >
-
-    </div>
-
-  </div>
-
   <div class="navbar-right">
 
-    <div
-      class="theme-selector"
-      (click)="toggleThemes()"
-    >
+    <div class="btn-navbar theme-btn"
+         (click)="toggleThemes()">
 
-      <i class="fi fi-br-palette"></i>
-
-      <span>
-        Tema
-      </span>
-
-      <i class="fi fi-br-angle-small-down"></i>
+      <i class="fi fi-bs-palette"></i>
 
       <div
         class="theme-menu"
         *ngIf="showThemes"
+        (click)="$event.stopPropagation()"
       >
 
         <div
@@ -95,31 +73,56 @@
 
     </div>
 
-    <div class="notification-btn">
+    <div class="btn-navbar notification-btn">
 
       <i class="fi fi-br-bell"></i>
 
+      <span class="notification-dot"></span>
+
     </div>
 
-    <div class="user-profile">
+    <button
+      type="button"
+      class="user-avatar"
+      (click)="toggleUserMenu()"
+    >
+      {{ usuario.charAt(0).toUpperCase() }}
+    </button>
 
-      <div class="avatar">
-        A
+    <div
+      class="user-menu"
+      *ngIf="showUserMenu"
+    >
+
+      <div class="user-menu-header">
+
+        <div class="avatar-large">
+          {{ usuario.charAt(0).toUpperCase() }}
+        </div>
+
+        <div class="user-data">
+
+          <span class="name">
+            {{ usuario }}
+          </span>
+
+          <span class="role">
+            {{ rol }}
+          </span>
+
+        </div>
+
       </div>
 
-      <div class="user-info">
+      <div class="user-menu-divider"></div>
 
-        <span class="name">
-          Administrador
-        </span>
-
-        <span class="role">
-          Super Admin
-        </span>
-
-      </div>
-
-      <i class="fi fi-br-angle-small-down"></i>
+      <button
+        class="user-menu-item logout"
+        (click)="logout()"
+      >
+        <i class="fi fi-br-sign-out-alt"></i>
+        Cerrar sesión
+      </button>
 
     </div>
 

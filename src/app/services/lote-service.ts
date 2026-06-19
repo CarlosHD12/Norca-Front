@@ -5,11 +5,11 @@ import {Observable} from 'rxjs';
 import {LoteMetricasDTO} from '../model/LoteMetricasDTO';
 import {LoteDetalleDTO} from '../model/LoteDetalleDTO';
 import {UltimoLoteResponseDTO} from '../model/UltimoLoteResponseDTO';
-import {LoteHistorialResponseDTO} from '../model/LoteHistorialResponseDTO';
 import {LoteSeleccionadoDTO} from '../model/LoteSeleccionadoDTO';
 import {MetricaLoteDTO} from '../model/MetricaLoteDTO';
 import {LoteRegistroDTO} from '../model/LoteRegistroDTO';
 import {LoteResponseDTO} from '../model/LoteResponseDTO';
+import {HistorialPrendaResponseDTO} from '../model/HistorialPrendaResponseDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -39,8 +39,8 @@ export class LoteService {
     );
   }
 
-  listarHistorialLotes(idPrenda: number): Observable<LoteHistorialResponseDTO[]> {
-    return this.http.get<LoteHistorialResponseDTO[]>(
+  listarHistorialLotes(idPrenda: number): Observable<HistorialPrendaResponseDTO> {
+    return this.http.get<HistorialPrendaResponseDTO>(
       `${this.baseUrl}/historial/lote/${idPrenda}`
     );
   }
@@ -50,9 +50,6 @@ export class LoteService {
       `${this.baseUrl}/ultimo/lote/${idPrenda}`
     );
   }
-
-
-
 
 
   getMetricas(id: number): Observable<LoteMetricasDTO> {

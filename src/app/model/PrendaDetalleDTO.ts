@@ -1,10 +1,10 @@
-import {LoteDetalleDTO} from './LoteDetalleDTO';
 import {InventarioHistorialDTO} from './InventarioHistorialDTO';
-import {MetricaLoteDTO} from './MetricaLoteDTO';
+import {ResumenLoteDTO} from './ResumenLoteDTO';
 
 export interface PrendaDetalleDTO {
   idPrenda: number;
   codigo: string;
+  nombre: string;
   imagenUrl: string;
   categoria: string;
   marca: string;
@@ -16,14 +16,16 @@ export interface PrendaDetalleDTO {
 
   // ÚLTIMO LOTE ACTIVO
   idLote: number;
+  codigoLote: string;
   cantidadInicial: number;
   stockActual: number;
   precioVenta: number;
+  precioCompra: number;
   fechaIngreso: string;
 
   // INVENTARIOS
   inventarios: InventarioHistorialDTO[];
 
-  // MÉTRICAS DEL LOTE
-  metricas: MetricaLoteDTO;
+  // RESUMEN DEL LOTE
+  resumen: ResumenLoteDTO;
 }

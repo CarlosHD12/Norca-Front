@@ -17,201 +17,174 @@ import {PrendaFiltros} from '../../../../model/PrendaFiltros';
   templateUrl: './prenda-filters.html',
   styleUrl: './prenda-filters.css',
 })
-export class PrendaFilters   implements OnInit {
-  showMarcaDropdown = false;
-  showEstadoDropdown = false;
-  showCategoriaDropdown = false;
+export class PrendaFilters implements OnInit{
 
-  toggleCategoriaDropdown(event: Event): void {
-
-    event.stopPropagation();
-
-    this.showCategoriaDropdown =
-      !this.showCategoriaDropdown;
-
-    this.showEstadoDropdown = false;
-    this.showMarcaDropdown = false;
-
-  }
-
-  toggleMarcaDropdown(event: Event): void {
-
-    event.stopPropagation();
-
-    this.showMarcaDropdown =
-      !this.showMarcaDropdown;
-
-    this.showCategoriaDropdown = false;
-    this.showEstadoDropdown = false;
-
-  }
-
-  toggleEstadoDropdown(event: Event): void {
-
-    event.stopPropagation();
-
-    this.showEstadoDropdown =
-      !this.showEstadoDropdown;
-
-    this.showCategoriaDropdown = false;
-    this.showMarcaDropdown = false;
-
-  }
-
-  selectMarca(marca: string): void {
-
-    this.filters.marca =
-      this.filters.marca === marca
-        ? ''
-        : marca;
-
-    this.showMarcaDropdown = false;
-
-    this.onFiltersChange();
-
-  }
-
-  selectEstado(estado: string): void {
-
-    this.filters.estado =
-      this.filters.estado === estado
-        ? ''
-        : estado;
-
-    this.showEstadoDropdown = false;
-
-    this.onFiltersChange();
-
-  }
-
-  @HostListener('document:click')
-  closeDropdowns(): void {
-
-    this.showCategoriaDropdown = false;
-
-    this.showMarcaDropdown = false;
-
-    this.showEstadoDropdown = false;
-
-  }
-
-  selectCategoria(categoria: string): void {
-
-    if (this.filters.categoria === categoria) {
-
-      this.filters.categoria = '';
-
-    } else {
-
-      this.filters.categoria = categoria;
-
-    }
-
-    this.showCategoriaDropdown = false;
-
-    this.onFiltersChange();
-
-  }
+  showMarcaDropdown=false;
+  showEstadoDropdown=false;
+  showCategoriaDropdown=false;
 
   @Output()
-  filtersChange =
-    new EventEmitter<PrendaFiltros>();
+  filtersChange=new EventEmitter<PrendaFiltros>();
 
-  categorias: CategoriaResponseDTO[] = [];
+  categorias:CategoriaResponseDTO[]=[];
+  marcas:MarcaResponseDTO[]=[];
 
-  marcas: MarcaResponseDTO[] = [];
+  showAdvanced=false;
 
-  showAdvanced = false;
-
-  filters: PrendaFiltros = {
-    search: '',
-    categoria: '',
-    marca: '',
-    estado: '',
-    stockMin: null,
-    stockMax: null,
-    precioMin: null,
-    precioMax: null
+  filters:PrendaFiltros={
+    search:'',
+    categoria:'',
+    marca:'',
+    estado:'',
+    stockMin:null,
+    stockMax:null,
+    precioMin:null,
+    precioMax:null
   };
 
+  private searchTimeout:any;
+
   constructor(
-    private categoriaService: CategoriaService,
-    private marcaService: MarcaService
-  ) {}
+    private categoriaService:CategoriaService,
+    private marcaService:MarcaService
+  ){}
 
-  ngOnInit(): void {
-    console.log('FILTERS INIT');
-
+  ngOnInit():void{
     this.loadCategorias();
     this.loadMarcas();
   }
 
-  loadCategorias(): void {
+  toggleCategoriaDropdown(event:Event):void{
+    event.stopPropagation();
+    this.showCategoriaDropdown=!this.showCategoriaDropdown;
+    this.showEstadoDropdown=false;
+    this.showMarcaDropdown=false;
+  }
 
+  toggleMarcaDropdown(event:Event):void{
+    event.stopPropagation();
+    this.showMarcaDropdown=!this.showMarcaDropdown;
+    this.showCategoriaDropdown=false;
+    this.showEstadoDropdown=false;
+  }
+
+  toggleEstadoDropdown(event:Event):void{
+    event.stopPropagation();
+    this.showEstadoDropdown=!this.showEstadoDropdown;
+    this.showCategoriaDropdown=false;
+    this.showMarcaDropdown=false;
+  }
+
+  selectCategoria(categoria:string):void{
+    this.filters.categoria=
+      this.filters.categoria===categoria
+        ?''
+        :categoria;
+    this.showCategoriaDropdown=false;
+    this.emitFilters();
+  }
+
+  selectMarca(marca:string):void{
+    this.filters.marca=
+      this.filters.marca===marca
+        ?''
+        :marca;
+    this.showMarcaDropdown=false;
+    this.emitFilters();
+  }
+
+  selectEstado(estado:string):void{
+    this.filters.estado=
+      this.filters.estado===estado
+        ?''
+        :estado;
+    this.showEstadoDropdown=false;
+    this.emitFilters();
+  }
+
+  @HostListener('document:click')
+  closeDropdowns():void{
+    this.showCategoriaDropdown=false;
+    this.showMarcaDropdown=false;
+    this.showEstadoDropdown=false;
+  }
+
+  loadCategorias():void{
     this.categoriaService
       .listarCategorias()
       .subscribe({
-
-        next: (data) => {
-
-          this.categorias = data;
-
+        next:(data)=>{
+          this.categorias=data;
         },
-
-        error: (error) => {
-
+        error:(error)=>{
           console.error(error);
-
         }
-
       });
-
   }
 
-  loadMarcas(): void {
-
+  loadMarcas():void{
     this.marcaService
       .listarMarcas()
       .subscribe({
-
-        next: (data) => {
-
-          this.marcas = data;
-
+        next:(data)=>{
+          this.marcas=data;
         },
-
-        error: (error) => {
-
+        error:(error)=>{
           console.error(error);
-
         }
-
       });
-
   }
 
-  onFiltersChange(): void {
+  onFiltersChange():void{
+    this.emitFilters();
+  }
+
+  private emitFilters():void{
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout=setTimeout(()=>{
+      this.filtersChange.emit({
+        ...this.filters
+      });
+    },1000);
+  }
+
+  toggleAdvancedFilters():void{
+    this.showAdvanced=!this.showAdvanced;
+  }
+
+  clearFilters():void{
+    this.filters={
+      search:'',
+      categoria:'',
+      marca:'',
+      estado:'',
+      stockMin:null,
+      stockMax:null,
+      precioMin:null,
+      precioMax:null
+    };
+    clearTimeout(this.searchTimeout);
     this.filtersChange.emit({
       ...this.filters
     });
   }
 
-  toggleAdvancedFilters(): void {
-    this.showAdvanced =
-      !this.showAdvanced;
-  }
-
-  clearFilters(): void {
-    this.filters = {
-      search: '',
-      categoria: '',
-      marca: '',
-      estado: '',
-      stockMin: null,
-      stockMax: null,
-      precioMin: null,
-      precioMax: null
+  resetFilters():void{
+    this.filters={
+      search:'',
+      categoria:'',
+      marca:'',
+      estado:'',
+      stockMin:null,
+      stockMax:null,
+      precioMin:null,
+      precioMax:null
     };
+    this.showCategoriaDropdown=false;
+    this.showMarcaDropdown=false;
+    this.showEstadoDropdown=false;
+    this.showAdvanced=false;
+    clearTimeout(this.searchTimeout);
     this.filtersChange.emit({
       ...this.filters
     });

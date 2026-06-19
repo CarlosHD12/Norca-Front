@@ -1,263 +1,264 @@
 <div class="table-card">
 
   <div class="table-header">
-
     <div class="header-left">
-
-      <h3>
-        Catálogo de Prendas
-      </h3>
+      <h3>Catálogo de Prendas</h3>
 
       <div class="table-stats">
-
-      <span class="stat-chip">
-
-        {{ prendas.length }}
-        mostradas
-
-      </span>
-
+        <span class="stat-chip">{{ prendas.length }} mostradas</span>
         <span class="stat-chip selected">
-          {{ selectedPrendaCodigo || 'Ninguna' }}
-        </span>
-
+        {{ selectedPrendaCodigo || 'Ninguna' }}
+      </span>
       </div>
-
     </div>
 
     <div class="header-actions">
-
-      <button
-        class="hover-toggle"
-        [class.active]="hoverMode"
-        (click)="toggleHoverMode()">
-
-        <i class="fi fi-br-mouse"></i>
-
-        {{ hoverMode ? 'Hover ON' : 'Hover OFF' }}
-
+      <button class="hover-toggle" title="Hover" [class.active]="hoverMode" (click)="toggleHoverMode()">
+        <i class="fi fi-br-magic-wand"></i>
       </button>
 
-
-      <button class="refresh-btn" (click)="onRefresh()">
-        <i class="fi fi-rr-refresh"></i>
-        Recargar
+      <button class="refresh-btn" title="Recargar" (click)="onRefresh()" [disabled]="loadingTabla">
+        <i class="fi fi-br-refresh" [class.spinning]="loadingTabla"></i>
       </button>
-
     </div>
-
   </div>
 
   <div class="table-wrapper">
 
+    <div
+      class="table-overlay"
+      [class.active]="loadingTabla && prendas.length > 0"
+    >
+      <div class="table-loader-box">
+        <div class="table-loader"></div>
+        <h3>Actualizando prendas</h3>
+        <p>Obteniendo información del inventario...</p>
+      </div>
+    </div>
+
     <table>
-
       <thead>
-
       <tr>
-
-        <th class="img-col">
-          IMG
-        </th>
-
-        <th>
-          Código
-        </th>
-
-        <th>
-          Prenda
-        </th>
-
-        <th>
-          Categoría
-        </th>
-
-        <th>
-          Marca
-        </th>
-
-        <th>
-          Lote FIFO
-        </th>
-
-        <th>
-          Estado
-        </th>
-
-        <th>
-          Precio
-        </th>
-
-        <th>
-          Stock
-        </th>
-
-        <th class="actions-col">
-          Acciones
-        </th>
-
+        <th>Imagen</th>
+        <th>Código</th>
+        <th>Prenda</th>
+        <th>Marca</th>
+        <th>Material</th>
+        <th>Precio Venta</th>
+        <th>Estado</th>
+        <th>Stock</th>
+        <th class="actions-col">Acciones</th>
       </tr>
-
       </thead>
 
       <tbody>
 
+      <!-- Primera carga -->
+      <tr *ngIf="loadingTabla && prendas.length === 0">
+        <td colspan="9" class="table-loading">
+          <div class="loading-content">
+            <div class="table-loader"></div>
+            <h3>Cargando prendas</h3>
+            <p>Obteniendo información del inventario...</p>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Sin resultados -->
+      <tr *ngIf="!loadingTabla && prendas.length === 0">
+        <td colspan="9" class="empty-state">
+          <div class="empty-content">
+            <i class="fi fi-rr-box-open"></i>
+            <h3>No se encontraron prendas</h3>
+            <p>No hay registros que coincidan con los filtros aplicados.</p>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Datos -->
       <tr
         *ngFor="let prenda of prendas"
-        [class.selected-row]="selectedPrendaId === prenda.idPrenda"
+        [class.selected-row]="selectedPrendaId===prenda.idPrenda"
         (mouseenter)="onRowHover(prenda)"
-        (click)="onRowClick(prenda)">
+        (click)="onRowClick(prenda)"
+      >
 
         <td>
-
-          <div class="image-container">
-
-            <img
-              [src]="prenda.imagenUrl || '/default.png'"
-              [alt]="prenda.nombre">
-
+          <div class="image-box">
+            <img [src]="prenda.imagenUrl || '/default.png'" [alt]="prenda.nombre">
           </div>
-
-        </td>
-
-        <td class="codigo">
-
-          {{ prenda.colores }}
-
         </td>
 
         <td>
+          <span class="codigo-badge">
+            {{ prenda.codigo }}
+          </span>
+        </td>
 
-          <div class="prenda-info">
-
-            <span class="nombre">
-
+        <td>
+          <div class="name-cell">
+            <div class="primary-text">
+              {{ prenda.categoria }}
+            </div>
+            <div class="secondary-text">
               {{ prenda.nombre }}
-
-            </span>
-
-            <small class="material">
-
-              {{ prenda.material }}
-
-            </small>
-
+            </div>
           </div>
-
         </td>
 
         <td>
+          <div class="marca-cell">
+            <div class="brand-text">
+              {{ prenda.marca }}
+            </div>
+          </div>
+        </td>
 
-          <span class="categoria-chip">
-
-            {{ prenda.categoria }}
-
+        <td>
+          <span class="material-badge">
+            {{ prenda.material }}
           </span>
-
-        </td>
-
-        <td class="marca">
-
-          {{ prenda.marca }}
-
         </td>
 
         <td>
-
-          <span class="lote-chip">
-
-            {{ prenda.colores }}
-
-          </span>
-
+          <div class="precio">
+            S/ {{ prenda.precioVenta | number:'1.2-2' }}
+          </div>
         </td>
 
         <td>
-
           <span
-            class="estado"
-            [class.disponible]="prenda.estado === 'DISPONIBLE'"
-            [class.agotado]="prenda.estado === 'AGOTADO'"
-            [class.sin-lotes]="prenda.estado === 'SIN_LOTES'"
-            [class.stock-bajo]="prenda.estado === 'STOCK_BAJO'">
-
-            {{ prenda.estado }}
-
+            class="estado-badge"
+            [class.disponible]="prenda.estado==='DISPONIBLE'"
+            [class.agotado]="prenda.estado==='AGOTADO'"
+            [class.sin-lotes]="prenda.estado==='SIN_LOTES'"
+            [class.inhabilitada]="prenda.estado==='INHABILITADA'"
+          >
+            <i class="fi fi-ss-circle-small"></i>
+            {{ prenda.estado.replace('_',' ') }}
           </span>
-
-        </td>
-
-        <td class="precio">
-
-          S/ {{ prenda.precioVenta }}
-
         </td>
 
         <td>
+          <div class="stock-wrapper">
+            <div class="stock-value">
+              {{ prenda.stock }} und.
+            </div>
 
-          <span
-            class="stock"
-            [class.low]="prenda.stock < 10">
-
-            {{ prenda.stock }}
-
-          </span>
-
+            <div class="stock-bar">
+              <div
+                class="stock-fill"
+                [style.width.%]="(prenda.stock / maxStock) * 100">
+              </div>
+            </div>
+          </div>
         </td>
 
         <td class="actions-col">
-
-          <div class="menu-container">
+          <div class="actions-grid">
 
             <button
-              class="action-btn"
-              (click)="toggleMenu(prenda.idPrenda, $event)">
-
-              <i class="fi fi-br-menu-dots"></i>
-
+              type="button"
+              class="action-square"
+              (click)="editarPorId(prenda.idPrenda, $event)"
+              title="Editar"
+            >
+              <i class="fi fi-rr-pencil"></i>
             </button>
 
-            <div
-              class="dropdown-menu"
-              *ngIf="openedMenuId === prenda.idPrenda"
-              (click)="$event.stopPropagation()">
+            <button
+              type="button"
+              class="action-square"
+              (click)="abrirNuevoLote(prenda.idPrenda)"
+              title="Lote"
+            >
+              <i class="fi fi-rr-layers"></i>
+            </button>
 
-              <button>
+            <button
+              type="button"
+              class="action-square"
+              (click)="abrirDetalle(prenda.idPrenda)"
+              title="Detalles"
+            >
+              <i class="fi fi-rr-eye"></i>
+            </button>
 
-                Ver detalle
+            <button
+              *ngIf="prenda.estado !== 'SIN_LOTES'"
+              type="button"
+              class="action-square"
+              (click)="abrirHistorial(prenda.idPrenda)"
+              title="Historial"
+            >
+              <i class="fi fi-rr-time-past"></i>
+            </button>
 
-              </button>
-
-              <button>
-
-                Editar
-
-              </button>
-
-            </div>
+            <button
+              type="button"
+              class="action-square action-danger"
+              (click)="abrirDesactivar(prenda.idPrenda)"
+              title="Desactivar"
+            >
+              <i class="fi fi-rr-remove-folder"></i>
+            </button>
 
           </div>
-
         </td>
-
-      </tr>
-
-      <tr *ngIf="!loading && prendas.length === 0">
-
-        <td
-          colspan="10"
-          class="empty-state">
-
-          No se encontraron prendas
-
-        </td>
-
       </tr>
 
       </tbody>
-
     </table>
 
-  </div>
+    <div
+      class="dropdown-menu"
+      *ngIf="openedMenuId !== null"
+      [style.top.px]="menuTop"
+      [style.left.px]="menuLeft"
+      (click)="$event.stopPropagation()"
+    >
 
+      <button
+        type="button"
+        (click)="editarPorId(openedMenuId, $event)"
+      >
+        <i class="fi fi-rr-pencil"></i>
+        Editar
+      </button>
+
+      <button
+        type="button"
+        (click)="abrirNuevoLote(openedMenuId)"
+      >
+        <i class="fi fi-rr-layers"></i>
+        Lote
+      </button>
+
+      <button
+        type="button"
+        (click)="abrirDetalle(openedMenuId)"
+      >
+        <i class="fi fi-rr-eye"></i>
+        Detalles
+      </button>
+
+      <button
+        type="button"
+        (click)="abrirHistorial(openedMenuId)"
+      >
+        <i class="fi fi-rr-time-past"></i>
+        Historial
+      </button>
+
+      <button
+        type="button"
+        (click)="abrirDesactivar(openedMenuId)"
+      >
+        <i class="fi fi-rr-remove-folder"></i>
+        Desactivar
+      </button>
+
+    </div>
+
+  </div>
 </div>
