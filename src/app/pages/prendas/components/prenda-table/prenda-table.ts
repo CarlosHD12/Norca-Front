@@ -21,6 +21,10 @@ export class PrendaTable  implements OnInit {
     this.refresh.emit();
   }
 
+  get esAdmin(): boolean {
+    return localStorage.getItem('rol') === 'ROLE_ADMIN';
+  }
+
   @Input() loadingTabla = false;
 
   @Output() quickDetail = new EventEmitter<number>();
@@ -132,6 +136,8 @@ export class PrendaTable  implements OnInit {
 
   @Output() desactivar = new EventEmitter<number>();
 
+  @Output() movimiento = new EventEmitter<number>();
+
   abrirDetalle(idPrenda: number): void {
     this.openedMenuId = null;
     this.detalle.emit(idPrenda);
@@ -150,5 +156,10 @@ export class PrendaTable  implements OnInit {
   abrirDesactivar(idPrenda: number): void {
     this.openedMenuId = null;
     this.desactivar.emit(idPrenda);
+  }
+
+  abrirMovimiento(idPrenda: number): void {
+    this.openedMenuId = null;
+    this.movimiento.emit(idPrenda);
   }
 }

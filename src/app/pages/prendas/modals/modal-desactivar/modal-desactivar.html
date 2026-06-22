@@ -1,59 +1,225 @@
 <div class="modal-backdrop" [class.fade-out]="closing">
 
-  <div class="modal-container" [class.modal-close]="closing" (click)="$event.stopPropagation()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
 
-    <form [formGroup]="form">
+    <!-- HEADER -->
+    <div class="app-modal-header">
 
-      <div class="modal-footer">
+      <div class="app-modal-header-info">
 
-        <!-- Acciones secundarias -->
-        <div class="footer-left">
+        <div
+          class="app-modal-header-icon"
+          [class.icon-warning]="!esInhabilitada"
+          [class.icon-success]="esInhabilitada">
 
-
-          <button type="button" class="btn-footer btn-clear">
-
-            <i class="fi fi-br-broom"></i>
-
-            <span>Limpiar</span>
-
-          </button>
+          <i
+            [class]="esInhabilitada
+              ? 'fi fi-rr-check-circle'
+              : 'fi fi-rr-triangle-warning'">
+          </i>
 
         </div>
 
-        <!-- Acciones principales -->
-        <div class="footer-right">
+        <div class="app-modal-header-text">
 
-          <button
-            type="button"
-            class="btn-footer btn-cancel"
-            (click)="cerrarDesactivar()">
+          <h2>
+            {{ esInhabilitada ? 'Activar Prenda' : 'Desactivar Prenda' }}
+          </h2>
 
-            <i class="fi fi-br-cross-small"></i>
-
-            <span>Cancelar</span>
-
-          </button>
-
-          <button
-            type="button"
-            class="btn-footer btn-save"
-          >
-
-            <i class="fi fi-br-disk"></i>
-
-            <span>
-      XDDDDD
-      </span>
-
-          </button>
+          <p>
+            {{
+              esInhabilitada
+                ? 'La prenda volverá a estar disponible dentro del sistema.'
+                : 'La prenda será marcada como inhabilitada y dejará de estar disponible para nuevas operaciones.'
+            }}
+          </p>
 
         </div>
 
       </div>
 
+      <div class="app-modal-header-actions">
 
-    </form>
+        <div class="app-modal-badge">
+          <span>{{ codigoPrenda }}</span>
+        </div>
+
+        <button
+          type="button"
+          class="app-modal-close-btn"
+          (click)="cerrarDesactivar()">
+
+          <i class="fi fi-rr-cross-small"></i>
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- BODY -->
+    <div class="modal-body">
+
+      <div class="decision-panel">
+
+        <div
+          class="decision-banner"
+          [class.banner-success]="esInhabilitada"
+          [class.banner-danger]="!esInhabilitada">
+
+          <div class="decision-icon">
+
+            <i
+              [class]="esInhabilitada
+            ? 'fi fi-rr-check-circle'
+            : 'fi fi-rr-trash'">
+            </i>
+
+          </div>
+
+          <div class="decision-info">
+
+        <span class="decision-tag">
+          Confirmación requerida
+        </span>
+
+            <h3>
+              {{
+                esInhabilitada
+                  ? 'La prenda será activada'
+                  : 'La prenda será desactivada'
+              }}
+            </h3>
+
+            <p>
+              {{
+                esInhabilitada
+                  ? 'La prenda volverá a estar disponible para las operaciones del sistema.'
+                  : 'La prenda dejará de estar disponible para nuevas operaciones.'
+              }}
+            </p>
+
+          </div>
+
+        </div>
+
+        <div class="changes-card">
+
+          <div class="changes-title">
+
+            <i class="fi fi-rr-sparkles"></i>
+
+            <span>
+          Cambios que se aplicarán
+        </span>
+
+          </div>
+
+          <div class="changes-list">
+
+            <ng-container *ngIf="esInhabilitada; else desactivarCambios">
+
+              <div class="change-item">
+                <i class="fi fi-rr-check"></i>
+                <span>El estado cambiará a <strong>ACTIVA</strong>.</span>
+              </div>
+
+              <div class="change-item">
+                <i class="fi fi-rr-check"></i>
+                <span>Volverá a aparecer en listados y búsquedas.</span>
+              </div>
+
+              <div class="change-item">
+                <i class="fi fi-rr-check"></i>
+                <span>Podrá utilizarse nuevamente en inventarios y movimientos.</span>
+              </div>
+
+              <div class="change-item">
+                <i class="fi fi-rr-check"></i>
+                <span>Se conservará todo el historial registrado.</span>
+              </div>
+
+            </ng-container>
+
+            <ng-template #desactivarCambios>
+
+              <div class="change-item">
+                <i class="fi fi-rr-check"></i>
+                <span>El estado cambiará a <strong>INHABILITADA</strong>.</span>
+              </div>
+
+              <div class="change-item">
+                <i class="fi fi-rr-check"></i>
+                <span>Dejará de estar disponible para nuevas operaciones.</span>
+              </div>
+
+              <div class="change-item">
+                <i class="fi fi-rr-check"></i>
+                <span>No aparecerá como opción activa en los procesos.</span>
+              </div>
+
+              <div class="change-item">
+                <i class="fi fi-rr-check"></i>
+                <span>El historial y trazabilidad permanecerán disponibles.</span>
+              </div>
+
+            </ng-template>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="app-modal-footer">
+
+      <div class="app-modal-footer-left">
+
+        <button
+          type="button"
+          class="app-btn app-btn-secondary"
+          (click)="cerrarDesactivar()">
+          <i class="fi fi-rr-cross-small"></i>
+          <span>Cancelar</span>
+        </button>
+
+      </div>
+
+      <div class="app-modal-footer-right">
+
+        <button
+          type="button"
+          class="app-btn"
+          [class.app-btn-success]="esInhabilitada"
+          [class.app-btn-danger]="!esInhabilitada"
+          [disabled]="cargando"
+          (click)="confirmarAccion()">
+
+          <i
+            [class]="
+      cargando
+        ? 'fi fi-rr-spinner'
+        : (esInhabilitada ? 'fi fi-br-check' : 'fi fi-br-trash')
+    ">
+          </i>
+
+          <span>
+    {{
+              cargando
+                ? 'Procesando...'
+                : (esInhabilitada ? 'Activar Prenda' : 'Desactivar Prenda')
+            }}
+  </span>
+
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
 
-</div>
+</div>V

@@ -8,7 +8,7 @@
         <div class="app-modal-header-info">
 
           <div class="app-modal-header-icon">
-            <i class="fi fi-br-add"></i>
+            <i class="fi fi-rr-add"></i>
           </div>
 
           <div class="app-modal-header-text">
@@ -52,15 +52,15 @@
                   <div class="info-card-header">
                     <span>Código de Lote</span>
                     <span class="info-badge">
-            <i class="fi fi-br-user-robot"></i>
+            <i class="fi fi-rr-user-robot"></i>
             Generado
           </span>
                   </div>
 
                   <div class="info-value">
-                    <i class="fi fi-bs-qrcode"></i>
+                    <i class="fi fi-rr-qrcode"></i>
                     <span class="info-text">LOT-XXXXXXXX</span>
-                    <i class="fi fi-br-lock"></i>
+                    <i class="fi fi-rr-lock"></i>
                   </div>
                 </div>
 
@@ -69,15 +69,15 @@
                   <div class="info-card-header">
                     <span>Código de Prenda</span>
                     <span class="info-badge">
-            <i class="fi fi-br-bolt-auto"></i>
+            <i class="fi fi-rr-bolt-auto"></i>
             Sistema
           </span>
                   </div>
 
                   <div class="info-value">
-                    <i class="fi fi-bs-qrcode"></i>
+                    <i class="fi fi-rr-qrcode"></i>
                     <span class="info-text">{{ codigoPrenda || '-' }}</span>
-                    <i class="fi fi-br-lock"></i>
+                    <i class="fi fi-rr-lock"></i>
                   </div>
                 </div>
 
@@ -86,17 +86,17 @@
                   <div class="info-card-header">
                     <span>Fecha de Registro</span>
                     <span class="info-badge">
-            <i class="fi fi-br-bolt-auto"></i>
+            <i class="fi fi-rr-bolt-auto"></i>
             Sistema
           </span>
                   </div>
 
                   <div class="info-value">
-                    <i class="fi fi-br-calendar-day"></i>
+                    <i class="fi fi-rr-calendar-day"></i>
                     <span class="info-text">
             {{ fechaActual | date:'dd MMM yyyy, HH:mm' }}
           </span>
-                    <i class="fi fi-br-lock"></i>
+                    <i class="fi fi-rr-lock"></i>
                   </div>
                 </div>
 
@@ -124,7 +124,7 @@
                       [class.invalid]="submitted && form.get('cantidadInicial')?.invalid">
 
                       <div class="input-icon">
-                        <i class="fi fi-br-box-open-full"></i>
+                        <i class="fi fi-rr-box-open-full"></i>
                       </div>
 
                       <input
@@ -147,7 +147,7 @@
                       [class.invalid]="submitted && form.get('precioCompraTotal')?.invalid">
 
                       <div class="input-icon">
-                        <i class="fi fi-bs-dollar"></i>
+                        <i class="fi fi-rr-dollar"></i>
                       </div>
 
                       <input
@@ -170,7 +170,7 @@
                       [class.invalid]="submitted && form.get('precioVenta')?.invalid">
 
                       <div class="input-icon">
-                        <i class="fi fi-bs-dollar"></i>
+                        <i class="fi fi-rr-dollar"></i>
                       </div>
 
                       <input
@@ -202,7 +202,7 @@
                   </div>
 
                   <button type="button" class="btn-add-size" (click)="agregarTalla()" [disabled]="!puedeAgregarInventario()">
-                    <i class="fi fi-br-plus"></i>
+                    <i class="fi fi-rr-plus"></i>
                   </button>
 
                 </div>
@@ -212,7 +212,7 @@
                   <div class="table-empty" *ngIf="inventarios.length === 0">
 
                     <div class="table-empty-icon">
-                      <i class="fi fi-br-box-open"></i>
+                      <i class="fi fi-rr-box-open"></i>
                     </div>
 
                     <div class="table-empty-content">
@@ -245,7 +245,7 @@
                           </ng-container>
 
                           <ng-template #iconoTalla>
-                            <i class="fi fi-br-scissors"></i>
+                            <i class="fi fi-rr-scissors"></i>
                           </ng-template>
 
                         </button>
@@ -273,7 +273,7 @@
                     </div>
 
                     <button type="button" class="delete-button" (click)="eliminarTalla(i)">
-                      <i class="fi fi-bs-trash"></i>
+                      <i class="fi fi-rr-trash"></i>
                     </button>
                   </div>
                 </div>
@@ -495,7 +495,7 @@
             type="button"
             class="app-btn app-btn-secondary"
             (click)="limpiarFormulario()">
-            <i class="fi fi-br-broom"></i>
+            <i class="fi fi-rr-broom"></i>
             <span>Limpiar</span>
           </button>
 
@@ -507,7 +507,7 @@
             type="button"
             class="app-btn app-btn-secondary"
             (click)="cerrarLote()">
-            <i class="fi fi-br-cross-small"></i>
+            <i class="fi fi-rr-cross-small"></i>
             <span>Cancelar</span>
           </button>
 
@@ -515,7 +515,7 @@
             type="button"
             class="app-btn app-btn-primary"
             (click)="registrar()">
-            <i class="fi fi-br-disk"></i>
+            <i class="fi fi-rr-disk"></i>
             <span>Registrar Lote</span>
           </button>
 
@@ -532,7 +532,7 @@
   <div class="modal-tallas-container" (click)="$event.stopPropagation()">
     <div class="modal-tallas-header">
       <div class="modal-tallas-info">
-        <div class="modal-tallas-icon"><i class="fi fi-br-scissors"></i></div>
+        <div class="modal-tallas-icon"><i class="fi fi-rr-scissors"></i></div>
         <div class="modal-tallas-text">
           <h3>Seleccionar Talla</h3>
           <p>Asigna una talla disponible al inventario actual.</p>
@@ -549,15 +549,15 @@
           <div class="talla-name">{{ talla.nombre }}</div>
           <div class="talla-state">
             <ng-container *ngIf="esTallaSeleccionada(talla.idTalla)">
-              <i class="fi fi-br-check"></i>
+              <i class="fi fi-rr-check"></i>
               Seleccionada
             </ng-container>
             <ng-container *ngIf="!esTallaSeleccionada(talla.idTalla) && estaTallaOcupada(talla.idTalla)">
-              <i class="fi fi-br-lock"></i>
+              <i class="fi fi-rr-lock"></i>
               Ocupada
             </ng-container>
             <ng-container *ngIf="!esTallaSeleccionada(talla.idTalla) && !estaTallaOcupada(talla.idTalla)">
-              <i class="fi fi-br-plus-small"></i>
+              <i class="fi fi-rr-plus-small"></i>
               Disponible
             </ng-container>
           </div>

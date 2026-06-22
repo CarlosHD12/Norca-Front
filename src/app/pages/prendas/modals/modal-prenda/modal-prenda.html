@@ -9,7 +9,7 @@
         <div class="app-modal-header-info">
 
           <div class="app-modal-header-icon">
-            <i [class]="modoEdicion ? 'fi fi-br-refresh' : 'fi fi-br-add'"></i>
+            <i [class]="modoEdicion ? 'fi fi-rr-refresh' : 'fi fi-rr-add'"></i>
           </div>
 
           <div class="app-modal-header-text">
@@ -65,7 +65,7 @@
             </label>
 
             <div class="input-wrapper" [class.invalid]="submitted && form.get('nombre')?.invalid">
-              <div class="input-icon"><i class="fi fi-br-label"></i></div>
+              <div class="input-icon"><i class="fi fi-rr-label"></i></div>
               <input type="text" formControlName="nombre" placeholder="Ej: Hoodie Urbano Classic">
             </div>
 
@@ -91,7 +91,7 @@
         {{ selectedCategoriaNombre || 'Seleccionar categoría' }}
       </span>
 
-                  <i class="fi fi-br-angle-small-down" [class.rotate]="showCategoriaDropdown"></i>
+                  <i class="fi fi-rr-angle-small-down" [class.rotate]="showCategoriaDropdown"></i>
 
                 </div>
 
@@ -154,7 +154,7 @@
       </span>
 
                   <i
-                    class="fi fi-br-angle-small-down"
+                    class="fi fi-rr-angle-small-down"
                     [class.rotate]="showMarcaDropdown">
                   </i>
 
@@ -205,7 +205,7 @@
             </label>
 
             <div class="input-wrapper" [class.invalid]="submitted && form.get('material')?.invalid">
-              <div class="input-icon"><i class="fi fi-br-reel"></i></div>
+              <div class="input-icon"><i class="fi fi-rr-reel"></i></div>
               <input type="text" formControlName="material" placeholder="Ej: 100% Algodón, Denim Stretch...">
             </div>
 
@@ -287,7 +287,7 @@
               <label>URL de Imágen</label>
 
             <div class="input-wrapper" [class.invalid]="form.get('imagenUrl')?.value && !esUrlValida(form.get('imagenUrl')?.value)">
-              <div class="input-icon"><i class="fi fi-br-link-alt"></i></div>
+              <div class="input-icon"><i class="fi fi-rr-link-alt"></i></div>
               <input type="text" formControlName="imagenUrl" placeholder="https://...">
             </div>
 
@@ -340,7 +340,7 @@
 
           <button type="button" class="btn-remove-image" (click)="eliminarImagen()">
             <i class="fi fi-rr-trash"></i>
-            Quitar Imágen
+            Eliminar Imágen
           </button>
 
         </div>
@@ -358,12 +358,12 @@
           <div class="info-card">
             <div class="info-card-header">
               <span>Código de Prenda</span>
-              <span class="info-badge"><i [class]="modoEdicion? 'fi fi-br-bolt-auto': 'fi fi-br-user-robot'"></i>{{ modoEdicion ? 'Sistema' : 'Generado' }}</span>
+              <span class="info-badge"><i [class]="modoEdicion? 'fi fi-rr-bolt-auto': 'fi fi-rr-user-robot'"></i>{{ modoEdicion ? 'Sistema' : 'Generado' }}</span>
             </div>
             <div class="info-value">
-              <i class="fi fi-br-qrcode"></i>
+              <i class="fi fi-rr-qrcode"></i>
               <span class="info-text">{{ modoEdicion ? datosPrenda?.codigo : 'PRD-XXXXXXXX' }}</span>
-              <i class="fi fi-br-lock"></i>
+              <i class="fi fi-rr-lock"></i>
             </div>
           </div>
 
@@ -373,15 +373,15 @@
               <div class="info-card-header">
                 <span>Fecha de Registro</span>
 
-                <span class="info-badge"><i class="fi fi-br-bolt-auto"></i>Sistema</span>
+                <span class="info-badge"><i class="fi fi-rr-bolt-auto"></i>Sistema</span>
               </div>
 
               <div class="info-value">
 
-                <i class="fi fi-br-calendar-day"></i>
+                <i class="fi fi-rr-calendar-day"></i>
 
                 <span class="info-text">{{modoEdicion ? (datosPrenda?.fechaRegistro | date:'dd MMM yyyy, HH:mm') : fechaActual | date:'dd MMM yyyy, HH:mm'}}</span>
-                <i class="fi fi-br-lock"></i>
+                <i class="fi fi-rr-lock"></i>
 
               </div>
 
@@ -393,16 +393,16 @@
               <div class="info-card-header">
                 <span>Estado</span>
 
-                <span class="info-badge"><i class="fi fi-br-bolt-auto"></i>Sistema</span>
+                <span class="info-badge"><i class="fi fi-rr-bolt-auto"></i>Sistema</span>
 
               </div>
 
               <div class="info-value">
-              <i class="fi fi-br-refresh"></i>
+              <i class="fi fi-rr-refresh"></i>
 
               <span class="info-text">{{modoEdicion ? (datosPrenda?.estado === 'SIN_LOTES' ? 'SIN LOTES' : datosPrenda?.estado) : 'SIN LOTES' }}</span>
 
-              <i class="fi fi-br-lock"></i>
+              <i class="fi fi-rr-lock"></i>
             </div>
 
             </div>
@@ -413,7 +413,7 @@
               <div class="info-card-header">
                 <span>Activo</span>
 
-                <span class="info-badge"><i class="fi fi-br-bolt-auto"></i>Sistema</span>
+                <span class="info-badge"><i class="fi fi-rr-bolt-auto"></i>Sistema</span>
 
               </div>
 
@@ -437,7 +437,7 @@
 
           <button type="button" class="app-btn app-btn-secondary" [disabled]="!puedeBuscar()" (click)="buscarPrenda()">
 
-            <i class="fi fi-br-search"></i>
+            <i class="fi fi-rr-search"></i>
 
             <span>Buscar</span>
 
@@ -445,7 +445,7 @@
 
           <button type="button" class="app-btn app-btn-secondary" (click)="limpiarFormulario()">
 
-            <i class="fi fi-br-broom"></i>
+            <i class="fi fi-rr-broom"></i>
 
             <span>Limpiar</span>
 
@@ -460,7 +460,7 @@
             class="app-btn app-btn-secondary"
             (click)="cancelar()">
 
-            <i class="fi fi-br-cross-small"></i>
+            <i class="fi fi-rr-cross-small"></i>
 
             <span>
         Cancelar
@@ -473,7 +473,7 @@
             class="app-btn app-btn-primary"
             (click)="guardar()">
 
-            <i class="fi fi-br-disk"></i>
+            <i class="fi fi-rr-disk"></i>
 
             <span>
         {{ modoEdicion ? 'Actualizar Prenda' : 'Registrar Prenda' }}

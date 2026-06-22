@@ -1,0 +1,142 @@
+.decision-panel{
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.decision-banner{
+  display: flex;
+  gap: 18px;
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid #ececec;
+}
+
+.banner-success{
+  background: linear-gradient(
+    135deg,
+    #ecfdf5 0%,
+    #ffffff 100%
+  );
+}
+
+.banner-danger{
+  background: linear-gradient(
+    135deg,
+    #fef2f2 0%,
+    #ffffff 100%
+  );
+}
+
+.decision-icon{
+  width: 72px;
+  height: 72px;
+  min-width: 72px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,.75);
+}
+
+.banner-success .decision-icon{
+  color: #059669;
+}
+
+.banner-danger .decision-icon{
+  color: #dc2626;
+}
+
+.decision-icon i{
+  font-size: 34px;
+}
+
+.decision-info{
+  flex: 1;
+}
+
+.decision-tag{
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.8);
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.decision-info h3{
+  margin: 12px 0 8px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.decision-info p{
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.changes-card{
+  border: 1px solid #ececec;
+  border-radius: 20px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.changes-title{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 22px;
+  border-bottom: 1px solid #f1f1f1;
+  background: #fafafa;
+}
+
+.changes-title i{
+  font-size: 16px;
+  color: #2563eb;
+}
+
+.changes-title span{
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.changes-list{
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.change-item{
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fafafa;
+}
+
+.change-item i{
+  font-size: 14px;
+  color: #10b981;
+  margin-top: 2px;
+}
+
+.change-item span{
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.change-item strong{
+  color: #111827;
+  font-weight: 700;
+}

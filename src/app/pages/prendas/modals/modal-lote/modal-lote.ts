@@ -433,13 +433,13 @@ export class ModalLote implements OnInit {
 
     switch (estado) {
       case 'good':
-        return 'fi fi-br-arrow-trend-up';
+        return 'fi fi-rr-arrow-trend-up';
       case 'medium':
-        return 'fi fi-br-arrow-right';
+        return 'fi fi-rr-arrow-right';
       case 'neutral':
-        return 'fi fi-br-down-left-and-up-right-to-center';
+        return 'fi fi-rr-down-left-and-up-right-to-center';
       default:
-        return 'fi fi-br-arrow-trend-down';
+        return 'fi fi-rr-arrow-trend-down';
     }
 
   }
@@ -567,13 +567,13 @@ export class ModalLote implements OnInit {
 
     switch (this.estadoFinanciero) {
       case 'good':
-        return 'fi fi-br-badge-check';
+        return 'fi fi-rr-badge-check';
       case 'medium':
-        return 'fi fi-br-time-check';
+        return 'fi fi-rr-time-check';
       case 'bad':
-        return 'fi fi-br-triangle-warning';
+        return 'fi fi-rr-triangle-warning';
       default:
-        return 'fi fi-br-hourglass-start';
+        return 'fi fi-rr-hourglass-start';
     }
 
   }

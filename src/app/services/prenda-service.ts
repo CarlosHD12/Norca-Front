@@ -43,9 +43,10 @@ export class PrendaService {
     );
   }
 
-  eliminarPrenda(id: number): Observable<void> {
-    return this.http.delete<void>(
-      `${this.baseUrl}/eliminar/prenda/${id}`
+  inhabilitarPrenda(id: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.baseUrl}/inhabilitar/prenda/${id}`,
+      {}
     );
   }
 

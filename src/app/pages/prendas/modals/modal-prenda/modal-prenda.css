@@ -61,7 +61,7 @@
   font-weight: 500;
   color: #333;
   min-width: 40px;
-  max-width: 120px;
+  max-width: 110px;
 }
 
 .color-chip input::placeholder{
@@ -69,11 +69,8 @@
 }
 
 .chip-remove{
-  width: 26px;
-  height: 26px;
   margin-left: 4px;
   border: none;
-  border-radius: 8px;
   background: transparent;
   display: flex;
   align-items: center;
@@ -97,10 +94,6 @@
 .chip-remove:hover i{
   color: #5C0B15;
   transform: scale(1.1);
-}
-
-.chip-remove:active i{
-  transform: scale(.95);
 }
 
 .add-color-btn{

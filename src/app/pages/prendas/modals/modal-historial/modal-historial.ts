@@ -3,7 +3,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {LoteHistorialResponseDTO} from '../../../../model/LoteHistorialResponseDTO';
 import {LoteService} from '../../../../services/lote-service';
 import {HistorialPrendaResponseDTO} from '../../../../model/HistorialPrendaResponseDTO';
-import {DatePipe, DecimalPipe} from '@angular/common';
+import {DatePipe, DecimalPipe, NgForOf, NgIf} from '@angular/common';
 import {MetricaLoteDTO} from '../../../../model/MetricaLoteDTO';
 
 @Component({
@@ -11,7 +11,9 @@ import {MetricaLoteDTO} from '../../../../model/MetricaLoteDTO';
   imports: [
     ReactiveFormsModule,
     DatePipe,
-    DecimalPipe
+    DecimalPipe,
+    NgIf,
+    NgForOf
   ],
   templateUrl: './modal-historial.html',
   styleUrl: './modal-historial.css',

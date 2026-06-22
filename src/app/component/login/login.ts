@@ -1,21 +1,16 @@
 import {inject} from '@angular/core';
-import {RouterLink} from '@angular/router';
 import {FormGroup} from '@angular/forms';
-import {ResponseDto} from '../../model/response-dto';
 import {NgIf} from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder , Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import {LoginService} from '../../services/login-service';
-import {RequestDto} from '../../model/request-dto';
 import {AuthService} from '../../services/auth-service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
-    RouterLink,
     ReactiveFormsModule,
     NgIf
   ],
@@ -24,74 +19,143 @@ import {AuthService} from '../../services/auth-service';
 })
 export class Login {
 
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   loginForm: FormGroup;
+  registerForm: FormGroup;
+
+  modoRegistro = false;
+
   errorLogin = '';
   successLogin = '';
+
   hidePassword = true;
+  hideRegisterPassword = true;
+
   animandoLogin = false;
 
-  private router = inject(Router);
-  private fb = inject(FormBuilder);
-  private loginService = inject(LoginService);
-  private authService = inject(AuthService);
-
   constructor() {
+
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
+
+    this.registerForm = this.fb.group({
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(3)
+        ]
+      ],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(6)
+        ]
+      ]
+    });
+
   }
 
   togglePassword(): void {
     this.hidePassword = !this.hidePassword;
   }
 
-  onSubmit(): void {
-    if (this.animandoLogin) {
-      return;
-    }
+  toggleRegisterPassword(): void {
+    this.hideRegisterPassword = !this.hideRegisterPassword;
+  }
+
+  cambiarModo(): void {
+
+    this.modoRegistro = !this.modoRegistro;
 
     this.errorLogin = '';
     this.successLogin = '';
 
+    this.loginForm.reset();
+    this.registerForm.reset();
+  }
+
+  login(): void {
+
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
-      this.errorLogin = 'El formulario está incompleto.';
       return;
     }
 
-    const requestDto = new RequestDto();
-    requestDto.username = this.loginForm.get('username')?.value?.trim();
-    requestDto.password = this.loginForm.get('password')?.value;
+    this.errorLogin = '';
+    this.animandoLogin = true;
 
-    this.loginService.login(requestDto).subscribe({
-      next: (data: ResponseDto) => {
-        const rol = data.roles?.[0] ?? '';
+    this.authService.login(this.loginForm.value)
+      .subscribe({
 
-        this.authService.login(data.jwt);
-        localStorage.setItem('rol', rol);
-        localStorage.setItem('usuario', requestDto.username);
+        next: (response) => {
 
-        this.successLogin = '¡Login exitoso! Redirigiendo...';
-        this.animandoLogin = true;
-        this.loginForm.disable();
+          this.authService.saveSession(response);
 
-        setTimeout(() => {
-          switch (rol) {
-            case 'ROLE_ADMIN':
-            case 'ROLE_AYUDANTE':
-            default:
-              this.router.navigate(['/PrendaHome']);
-              break;
-          }
-        }, 1500);
-      },
-      error: () => {
-        this.animandoLogin = false;
-        this.loginForm.enable();
-        this.errorLogin = 'Usuario o contraseña incorrectos.';
-      }
-    });
+          localStorage.setItem(
+            'role',
+            response.role
+          );
+
+          this.successLogin =
+            'Ingreso correcto';
+
+          setTimeout(() => {
+
+            this.router.navigate([
+              '/PrendaHome'
+            ]);
+
+          }, 1200);
+        },
+
+        error: () => {
+
+          this.animandoLogin = false;
+
+          this.errorLogin =
+            'Usuario o contraseña incorrectos';
+        }
+      });
+  }
+
+  register(): void {
+
+    if (this.registerForm.invalid) {
+
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    this.errorLogin = '';
+
+    this.authService
+      .register(this.registerForm.value)
+      .subscribe({
+
+        next: () => {
+
+          this.successLogin =
+            'Usuario registrado correctamente';
+
+          this.modoRegistro = false;
+
+          this.registerForm.reset();
+        },
+
+        error: (err) => {
+
+          this.errorLogin =
+            err?.error ||
+            'No se pudo registrar el usuario';
+        }
+      });
   }
 
 }

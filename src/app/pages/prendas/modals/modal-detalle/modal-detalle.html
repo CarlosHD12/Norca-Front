@@ -7,7 +7,7 @@
       <div class="app-modal-header-info">
 
         <div class="app-modal-header-icon">
-          <i class="fi fi-br-file"></i>
+          <i class="fi fi-rr-file"></i>
         </div>
 
         <div class="app-modal-header-text">
@@ -52,7 +52,7 @@
                 <div class="prenda-info-container">
 
                   <div class="prenda-header">
-                    <span class="prenda-chip"><i class="fi fi-br-label"></i>Nombre de Prenda</span>
+                    <span class="prenda-chip"><i class="fi fi-rr-label"></i>Nombre de Prenda</span>
                     <h3 class="prenda-title">{{ detalle?.nombre }}</h3>
                   </div>
 
@@ -60,7 +60,7 @@
 
                     <div class="detail-item">
                       <div class="detail-icon">
-                        <i class="fi fi-br-apps"></i>
+                        <i class="fi fi-rr-apps"></i>
                       </div>
                       <div class="detail-content">
                         <span class="detail-label">Categoría</span>
@@ -70,7 +70,7 @@
 
                     <div class="detail-item">
                       <div class="detail-icon">
-                        <i class="fi fi-br-bookmark"></i>
+                        <i class="fi fi-rr-bookmark"></i>
                       </div>
                       <div class="detail-content">
                         <span class="detail-label">Marca</span>
@@ -80,7 +80,7 @@
 
                     <div class="detail-item">
                       <div class="detail-icon">
-                        <i class="fi fi-br-layers"></i>
+                        <i class="fi fi-rr-layers"></i>
                       </div>
                       <div class="detail-content">
                         <span class="detail-label">Material</span>
@@ -93,7 +93,7 @@
                   <div class="prenda-meta">
 
                     <div class="meta-item">
-                      <i class="fi fi-br-calendar-day"></i>
+                      <i class="fi fi-rr-calendar-day"></i>
                       <span class="meta-label">Registrado:</span>
                       <span class="meta-value">{{ detalle?.fechaRegistro | date:'dd MMM yyyy, HH:mm' }}</span>
                     </div>
@@ -101,7 +101,7 @@
                     <div class="meta-divider"></div>
 
                     <div class="meta-item">
-                      <i class="fi fi-br-refresh"></i>
+                      <i class="fi fi-rr-refresh"></i>
                       <span class="meta-label">Estado:</span>
                       <span class="estado-badge">{{ detalle?.estado }}</span>
                     </div>
@@ -158,19 +158,32 @@
                 </div>
 
                 <div class="descripcion-content">
-                  <span class="detail-label">Descripción</span>
 
-                  <ng-container *ngIf="detalle?.descripcion?.trim(); else emptyDescripcion">
-                    <p class="descripcion-text">
-                      {{ detalle?.descripcion }}
-                    </p>
-                  </ng-container>
+                  <div class="descripcion-header">
+                    <span class="detail-label">Descripción</span>
+                  </div>
 
-                  <ng-template #emptyDescripcion>
-                    <p class="descripcion-text empty">
-                      No se ha registrado una descripción para esta prenda.
-                    </p>
-                  </ng-template>
+                  <div class="descripcion-body">
+
+                    <ng-container *ngIf="detalle?.descripcion?.trim(); else emptyDescripcion">
+
+                      <p class="descripcion-text">
+                        {{ detalle?.descripcion }}
+                      </p>
+
+                    </ng-container>
+
+                    <ng-template #emptyDescripcion>
+
+                      <div class="descripcion-empty">
+
+                        <span>No se ha registrado una descripción para esta prenda.</span>
+
+                      </div>
+
+                    </ng-template>
+
+                  </div>
 
                 </div>
 
@@ -228,12 +241,12 @@
 
                 <div class="metric-card">
                   <span class="metric-label">Precio Compra</span>
-                  <span class="metric-value">S/ {{ detalle?.precioCompra | number:'1.2-2'}}</span>
+                  <span class="metric-value">{{ detalle?.precioCompra != null ? ('S/ ' + (detalle!.precioCompra | number:'1.2-2')) : '-' }}</span>
                 </div>
 
                 <div class="metric-card">
                   <span class="metric-label">Precio Venta</span>
-                  <span class="metric-value">S/ {{ detalle?.precioVenta | number:'1.2-2'}}</span>
+                  <span class="metric-value">{{ detalle?.precioVenta != null ? ('S/ ' + (detalle!.precioCompra | number:'1.2-2')) : '-' }}</span>
                 </div>
 
               </div>
@@ -266,12 +279,21 @@
                 </div>
 
                 <ng-template #emptyInventario>
-                  <div class="inventario-empty">
-                    <i class="fi fi-rr-box-open"></i>
-                    <span>No hay inventario registrado.</span>
-                  </div>
-                </ng-template>
 
+                  <div class="inventario-empty">
+
+                    <div class="empty-icon">
+                      <i class="fi fi-rr-box-open"></i>
+                    </div>
+
+                    <div class="empty-content">
+                      <span class="empty-title">Sin inventario</span>
+                      <span class="empty-subtitle">No existen registros asociados a este lote.</span>
+                    </div>
+
+                  </div>
+
+                </ng-template>
               </div>
 
               <div class="insight-grid">
@@ -282,19 +304,22 @@
                     Tiempo transcurrido desde el registro del lote.
                   </div>
 
-                  <div class="insight-header">
-                    <span class="insight-title">Antigüedad</span>
+                  <div class="insight-top">
+
+                    <div>
+                      <span class="insight-label">Edad</span>
+                      <div class="insight-value">
+                        {{ resumen?.antiguedadDias != null ? resumen?.antiguedadDias + ' días' : '-' }}
+                      </div>
+                    </div>
 
                     <div class="insight-icon">
                       <i class="fi fi-rr-calendar"></i>
                     </div>
+
                   </div>
 
-                  <div class="insight-value">
-                    {{ resumen?.antiguedadDias }} días
-                  </div>
-
-                  <div class="insight-subtitle">
+                  <div class="insight-footer">
                     Tiempo en inventario
                   </div>
 
@@ -306,19 +331,22 @@
                     Nivel de desempeño del lote según el porcentaje vendido.
                   </div>
 
-                  <div class="insight-header">
-                    <span class="insight-title">Estado Comercial</span>
+                  <div class="insight-top">
+
+                    <div>
+                      <span class="insight-label">Estado</span>
+                      <div class="insight-value">
+                        {{ resumen?.estadoComercial ?? '-' }}
+                      </div>
+                    </div>
 
                     <div class="insight-icon">
                       <i class="fi fi-rr-chart-line-up"></i>
                     </div>
+
                   </div>
 
-                  <div class="insight-value">
-                    {{ resumen?.estadoComercial }}
-                  </div>
-
-                  <div class="insight-subtitle">
+                  <div class="insight-footer">
                     Rendimiento actual
                   </div>
 
@@ -330,19 +358,24 @@
                     Capital que permanece invertido en el stock disponible.
                   </div>
 
-                  <div class="insight-header">
-                    <span class="insight-title">Valor Inventario</span>
+                  <div class="insight-top">
+
+                    <div>
+                      <span class="insight-label">Inventario</span>
+                      <div class="insight-value">
+                        {{ resumen?.valorInventario != null
+                        ? ('S/ ' + (resumen?.valorInventario | number:'1.2-2'))
+                        : '-' }}
+                      </div>
+                    </div>
 
                     <div class="insight-icon">
                       <i class="fi fi-rr-box-open"></i>
                     </div>
+
                   </div>
 
-                  <div class="insight-value">
-                    S/ {{ resumen?.valorInventario | number:'1.2-2' }}
-                  </div>
-
-                  <div class="insight-subtitle">
+                  <div class="insight-footer">
                     Capital inmovilizado
                   </div>
 
@@ -354,19 +387,24 @@
                     Ganancia estimada si se vende todo el stock restante.
                   </div>
 
-                  <div class="insight-header">
-                    <span class="insight-title">Ganancia Potencial</span>
+                  <div class="insight-top">
+
+                    <div>
+                      <span class="insight-label">Ganancia</span>
+                      <div class="insight-value">
+                        {{ resumen?.gananciaPotencial != null
+                        ? ('S/ ' + (resumen?.gananciaPotencial | number:'1.2-2'))
+                        : '-' }}
+                      </div>
+                    </div>
 
                     <div class="insight-icon">
-                      <i class="fi fi-rr-sack-dollar"></i>
+                      <i class="fi fi-rr-circle"></i>
                     </div>
+
                   </div>
 
-                  <div class="insight-value">
-                    S/ {{ resumen?.gananciaPotencial | number:'1.2-2' }}
-                  </div>
-
-                  <div class="insight-subtitle">
+                  <div class="insight-footer">
                     Utilidad proyectada
                   </div>
 

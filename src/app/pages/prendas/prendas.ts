@@ -18,6 +18,7 @@ import {ModalLote} from './modals/modal-lote/modal-lote';
 import {ModalDetalle} from './modals/modal-detalle/modal-detalle';
 import {ModalHistorial} from './modals/modal-historial/modal-historial';
 import {ModalDesactivar} from './modals/modal-desactivar/modal-desactivar';
+import {ModalMovimiento} from './modals/modal-movimiento/modal-movimiento';
 
 @Component({
   selector: 'app-prendas',
@@ -36,7 +37,8 @@ import {ModalDesactivar} from './modals/modal-desactivar/modal-desactivar';
     ModalLote,
     ModalDetalle,
     ModalHistorial,
-    ModalDesactivar
+    ModalDesactivar,
+    ModalMovimiento
   ],
   templateUrl: './prendas.html',
   styleUrl: './prendas.css',
@@ -116,6 +118,7 @@ export class Prendas implements OnInit {
   }
 
   onPrendaSelected(idPrenda: number): void {
+    console.log('ID SELECCIONADO', idPrenda);
 
     this.isRightSidebarOpen = true;
 
@@ -253,9 +256,11 @@ export class Prendas implements OnInit {
   mostrarModalDetalle = false;
   mostrarModalHistorial = false;
   mostrarModalDesactivar = false;
+  mostrarModalMovimiento = false;
 
   idPrendaSeleccionada: number | null = null;
   codigoPrendaSeleccionada: string | null = null;
+  estadoPrendaSeleccionada: string = '';
 
   abrirModalLote(idPrenda: number): void {
     this.idPrendaSeleccionada = idPrenda;
@@ -280,8 +285,23 @@ export class Prendas implements OnInit {
   }
 
   abrirModalDesactivar(idPrenda: number): void {
-    this.idPrendaSeleccionada = idPrenda;
+    const prenda = this.prendas.find(
+      p => p.idPrenda === idPrenda
+    );
+    if (!prenda) {
+      return;
+    }
+    this.idPrendaSeleccionada = prenda.idPrenda;
+    this.estadoPrendaSeleccionada = prenda.estado;
+    this.codigoPrendaSeleccionada = prenda.codigo;
     this.mostrarModalDesactivar = true;
+    this.bloquearScroll();
+  }
+
+  abrirModalMovimiento(idPrenda: number): void {
+    this.idPrendaSeleccionada = idPrenda;
+    this.codigoPrendaSeleccionada = this.prendas.find(p => p.idPrenda === idPrenda)?.codigo ?? null;
+    this.mostrarModalMovimiento = true;
     this.bloquearScroll();
   }
 
@@ -306,9 +326,15 @@ export class Prendas implements OnInit {
   cerrarModalDesactivar(): void {
     this.mostrarModalDesactivar = false;
     this.idPrendaSeleccionada = null;
+    this.estadoPrendaSeleccionada = '';
     this.restaurarScroll();
   }
 
+  cerrarModalMovimiento(): void {
+    this.mostrarModalMovimiento = false;
+    this.idPrendaSeleccionada = null;
+    this.restaurarScroll();
+  }
 
   onLoteGuardado(): void {
     this.cerrarModalLote();

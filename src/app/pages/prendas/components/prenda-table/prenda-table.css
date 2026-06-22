@@ -365,7 +365,11 @@ tbody tr:hover{
 }
 
 .action-square i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 15px;
+  line-height: 1;
 }
 
 .action-square:hover {
@@ -376,11 +380,26 @@ tbody tr:hover{
 
 .action-danger {
   color: #d9534f;
+  border-color: #d9534f;
+  background: #fdeaea;
 }
 
 .action-danger:hover {
-  background: #fdeaea;
-  border-color: #f3c0c0;
+  color: #fdeaea;
+  background: #d9534f;
+  border-color: #d9534f;
+}
+
+.action-success{
+  color: #10b981;
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+}
+
+.action-success:hover{
+  color: #ffffff;
+  background: #10b981;
+  border-color: #10b981;
 }
 
 /* MENU DE OPCIONES */

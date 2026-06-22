@@ -31,6 +31,7 @@
       (detalle)="abrirModalDetalle($event)"
       (historial)="abrirModalHistorial($event)"
       (desactivar)="abrirModalDesactivar($event)"
+      (movimiento)="abrirModalMovimiento($event)"
       (quickDetail)="onPrendaSelected($event)"
       (editarPrenda)="onEditarPrenda($event)">
     </app-prenda-table>
@@ -90,5 +91,15 @@
 <app-modal-desactivar
   *ngIf="mostrarModalDesactivar"
   [idPrenda]="idPrendaSeleccionada"
+  [estadoPrenda]="estadoPrendaSeleccionada"
+  [codigoPrenda]="codigoPrendaSeleccionada"
+  (accionExitosa)="reloadPrendas()"
   (closeDesactivar)="cerrarModalDesactivar()">
 </app-modal-desactivar>
+
+<app-modal-movimiento
+  *ngIf="mostrarModalMovimiento"
+  [idPrenda]="idPrendaSeleccionada"
+  [codigoPrenda]="codigoPrendaSeleccionada"
+  (closeMovimiento)="cerrarModalMovimiento()">
+</app-modal-movimiento>

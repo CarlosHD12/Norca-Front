@@ -9,11 +9,11 @@
           <div class="app-modal-header-info">
 
             <div class="app-modal-header-icon">
-              <i class="fi fi-br-file"></i>
+              <i class="fi fi-rr-file"></i>
             </div>
 
             <div class="app-modal-header-text">
-              <h2>Detalle de la Prenda</h2>
+              <h2>Historial de Lotes</h2>
               <p>Consulte la información general, el inventario y el historial del producto.</p>
             </div>
 
@@ -36,7 +36,6 @@
 
         </div>
 
-
         <div class="modal-body">
 
           <div class="body-columns">
@@ -47,9 +46,9 @@
 
                 <div class="historial-container">
 
-                  @for (lote of historial?.lotes ?? []; track lote.idLote) {
+                  <ng-container *ngIf="(historial?.lotes?.length ?? 0) > 0; else emptyHistorial">
 
-                    <div class="lote-card" [class.selected]="esLoteSeleccionado(lote.idLote)" (click)="seleccionarLote(lote)">
+                    <div class="lote-card" *ngFor="let lote of historial?.lotes" [class.selected]="esLoteSeleccionado(lote.idLote)" (click)="seleccionarLote(lote)">
 
                       <div class="lote-header">
 
@@ -64,17 +63,35 @@
                             <h3>{{ lote.codigoLote }}</h3>
 
                             <span>
-                              <i class="fi fi-rr-calendar-day"></i>
+              <i class="fi fi-rr-calendar-day"></i>
                               {{ lote.fechaIngreso | date:'dd MMM yyyy, HH:mm' }}
-                            </span>
+            </span>
 
                           </div>
 
                         </div>
 
-                        <div class="lote-status" [class.active]="lote.activo" [class.selected-status]="esLoteSeleccionado(lote.idLote)">
-                          <i [class]="  esLoteSeleccionado(lote.idLote) ? 'fi fi-rr-check-circle' : (lote.activo ? 'fi fi-br-check' : 'fi fi-br-minus-circle')"></i>
-                          {{esLoteSeleccionado(lote.idLote) ? 'Seleccionado' : (lote.activo ? 'Activo' : 'Finalizado') }}
+                        <div
+                          class="lote-status"
+                          [class.active]="lote.activo"
+                          [class.selected-status]="esLoteSeleccionado(lote.idLote)">
+
+                          <i
+                            [class]="
+              esLoteSeleccionado(lote.idLote)
+                ? 'fi fi-rr-check-circle'
+                : (lote.activo
+                    ? 'fi fi-rr-check'
+                    : 'fi fi-rr-minus-circle')
+            ">
+                          </i>
+
+                          {{
+                            esLoteSeleccionado(lote.idLote)
+                              ? 'Seleccionado'
+                              : (lote.activo ? 'Activo' : 'Finalizado')
+                          }}
+
                         </div>
 
                       </div>
@@ -130,24 +147,36 @@
                         </div>
 
                         <strong>
-                          S/ {{ lote.precioCompraTotal | number:'1.2-2'}}
+                          S/ {{ lote.precioCompraTotal | number:'1.2-2' }}
                         </strong>
 
                       </div>
 
                       <div class="progress-info">
                         <span>{{ lote.cantidadInicial - lote.stockActual }} vendidos</span>
-                        <span>{{ ((lote.cantidadInicial - lote.stockActual) / lote.cantidadInicial * 100).toFixed(0) }}%</span>
+
+                        <span>
+          {{ ((lote.cantidadInicial - lote.stockActual) / lote.cantidadInicial * 100).toFixed(0) }}%
+        </span>
                       </div>
 
                       <div class="progress-bar">
+
                         <div
                           class="progress-fill"
-                          [style.width.%]="((lote.cantidadInicial - lote.stockActual) / lote.cantidadInicial) * 100">
+                          [style.width.%]="
+            ((lote.cantidadInicial - lote.stockActual) / lote.cantidadInicial) * 100
+          ">
                         </div>
+
                       </div>
+
                     </div>
-                  } @empty {
+
+
+                  </ng-container>
+
+                  <ng-template #emptyHistorial>
 
                     <div class="historial-empty">
 
@@ -163,7 +192,7 @@
 
                     </div>
 
-                  }
+                  </ng-template>
 
                 </div>
 
@@ -176,178 +205,250 @@
 
               <div class="section-card">
 
-                @if (loteSeleccionado) {
+                <div class="inventario-content">
 
-                  <!-- INVENTARIO -->
+                  <ng-container  *ngIf="loteSeleccionado as lote; else emptyState">
 
-                  <div class="inventario-section">
+                    <div class="inventario-header">
 
-                    <div class="block-title">
+                      <div class="inventario-header-left">
 
-                      <div class="block-title-icon">
-                        <i class="fi fi-rr-boxes"></i>
+                        <div class="inventario-header-icon">
+                          <i class="fi fi-rr-boxes"></i>
+                        </div>
+
+                        <div class="inventario-header-info">
+
+          <span class="inventario-label">
+            LOTE SELECCIONADO
+          </span>
+
+                          <h4>
+                            {{ loteSeleccionado.codigoLote }}
+                          </h4>
+
+                        </div>
+
                       </div>
 
-                      <div>
-                        <h4>Inventario por Talla</h4>
-                        <span>{{ loteSeleccionado.codigoLote }}</span>
+                      <div class="header-stat">
+
+                        <span>Tallas</span>
+
+                        <strong>
+                          {{ loteSeleccionado.inventarios.length }}
+                        </strong>
+
                       </div>
 
                     </div>
 
-                  <div class="inventario-distribucion">
+                    <div class="inventario-distribucion">
 
-                    @for (inventario of loteSeleccionado.inventarios; track inventario.idInventario) {
+                      <div class="talla-card" *ngFor="let inventario of loteSeleccionado.inventarios">
 
-                      <div class="talla-row">
+                        <div class="talla-top">
 
-                        <div class="talla-label">
-                          {{ inventario.talla }}
+          <span class="talla-name">
+            {{ inventario.talla }}
+          </span>
+
+                          <span class="talla-stock">
+            {{ inventario.stock }} uds
+          </span>
+
                         </div>
 
-                        <div class="talla-progress">
+                        <div class="talla-bar">
 
                           <div
-                            class="talla-progress-fill"
+                            class="talla-bar-fill"
                             [style.width.%]="(inventario.stock / loteSeleccionado.stockActual) * 100">
                           </div>
 
                         </div>
 
-                        <div class="talla-stock">
-                          {{ inventario.stock }}
+                      </div>
+
+                    </div>
+
+                    <div class="stock-card">
+
+                      <div class="stock-header">
+
+        <span class="stock-label">
+          Stock Disponible
+        </span>
+
+                        <span class="stock-value">
+          {{ loteSeleccionado.stockActual }}
+                          de
+                          {{ loteSeleccionado.cantidadInicial }}
+                          unidades
+        </span>
+
+                      </div>
+
+                      <div class="stock-bar">
+
+                        <div class="stock-bar-fill" [style.width.%]="(loteSeleccionado.stockActual / loteSeleccionado.cantidadInicial) * 100">
                         </div>
 
                       </div>
 
-                    }
+                    </div>
 
-                  </div>
+                    <ng-container *ngIf="metricasLote">
+
+                        <div class="metricas-grid">
+
+                          <div
+                            class="mini-metrica"
+                            data-tooltip="Monto total generado por las ventas">
+
+                            <div class="metrica-icon">
+                              <i class="fi fi-rr-shopping-cart"></i>
+                            </div>
+
+                            <div class="metrica-content">
+
+                              <span>Ventas</span>
+
+                              <strong>
+                                S/ {{ metricasLote.ventaTotal | number:'1.2-2' }}
+                              </strong>
+
+                            </div>
+
+                          </div>
 
 
-                  </div>
+                          <div
+                            class="mini-metrica"
+                            data-tooltip="Ganancia obtenida por cada unidad vendida">
 
-                  <!-- RESUMEN -->
+                            <div class="metrica-icon">
+                              <i class="fi fi-rr-coins"></i>
+                            </div>
 
-                  <div class="inventario-summary">
+                            <div class="metrica-content">
 
-                    <div class="summary-item">
+                              <span>Ganancia Unt.</span>
 
-                      <span>Total de Tallas</span>
+                              <strong>
+                                S/ {{ metricasLote.gananciaPorUnidad | number:'1.2-2' }}
+                              </strong>
 
-                      <strong>
-                        {{ loteSeleccionado.inventarios.length }}
-                      </strong>
+                            </div>
+
+                          </div>
+
+                          <div
+                            class="mini-metrica"
+                            data-tooltip="Ganancia neta generada por el lote">
+
+                            <div class="metrica-icon">
+                              <i class="fi fi-rr-chart-line-up"></i>
+                            </div>
+
+                            <div class="metrica-content">
+
+                              <span>Ganancia Total</span>
+
+                              <strong>
+                                S/ {{ metricasLote.gananciaTotal | number:'1.2-2' }}
+                              </strong>
+
+                            </div>
+
+                          </div>
+
+                          <div
+                            class="mini-metrica"
+                            data-tooltip="Cantidad mínima de unidades necesarias para cubrir los costos">
+
+                            <div class="metrica-icon">
+                              <i class="fi fi-rr-target"></i>
+                            </div>
+
+                            <div class="metrica-content">
+
+                              <span>Equilibrio</span>
+
+                              <strong>
+                                {{ metricasLote.puntoEquilibrio | number:'1.0-0' }}
+                              </strong>
+
+                            </div>
+
+                          </div>
+
+                          <div
+                            class="mini-metrica"
+                            data-tooltip="Retorno generado respecto a la inversión">
+
+                            <div class="metrica-icon">
+                              <i class="fi fi-rr-chart-pie-alt"></i>
+                            </div>
+
+                            <div class="metrica-content">
+
+                              <span>ROI</span>
+
+                              <strong>
+                                {{ metricasLote.radioInversion | number:'1.0-2' }}%
+                              </strong>
+
+                            </div>
+
+                          </div>
+
+                          <div
+                            class="mini-metrica"
+                            data-tooltip="Porcentaje de utilidad sobre la venta">
+
+                            <div class="metrica-icon">
+                              <i class="fi fi-rr-percentage"></i>
+                            </div>
+
+                            <div class="metrica-content">
+
+                              <span>Margen</span>
+
+                              <strong>
+                                {{ metricasLote.margenGanancia | number:'1.0-2' }}%
+                              </strong>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                    </ng-container>
+
+                  </ng-container>
+
+                  <ng-template #emptyState>
+
+                    <div class="inventario-empty">
+
+                      <div class="empty-icon">
+                        <i class="fi fi-rr-box-open"></i>
+                      </div>
+
+                      <h3>Seleccione un lote</h3>
+
+                      <p>
+                        Elija un lote del historial para visualizar sus inventarios,
+                        distribución de prendas por talla y métricas de desempeño.
+                      </p>
 
                     </div>
 
-                    <div class="summary-item">
+                  </ng-template>
 
-                      <span>Stock Disponible</span>
-
-                      <strong>
-                        {{ loteSeleccionado.stockActual }}
-                      </strong>
-
-                    </div>
-
-                  </div>
-
-                  <!-- MÉTRICAS -->
-
-                  @if (metricasLote) {
-
-                  <div class="metricas-dashboard">
-
-                    <div class="metrica-principal">
-
-                      <div class="metrica-principal-icon">
-                        <i class="fi fi-rr-chart-line-up"></i>
-                      </div>
-
-                      <span>Ganancia Total</span>
-
-                      <strong>
-                        S/ {{ metricasLote.gananciaTotal | number:'1.2-2' }}
-                      </strong>
-
-                    </div>
-
-                    <div class="metricas-grid">
-
-                      <div class="mini-metrica">
-
-                        <span>Ventas</span>
-
-                        <strong>
-                          S/ {{ metricasLote.ventaTotal | number:'1.2-2' }}
-                        </strong>
-
-                      </div>
-
-                      <div class="mini-metrica">
-
-                        <span>Ganancia Unidad</span>
-
-                        <strong>
-                          S/ {{ metricasLote.gananciaPorUnidad | number:'1.2-2' }}
-                        </strong>
-
-                      </div>
-
-                      <div class="mini-metrica">
-
-                        <span>Margen</span>
-
-                        <strong>
-                          {{ metricasLote.margenGanancia | number:'1.0-2' }}%
-                        </strong>
-
-                      </div>
-
-                      <div class="mini-metrica">
-
-                        <span>ROI</span>
-
-                        <strong>
-                          {{ metricasLote.radioInversion | number:'1.0-2' }}%
-                        </strong>
-
-                      </div>
-
-                      <div class="mini-metrica full-width">
-
-                        <span>Punto de Equilibrio</span>
-
-                        <strong>
-                          {{ metricasLote.puntoEquilibrio | number:'1.0-0' }}
-                        </strong>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-                  
-                  }
-
-                } @else {
-
-                  <div class="inventario-empty">
-
-                    <div class="empty-icon">
-                      <i class="fi fi-rr-hand-pointer"></i>
-                    </div>
-
-                    <h3>Seleccione un lote</h3>
-
-                    <p>
-                      Elija un lote del historial para visualizar el inventario y métricas.
-                    </p>
-
-                  </div>
-
-                }
+                </div>
 
               </div>
 
@@ -357,13 +458,9 @@
 
         </div>
 
-
         <div class="app-modal-footer">
 
-          <div class="app-modal-footer-left">
-
-
-          </div>
+          <div class="app-modal-footer-left"></div>
 
           <div class="app-modal-footer-right">
 
@@ -378,7 +475,6 @@
           </div>
 
         </div>
-
 
       </div>
 

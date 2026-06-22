@@ -157,51 +157,73 @@
         <td class="actions-col">
           <div class="actions-grid">
 
-            <button
-              type="button"
-              class="action-square"
-              (click)="editarPorId(prenda.idPrenda, $event)"
-              title="Editar"
-            >
-              <i class="fi fi-rr-pencil"></i>
-            </button>
+            <ng-container *ngIf="prenda.estado !== 'INHABILITADA'; else activarTemplate">
 
-            <button
-              type="button"
-              class="action-square"
-              (click)="abrirNuevoLote(prenda.idPrenda)"
-              title="Lote"
-            >
-              <i class="fi fi-rr-layers"></i>
-            </button>
+              <button
+                type="button"
+                class="action-square"
+                (click)="editarPorId(prenda.idPrenda, $event)"
+                title="Editar">
+                <i class="fi fi-rr-pencil"></i>
+              </button>
 
-            <button
-              type="button"
-              class="action-square"
-              (click)="abrirDetalle(prenda.idPrenda)"
-              title="Detalles"
-            >
-              <i class="fi fi-rr-eye"></i>
-            </button>
+              <button
+                type="button"
+                class="action-square"
+                (click)="abrirNuevoLote(prenda.idPrenda)"
+                title="Nuevo Lote">
+                <i class="fi fi-rr-layers"></i>
+              </button>
 
-            <button
-              *ngIf="prenda.estado !== 'SIN_LOTES'"
-              type="button"
-              class="action-square"
-              (click)="abrirHistorial(prenda.idPrenda)"
-              title="Historial"
-            >
-              <i class="fi fi-rr-time-past"></i>
-            </button>
+              <button
+                type="button"
+                class="action-square"
+                (click)="abrirDetalle(prenda.idPrenda)"
+                title="Detalles">
+                <i class="fi fi-rr-eye"></i>
+              </button>
 
-            <button
-              type="button"
-              class="action-square action-danger"
-              (click)="abrirDesactivar(prenda.idPrenda)"
-              title="Desactivar"
-            >
-              <i class="fi fi-rr-remove-folder"></i>
-            </button>
+              <button
+                *ngIf="prenda.estado !== 'SIN_LOTES'"
+                type="button"
+                class="action-square"
+                (click)="abrirHistorial(prenda.idPrenda)"
+                title="Historial">
+                <i class="fi fi-rr-time-past"></i>
+              </button>
+
+              <button
+                *ngIf="esAdmin"
+                type="button"
+                class="action-square action-admin"
+                (click)="abrirMovimiento(prenda.idPrenda)"
+                title="Movimientos">
+                <i class="fi fi-rs-hourglass"></i>
+              </button>
+
+              <button
+                type="button"
+                class="action-square action-danger"
+                (click)="abrirDesactivar(prenda.idPrenda)"
+                title="Desactivar">
+                <i class="fi fi-rr-remove-folder"></i>
+              </button>
+
+            </ng-container>
+
+            <ng-template #activarTemplate>
+
+              <button
+                type="button"
+                class="action-square action-success"
+                (click)="abrirDesactivar(prenda.idPrenda)"
+                title="Activar">
+
+                <i class="fi fi-rr-check-circle"></i>
+
+              </button>
+
+            </ng-template>
 
           </div>
         </td>

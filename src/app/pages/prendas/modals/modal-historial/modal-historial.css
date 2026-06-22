@@ -1,10 +1,48 @@
+/* ========================== CONTENEDOR DE LOTES ========================== */
 .historial-container{
-  height: 500px;
+  height: 600px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  padding: 10px;
+  padding: 15px;
+}
+
+.lote-info span i{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  margin-top: -2px;
+}
+
+.lote-card{
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  padding: 15px;
+  flex-shrink: 0;
+  transition: all .2s ease;
+  cursor: pointer;
+}
+
+.lote-card:hover{
+  border-color: #d7d7d7;
+  transform: translateY(-1px);
+}
+
+.lote-card.selected{
+  border-color: #111;
+  box-shadow: 0 0 0 2px rgba(17,17,17,.06);
+}
+
+.lote-card.selected .lote-icon{
+  background: #111;
+  border-color: #111;
+}
+
+.lote-card.selected .lote-icon i{
+  color: #fff;
 }
 
 .lote-header{
@@ -53,43 +91,6 @@
   font-size: 12px;
   font-weight: 500;
   color: #8b8b8b;
-}
-
-.lote-info span i{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  margin-top: -2px;
-}
-
-.lote-card{
-  background: #fff;
-  border: 1px solid #ececec;
-  border-radius: 18px;
-  padding: 16px;
-  flex-shrink: 0;
-  transition: all .2s ease;
-  cursor: pointer;
-}
-
-.lote-card:hover{
-  border-color: #d7d7d7;
-  transform: translateY(-1px);
-}
-
-.lote-card.selected{
-  border-color: #111;
-  box-shadow: 0 0 0 2px rgba(17,17,17,.06);
-}
-
-.lote-card.selected .lote-icon{
-  background: #111;
-  border-color: #111;
-}
-
-.lote-card.selected .lote-icon i{
-  color: #fff;
 }
 
 .lote-status{
@@ -181,7 +182,7 @@
 }
 
 .purchase-row{
-  margin-top: 12px;
+  margin-top: 15px;
   background: #fafafa;
   border: 1px solid #f0f0f0;
   border-radius: 8px;
@@ -216,7 +217,7 @@
 
 .progress-info{
   display: flex;
-  margin-top: 10px;
+  margin-top: 15px;
   padding: 0 12px;
   justify-content: space-between;
   font-size: 12px;
@@ -225,9 +226,9 @@
 }
 
 .progress-bar{
-  margin-top: 5px;
+  margin-top: 7px;
   height: 9px;
-  background: #efefef;
+  background: #f5f5f5;
   border-radius: 50px;
   overflow: hidden;
 }
@@ -260,7 +261,6 @@
   align-items: center;
   justify-content: center;
 
-  margin-bottom: 16px;
 }
 
 .empty-icon i{
@@ -270,79 +270,378 @@
 
 .historial-empty h3{
   margin: 0;
-
   font-size: 16px;
   color: #222;
 }
 
 .historial-empty p{
   margin-top: 8px;
-
   max-width: 260px;
-
   font-size: 13px;
   color: #8b8b8b;
 }
 
-
-
-
-
-
-.inventario-distribucion {
-  height: 320px;
-  min-height: 320px;
-  max-height: 320px;
-
-  overflow-y: auto;
-
+/* ========================== CONTENEDOR DE INVENTARIOS DE UN LOTE SELECCIONADO ========================== */
+.inventario-content{
   display: flex;
   flex-direction: column;
-  gap: 18px;
-
-  padding-right: 8px;
-}
-
-.talla-row {
-  display: grid;
-  grid-template-columns: 40px 1fr 40px;
-  align-items: center;
-  gap: 14px;
-}
-
-.talla-label {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1f2937;
-}
-
-.talla-stock {
-  text-align: right;
-  font-size: 15px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.talla-progress {
-  height: 10px;
-
-  background: #ececec;
-
-  border-radius: 999px;
-
+  height: 600px;
+  gap: 10px;
   overflow: hidden;
+  padding: 10px;
+  border-radius: 10px;
 }
 
-.talla-progress-fill {
-  height: 100%;
+.inventario-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-  border-radius: 999px;
+.inventario-header-left{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
 
+.inventario-header-icon{
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  background: #5C0B15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.inventario-header-icon i{
+  display: flex;
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.inventario-header-info{
+  display:flex;
+  flex-direction:column;
+}
+
+.inventario-label{
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing:.8px;
+  color:#8c8c8c;
+}
+
+.inventario-header-info h4{
+  margin: 2px 0 0;
+  font-size: 17px;
+  font-weight: 700;
+  color:#252525;
+}
+
+.header-stat{
+  width: 55px;
+  height: 55px;
+  background:#fff;
+  border:1px solid #ececec;
+  border-radius: 10px;
+  padding: 5px;
+  text-align:center;
+}
+
+.header-stat span{
+  display:block;
+  font-size: 12px;
+  color:#8c8c8c;
+}
+
+.header-stat strong{
+  font-size: 16px;
+  font-weight: 600;
+  color:#252525;
+}
+
+.inventario-empty{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+  border: 2px dashed #e8e8e8;
+  border-radius: 10px;
   background: linear-gradient(
-    90deg,
-    #ef4444,
-    #f87171
+    180deg,
+    #fcfcfc 0%,
+    #f8f8f8 100%
   );
+}
 
-  transition: width .3s ease;
+.empty-icon{
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid #ececec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.04),
+    0 2px 8px rgba(0,0,0,0.03);
+}
+
+.empty-icon i{
+  font-size: 42px;
+  color: #8a8a8a;
+}
+
+.inventario-empty h3{
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #202020;
+  letter-spacing: -0.3px;
+}
+
+.inventario-empty p{
+  margin: 0;
+  max-width: 420px;
+  color: #7d7d7d;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.inventario-empty::after{
+  content: "";
+  width: 120px;
+  height: 4px;
+  border-radius: 999px;
+  background: #ececec;
+  margin-top: 24px;
+}
+
+/* ========================== CONTENEDOR DE TALLAS DEL INVENTARIO DE UN LOTE SELECCIONADO ========================== */
+.inventario-distribucion{
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 195px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.talla-card{
+  background:#fafafa;
+  border:1px solid #ececec;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.talla-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom: 5px;
+}
+
+.talla-name{
+  font-size:14px;
+  font-weight:600;
+  color:#252525;
+}
+
+.talla-stock{
+  font-size:13px;
+  font-weight:500;
+  color:#777;
+}
+
+.talla-bar{
+  height:7px;
+  background:#ececec;
+  border-radius: 50px;
+  overflow:hidden;
+}
+
+.talla-bar-fill{
+  height:100%;
+  border-radius:50px;
+  background: #C54453;
+}
+
+/* ========================== CONTENEDOR DE MÉTRICAS DE UN LOTE SELECCIONADO ========================== */
+.stock-card{
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ececec;
+  background:#fafafa;
+}
+
+.stock-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.stock-label{
+  font-weight:600;
+  color:#353535;
+}
+
+.stock-value{
+  font-weight:500;
+  color:#8c8c8c;
+}
+
+.stock-bar{
+  width:100%;
+  height: 8px;
+  background:#ececec;
+  border-radius:50px;
+  overflow:hidden;
+}
+
+.stock-bar-fill{
+  height:100%;
+  border-radius:999px;
+  background: #b22e40;
+  transition:width .3s ease;
+}
+
+/* ========================== CONTENEDOR DE MÉTRICAS DE UN LOTE SELECCIONADO ========================== */
+.metricas-grid{
+  margin-top: 5px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap: 10px;
+}
+
+.mini-metrica{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  background:#fff;
+  border:1px solid #ececec;
+  border-radius: 10px;
+  padding: 12px;
+  transition:.25s ease;
+  cursor:default;
+}
+
+.mini-metrica:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 24px rgba(0,0,0,.06);
+}
+
+.full-width{
+  grid-column:1/-1;
+}
+
+.metrica-icon{
+  width: 45px;
+  height: 45px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius: 10px;
+  background:#fafafa;
+  border:1px solid #ececec;
+}
+
+.metrica-icon i{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 17px;
+  line-height:1;
+  color:#5C0B15;
+}
+
+.metrica-content{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+}
+
+.metrica-content span{
+  font-size:12px;
+  font-weight:500;
+  color:#8c8c8c;
+  margin-bottom:2px;
+}
+
+.metrica-content strong{
+  font-size:17px;
+  font-weight:600;
+  color:#252525;
+  line-height:1.2;
+}
+
+.mini-metrica::after{
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 11px);
+  transform: translateX(-50%) translateY(6px);
+  max-width: 165px;
+  width: max-content;
+  padding: 10px 12px;
+  background: #1f1f1f;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow:
+    0 10px 25px rgba(0,0,0,.18),
+    0 4px 10px rgba(0,0,0,.10);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity .2s ease,
+    transform .2s ease,
+    visibility .2s ease;
+  pointer-events: none;
+}
+
+.mini-metrica::before{
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  width: 10px;
+  height: 10px;
+  background: #1f1f1f;
+  border-right: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  transform: translateX(-50%) rotate(45deg);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity .2s ease,
+    transform .2s ease;
+}
+
+.mini-metrica:hover::after,
+.mini-metrica:hover::before{
+  opacity: 1;
+  visibility: visible;
+}
+
+.mini-metrica:hover::after{
+  transform: translateX(-50%) translateY(0);
+}
+
+.mini-metrica:hover::before{
+  transform: translateX(-50%) rotate(45deg);
 }
